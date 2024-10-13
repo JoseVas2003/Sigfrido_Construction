@@ -1,25 +1,26 @@
-const express = require('express')
-const mongoose = require('mongoose');
-const Product = require('./models/product.model.js');
-const app = express()
+const express = require("express");
+const mongoose = require("mongoose");
+const Product = require("./models/product.model.js");
+const productRoute = require("./routes/product.route.js");
+const app = express();
 
+// middleware
 app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 
-app.get('/', (req, res)=>{
-    res.send("hello from node api updated");
+
+// routes
+app.use("/api/products", productRoute);
+
+
+
+
+app.get("/", (req, res) => {
+  res.send("Hello from Node API Server Updated");
 });
 
 
-app.post('/api/products',async (req, res)=>{
-  try {
-    const product= await Product.create(req.body);
-    res.status(200).json(product);
-  } catch(error){
-    res.status(500).json({messag:error.message});
-  }
-});
-
-mongoose.connect("mongodb+srv://josepepevas1280:ElGo9002!Joe@backenddb.7rqv6.mongodb.net/Node-APi?retryWrites=true&w=majority&appName=BackendDB")
+mongoose.connect("mongodb+srv://Username:password@backenddb.7rqv6.mongodb.net/Node-APi?retryWrites=true&w=majority&appName=BackendDB")
 .then(()=>{
     console.log("Connected to database");
     app.listen(3000, () => {
