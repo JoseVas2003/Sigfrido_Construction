@@ -3,6 +3,9 @@ Tanner Stuhr
 Thanh Nguyen
 Jordan Dawson
 Mitchell Kouiyoth
+Jomel Sotelo
+
+
 
 
 
