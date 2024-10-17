@@ -1,5 +1,6 @@
 Group Members:
 Tanner Stuhr
+Thanh Nguyen
 
 
 
