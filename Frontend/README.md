@@ -4,6 +4,7 @@ Thanh Nguyen
 Jordan Dawson
 Jose Vasquez
 Mitchell Kouiyoth
+Jomel Sotelo
 
 
 
