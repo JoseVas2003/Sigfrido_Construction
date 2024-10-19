@@ -2,9 +2,11 @@ Group Members:
 Tanner Stuhr
 Thanh Nguyen
 Jordan Dawson
-
-
-
+Jose Vasquez
+Mitchell Kouiyoth
+Jomel Sotelo
+Galileo Perez
+Jose Avalos
 
 
 
