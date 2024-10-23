@@ -1,1 +1,2 @@
-Group Members
+Group Members:
+Thanh Nguyen
