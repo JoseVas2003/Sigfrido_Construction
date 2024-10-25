@@ -28,16 +28,20 @@ export default function Reviews() {
         const [reviews, setReviews] = useState(reviewsData);
         const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
 
-        const renderStars = (num) => {
+        const renderStars = (num: number) => {
             return Array(num).fill(null).map((_, i) => <span key={i} className="star">⭐</span>);
         };
+        // Gets average star rating from array of dummy review objects
+        const averageStars = reviewsData.reduce((sum, obj) => sum + obj.stars, 0) / reviewsData.length
+        
+        
     return (
         <div>
             {/* need header bar here */}
             <h1>Reviews</h1>
             <div className="star_box">
-                {/* will be a function to average number of stars header */}
-                <h1>4.92</h1>
+                {/*average number of stars*/}
+                <h1>{Math.round(averageStars * 10)/10}</h1>
                 <div className="star_bars">
                     <div className="left">
                         <h2>5 Stars:</h2>
