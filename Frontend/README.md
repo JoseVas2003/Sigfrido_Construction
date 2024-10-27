@@ -7,7 +7,6 @@ Jordan Dawson
 Jose Vasquez
 Mitchell Kouiyoth
 Jomel Sotelo
-Galileo Perez
 Jose Avalos
 Nathan Kovak
 
