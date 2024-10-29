@@ -52,9 +52,10 @@ body{
     padding-bottom: 10px;
     padding-right: 26px;
     margin: 0%;
-    height: 100px;
-    width: 100%;
-    
+    height: auto;
+    width: auto;
+    max-width: 140px;
+
     border-color: transparent;
     display: flex;
 }
@@ -102,7 +103,7 @@ body{
 }
 
 .menuePageButtons{
-    margin: 5px;
+    margin: 1px;
     justify-content: center;
     text-align: center;
     width: 16%;
