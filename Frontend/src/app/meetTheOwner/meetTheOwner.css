@@ -6,6 +6,8 @@ body {
 
 .wrapper {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
   .wrapper > div {
     font-size: 24px;
