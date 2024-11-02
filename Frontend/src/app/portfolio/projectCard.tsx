@@ -1,23 +1,23 @@
+import { StaticImageData } from 'next/image';
 import React, { CSSProperties } from 'react';
+import Image from 'next/image';
 
 interface ProjectCardProps {
   title: string;
-  imageUrl: string;
   description: string;
   category: string;
   time: string;
   cost: string;
-  
+  image: StaticImageData;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
   title,
-  imageUrl,
   description,
   category,
   time,
   cost,
-
+  image,
 }) => {
   return (
     <div style={styles.cardContainer}>
@@ -27,8 +27,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       {/* Content Area */}
       <div style={styles.contentArea}>
         {/* Image */}
-        <img src={imageUrl} style={styles.image} />
-
+        <Image src={image} alt={title} style={styles.image} />
         {/* Text Details */}
         <div style={styles.textContainer}>
           <p style={styles.descriptionTitle}>Description:</p>
