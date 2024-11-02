@@ -1,5 +1,6 @@
 'use client'
 import React, { useState } from "react";
+import Navbar from "../navbar/navBar";
 
 export default function Reviews() {
     // Fake reviews data
@@ -38,6 +39,7 @@ export default function Reviews() {
     return (
         <div>
             {/* need header bar here */}
+            <Navbar />
             <h1>Reviews</h1>
             <div className="star_box">
                 {/*average number of stars*/}
