@@ -22,7 +22,7 @@ export default function ContactPage() {
                 <div style={styles.splitContainer}>
                     {/* Text Section */}
                     <div style={styles.textSection}>
-                        <p>Schedule a call to speak with us if you have additional questions or 
+                        <p><strong>Schedule a call</strong>  to speak with us if you have additional questions or 
                             need assistance regarding jobs or projects, and we’ll call you at your chosen time.</p>
                         
                         <h2>ADDRESS</h2>
@@ -114,10 +114,13 @@ const styles: { [key: string]: CSSProperties } = {
     textSection: {
         flex: 1,
         backgroundColor: '#D9D9D9',
-        padding: '20px',
+        padding: '30px', 
         borderRadius: '8px',
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+        textAlign: 'center',
+        marginBottom: '20px', 
     },
+
     formSection: {
         flex: 1,
         backgroundColor: '#FFFDFD',
