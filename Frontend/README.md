@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-=======
-Group Members:
-Tanner Stuhr
-Thanh Nguyen
-Jordan Dawson
-Jose Vasquez
-Mitchell Kouiyoth
-Jomel Sotelo
-Jose Avalos
-Nathan Kovak
-
-
-
->>>>>>> main
 Default Readme below (nextJS instructions)
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
