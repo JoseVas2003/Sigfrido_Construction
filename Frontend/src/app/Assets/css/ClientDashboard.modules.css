@@ -1,0 +1,35 @@
+.container{
+  display: flex;
+
+}
+
+.Left_profile_bar{
+  font-weight: bold;
+  font-size: 26px;
+  text-align: center;
+  /* border: 2px blue;
+  border-style: dashed; */
+  background-color: #D9D9D9;
+  width: 240px;
+  height: 1000px;
+  padding-top: 50px;
+  
+}
+
+.Circle{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #2596B6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  font-weight: bold;
+  margin: 25px auto;
+}
+
+/* .Test{
+  color: red;
+  font-size:40px;
+} */
