@@ -2,8 +2,9 @@
 
 import React, { CSSProperties } from 'react';
 import ProjectCard from './projectCard';
-import fountainImage from './fountainExample.jpg';
+import fountainImage from '../portfolio/fountainExample.jpg';
 import Navbar from '../navbar/navBar';
+
 
 export default function Portfolio() {
     return (
@@ -46,11 +47,11 @@ export default function Portfolio() {
                 {/* Project Card */}
                 <ProjectCard
                     title="Stone Mason Fountain"
-                    imageUrl="fountainExample.jpg"
                     description="This project is a stone mason fountain made."
                     category="Bath"
                     time="2 weeks"
                     cost="$600"
+                    image={fountainImage}
                 />
         </div>
     );
@@ -59,13 +60,12 @@ export default function Portfolio() {
 const styles: { [key: string]: CSSProperties } = {    
     container: {
         position: 'relative',
-        height: '100vh',
         backgroundColor: '#EBECE5', // Background color
         
       },
     headerContainer: {
         position: 'absolute',
-        top: '10px',
+        top: '100px',
         right: '10px',
         display: 'flex',
         alignItems: 'center',

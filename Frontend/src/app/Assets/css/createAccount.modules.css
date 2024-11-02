@@ -1,0 +1,255 @@
+/************************************************************/
+/* Default Styling For Entire Page*/
+
+*
+{
+  padding: 0px;
+  margin: 0px;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Main Div For The Create
+   Account Page, Starts Below The Navigation Bar 
+*/
+
+.Container{
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  min-height: 100vh;
+  height: calc(100vh - 100px);
+  /* background-color: rgb(231, 232, 224); Red to see div*/
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Create Account Form */
+
+.createAccountForm{
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(231, 232, 224); /* Green to see div*/
+  padding: auto;
+  padding: 2rem;
+  border-radius: 5px;
+  border: 2px solid #B4B4B4;
+  box-shadow: 0px 0px 10px 2px black;
+}
+
+/************************************************************/
+/* Contains Everything Related To The First Name Input */
+
+.firstNameLabel{
+  display: inline;
+  color: black;
+}
+  
+.firstNameInput{
+  width: 250px;
+  height: 30px;
+  font-size: 20px;
+  border: 2px solid #B4B4B4;
+  border-radius: 5px;
+  padding-left: 5px;
+  color: black;
+  background-color: rgb(231, 232, 224);
+}
+  
+.firstNameInput:focus{
+  outline: none;
+  border-color: transparent;
+  border: 3px solid #2B96B7;
+  caret-color: #2B96B7;
+  
+}
+  
+.firstNameAsterisk{
+  display: inline;
+  color: red;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Last Name Input */
+
+.lastNameLabel{
+  margin-left: 23%;
+  display: inline;
+  color: black;
+}
+  
+.lastNameInput{
+  display: inline;
+  width: 250px;
+  height: 30px;
+  font-size: 20px;
+  border: 2px solid #B4B4B4;
+  border-radius: 5px;
+  padding-left: 5px;
+  color: black;
+  background-color: rgb(231, 232, 224);
+}
+  
+.lastNameInput:focus{
+  outline: none;
+  border-color: transparent;
+  border: 3px solid #2B96B7;
+  caret-color: #2B96B7;
+  
+}
+  
+.lastNameAsterisk{
+  color: red;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Phone Number Input */
+
+.phoneNumberLabel{
+  display: inline;
+  color: black;
+}
+  
+.phoneNumberInput{
+  width: 500px;
+  height: 30px;
+  font-size: 20px;
+  border: 2px solid #B4B4B4;
+  border-radius: 5px;
+  padding-left: 5px;
+  color: black;
+  background-color: rgb(231, 232, 224);
+}
+  
+.phoneNumberInput:focus{
+  outline: none;
+  border-color: transparent;
+  border: 3px solid #2B96B7;
+  caret-color: #2B96B7;
+  
+}
+  
+.phoneNumberAsterisk{
+  color: red;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Email Input */
+
+.createAccountEmailLabel{
+  display: inline;
+  color: black;
+}
+
+.createAcountEmailInput{
+  width: 500px;
+  height: 30px;
+  font-size: 20px;
+  border: 2px solid #B4B4B4;
+  border-radius: 5px;
+  padding-left: 5px;
+  color: black;
+  background-color: rgb(231, 232, 224);
+}
+
+.createAcountEmailInput:focus{
+  outline: none;
+  border-color: transparent;
+  border: 3px solid #2B96B7;
+  caret-color: #2B96B7;
+
+}
+
+.createAccountEmailAsterisk{
+  color: red;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Password Input */
+
+.createAccountPasswordLabel{
+  display: inline;
+  color: black;
+}
+
+.createAccountPasswordInput{
+  width: 500px;
+  height: 30px;
+  font-size: 20px;
+  border: 2px solid #B4B4B4;
+  border-radius: 5px;
+  padding-left: 5px;
+  color: black;
+  background-color: rgb(231, 232, 224);
+}
+
+.createAccountPasswordInput:focus{
+  outline: none;
+  border-color: transparent;
+  border: 3px solid #2B96B7;
+  caret-color: #2B96B7;
+
+}
+
+.createAccountPasswordAsterisk{
+  color: red;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Confirm Password Input 
+*/
+
+.confirmPasswordLabel{
+  display: inline;
+  color: black;
+}
+  
+.confirmPasswordInput{
+  width: 500px;
+  height: 30px;
+  font-size: 20px;
+  border: 2px solid #B4B4B4;
+  border-radius: 5px;
+  padding-left: 5px;
+  color: black;
+  background-color: rgb(231, 232, 224);
+}
+  
+.confirmPasswordInput:focus{
+  outline: none;
+  border-color: transparent;
+  border: 3px solid #2B96B7;
+  caret-color: #2B96B7;
+  
+}
+  
+.confirmPasswordAsterisk{
+  color: red;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Create Account Button */
+
+.CreateAccountButtonContainer{
+  text-align: center;
+}
+
+.CreateAccountButton{
+  width: auto;
+  width: 250px;
+  padding: 0.5rem;
+  font-style: normal;
+  font-size: 25px;
+  border-radius: 5px;
+  border-color: transparent;
+  color: black;
+  background-color: #4FB6CE;
+  font-weight: 700;
+}
+
+.CreateAccountButton:hover{
+  color: rgb(231, 232, 224);
+  background-color: #034357;
+}
+
+/************************************************************/
