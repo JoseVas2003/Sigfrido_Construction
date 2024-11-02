@@ -15,7 +15,8 @@ export default function ContactPage() {
             <div style={styles.headerContainer}>
                 <Navbar />
             </div>
-
+            <h1>Contact Us</h1>
+            <p>Have a question or a project you’d like to discuss?</p>
             {/* Main content container */}
             <div style={styles.mainContent}>
                 <div style={styles.splitContainer}>
@@ -36,7 +37,7 @@ export default function ContactPage() {
 
                     {/* Form Section */}
                     <div style={styles.formSection}>
-                        <h1>Contact Us</h1>
+                        
                         <form id="contactForm" onSubmit={handleSubmit}>
                             <div style={styles.nameGroup}>
                                 <div style={styles.formField}>
@@ -60,6 +61,12 @@ export default function ContactPage() {
                                     <label htmlFor="phone">Phone Number:</label>
                                     <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required placeholder="123-456-7890" style={styles.inputField} />
                                 </div>
+                            </div>
+
+                            {/* Subject Form Group */}
+                            <div style={styles.formGroup}>
+                                <label htmlFor="subject">Subject:</label>
+                                <input type="text" id="subject" name="subject" required style={styles.inputField} />
                             </div>
 
                             <div style={styles.formGroup}>
@@ -106,14 +113,14 @@ const styles: { [key: string]: CSSProperties } = {
     },
     textSection: {
         flex: 1,
-        backgroundColor: '#5a5a5a',
+        backgroundColor: '#D9D9D9',
         padding: '20px',
         borderRadius: '8px',
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
     },
     formSection: {
         flex: 1,
-        backgroundColor: '#EBECE5',
+        backgroundColor: '#FFFDFD',
         padding: '20px',
         borderRadius: '8px',
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
@@ -133,6 +140,7 @@ const styles: { [key: string]: CSSProperties } = {
     },
     formField: {
         flex: 1,
+        
     },
     inputField: {
         width: '100%',
