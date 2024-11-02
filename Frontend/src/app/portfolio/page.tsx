@@ -60,13 +60,12 @@ export default function Portfolio() {
 const styles: { [key: string]: CSSProperties } = {    
     container: {
         position: 'relative',
-        height: '100vh',
         backgroundColor: '#EBECE5', // Background color
         
       },
     headerContainer: {
         position: 'absolute',
-        top: '10px',
+        top: '100px',
         right: '10px',
         display: 'flex',
         alignItems: 'center',
