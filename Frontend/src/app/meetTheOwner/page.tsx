@@ -1,12 +1,16 @@
+'use client'
 import './meetTheOwner.css';
 import Image from "next/image";
 import ownerPic from './default_profile.jpg';
+
+import Navbar from "../navbar/navBar";
 
 export default function page(){
     return <html>
     
     <body> 
-        <div className="text-[black] text-[48px] text-center font-[inter]">Meet The Owner</div>
+    <Navbar />
+        <div className="text-[#333] text-[48px] text-center font-[inter]">Meet The Owner</div>
         <div className="wrapper">
             <div className="max-w-[400px] text-[24px] text-[black] bg-[white] m-[.4em] p-[.3em] rounded-[3px] flex-[1] ">
             
@@ -21,7 +25,7 @@ export default function page(){
             </div>
             <div className="text-[24px] text-[black] bg-[white] m-[.4em] p-[.3em] rounded-[3px] flex-[1] font-[inter] min-w-[400px] max-w-[900px]">bio placeholder</div>
           </div>
-          <div className="text-[48px] text-center pt-[48px] font-[inter] text-[black]">The Dev Team</div>
+          <div className="text-[48px] text-center pt-[48px] font-[inter] text-[#333]">The Dev Team</div>
           <div className="wrapper">
             <div className="text-[24px] text-[black] bg-[white] m-[.4em] p-[.3em] rounded-[3px] flex-[1] font-[inter] min-w-[300px] max-w-[400px]">
 
