@@ -30,6 +30,31 @@ export default function Reviews() {
         // State for storing and sorting reviews
         const [reviews, setReviews] = useState(reviewsData);
         const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
+        const [showModal, setShowModal] = useState(false);
+        const [newReview, setNewReview] = useState({
+            name: "",
+            title: "",
+            content: "",
+            imageFile: null,
+            stars: 0
+        });
+
+        const handleInputChange = (e) => {
+            const { name, value } = e.target;
+            setNewReview({...newReview, [name]: value});
+        };
+    
+        const handleFileChange = (e) => {
+            setNewReview({...newReview, imageFile: e.target.files[0]});
+        };
+    
+        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            setReviews([...reviews, {...newReview, stars: 5}]); // Assuming 5 stars for simplicity
+            setShowModal(false);
+            setNewReview({ name: "", title: "", content: "", imageFile: null }); // Reset form
+        };
+        
 
         const renderStars = (num: number) => {
             return Array(num).fill(null).map((_, i) => <span key={i} className="star">⭐</span>);
@@ -75,9 +100,53 @@ export default function Reviews() {
                         We strive to improve and tailor our services to best meet your needs. Please leave us
                         a review to let us know how we are doing and how we can make your experience even better.
                     </p>
-                    <button className="leave_review">
+                    <button className="leave_review" onClick={() => setShowModal(true)}>
                         Leave Review
                     </button>
+                    {showModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
+                            <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+                                <button onClick={() => setShowModal(false)} className="float-right text-3xl font-semibold">&times;</button>
+                                <form onSubmit={handleSubmit} className="mt-4">
+                                    <label className="block">
+                                        Name: <input type="text" name="name" required onChange={handleInputChange} className="mt-1 p-2 w-full border rounded-md"/>
+                                    </label>
+                                    <label className="block mt-4">
+                                        Image: <input type="file" name="image" onChange={handleFileChange} className="mt-1 p-2 w-full border rounded-md"/>
+                                    </label>
+                                    <label className="block mt-4">
+                                        Title: <input type="text" name="title" required onChange={handleInputChange} className="mt-1 p-2 w-full border rounded-md"/>
+                                    </label>
+                                    <label className="block mt-4">
+                                        Stars:
+                                        <select
+                                            name="stars"
+                                            value={newReview.stars}
+                                            onChange={(e) => setNewReview({...newReview, stars: Number(e.target.value)})}
+                                            required
+                                            className="mt-1 p-2 w-full border rounded-md"
+                                        >
+                                            <option value="" disabled>Select rating</option>
+                                            <option value="0">0 Stars</option>
+                                            <option value="1">1 Star</option>
+                                            <option value="2">2 Stars</option>
+                                            <option value="3">3 Stars</option>
+                                            <option value="4">4 Stars</option>
+                                            <option value="5">5 Stars</option>
+                                        </select>
+                                    </label>
+                                    <label className="block mt-4">
+                                        Review: <textarea name="content" required onChange={handleInputChange} className="mt-1 p-2 w-full border rounded-md"></textarea>
+                                    </label>
+                                    <button type="submit" className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                        Submit Review
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+                    )}
+
                 </div>
             </div>
             {/* reviews section, should be rendered from database and sorted based on menu selection */}
