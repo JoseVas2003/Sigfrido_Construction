@@ -1,12 +1,15 @@
+"use client";
+
 import React, { CSSProperties } from 'react';
 import ProjectCard from './projectCard';
 import fountainImage from './fountainExample.jpg';
+import Navbar from '../navbar/navBar';
 
 export default function Portfolio() {
     return (
         <div style={styles.container}>
             {/* Header Bar */}
-
+            <Navbar/>
             {/* Header Container */}
             <div style={styles.headerContainer}>
                 {/* Pencil Icon Button */}
