@@ -8,9 +8,11 @@ import Navbar from '../navbar/navBar';
 
 export default function Portfolio() {
     return (
-        <div style={styles.container}>
+        <div>
             {/* Header Bar */}
-            <Navbar/>
+            <div style={styles.Navbar}>
+                <Navbar />
+            </div>
             {/* Header Container */}
             <div style={styles.headerContainer}>
                 {/* Pencil Icon Button */}
@@ -60,16 +62,14 @@ export default function Portfolio() {
 const styles: { [key: string]: CSSProperties } = {    
     container: {
         position: 'relative',
-        backgroundColor: '#EBECE5', // Background color
-        
+        backgroundColor: '#EBECE5', // Background color     
       },
     headerContainer: {
-        position: 'absolute',
-        top: '100px',
-        right: '10px',
+        position: 'relative',
+        top: '5px',
+        right: '-1200px',
         display: 'flex',
-        alignItems: 'center',
-
+        paddingTop: '100px', // Add padding to offset the fixed Navbar height
     },
     iconSquare: {
         width: '44px',
@@ -79,12 +79,11 @@ const styles: { [key: string]: CSSProperties } = {
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: '10px',
-
+        
     },
     plusSign: {
         color: '#EBECE5',
         fontSize: '32px',
-
     },
     filterContainer: {
         padding: '8px 12px',
@@ -92,19 +91,27 @@ const styles: { [key: string]: CSSProperties } = {
         display: 'flex',
         alignItems: 'center',
         boxShadow: 'none',
-
+        
     },
     label: {
         fontWeight: 'bold',
         color: '#EBECE5', 
         marginRight: '10px',
-
     },
     dropdown: {
         backgroundColor: '#1E2D3D', 
         fontSize: '1rem',
         fontWeight: 'bold',
         padding: '5px',
-
     },
+Navbar: {
+    width: '100%',
+    position: 'fixed',
+    top: 0,
+    left: 0, // Ensures the Navbar takes up the full width
+    right: 0,
+    zIndex: 1000, // High z-index to overlay content
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    marginBottom: '20px',
+},
 };
