@@ -1,0 +1,124 @@
+/* Container for the entire dashboard */
+.dashboard-container {
+    display: flex;
+}
+
+/* Sidebar styling */
+.sidebar {
+    font-weight: bold;
+    font-size: 24px;
+    text-align: center;
+    background-color: #E6E6E6;
+    width: 240px;
+    height: 100vh;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.sidebar li {
+    margin: 15px 0;
+}
+
+/* Main content area styling */
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #f7f7f7;
+}
+
+/* Appointments section styling */
+.appointments-section {
+    margin-bottom: 20px;
+}
+
+.appointment-list {
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.appointment-item p {
+    margin: 0;
+    flex-grow: 1;
+    padding-left: 10px;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Calendar section styling */
+.calendar-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.calendar {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Feedback section styling */
+.feedback-section {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-list {
+    margin: 10px 0;
+}
+
+.feedback-item {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.feedback-item p {
+    margin: 5px 0;
+}
+
+.reply-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.reply-btn:hover {
+    background-color: #2980b9;
+}

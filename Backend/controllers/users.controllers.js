@@ -20,6 +20,7 @@ const getUser = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
+  console.log("Received request to create a user:", req.body); 
   try {
     const user = await User.create(req.body);
     res.status(200).json(user);
