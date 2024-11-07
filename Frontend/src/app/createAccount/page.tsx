@@ -34,11 +34,12 @@ export default function createUser(){
         },
       });
       console.log("Response from server:", response.data); // Debugging log
-      alert('Account created successfully!');
+      //alert('Account created successfully!');
     } catch (error) {
-      console.error("Error response:", error.response?.data || error.message); // Debugging log
-      alert(`Error: ${error.response?.data?.message || error.message}`);
-    }
+      const err = error as any;
+      console.error("Error response:", err.response?.data || err.message); // Debugging log
+      alert(`Error: ${err.response?.data?.message || err.message}`);
+  }
   };
   return (
     <div>

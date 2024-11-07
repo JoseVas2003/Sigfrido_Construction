@@ -1,13 +1,19 @@
 'use client';
-import '../Assets/css/adminDashboard.modules.css';
+import '../Assets/css/createAccount.modules.css';
 import Navbar from '../navbar/navBar';
-import { clicksOut } from '../navbar/navBar';
 
-export default function page() {
+export default function Page() {
     return (
         <div>
             <Navbar />
-            <main className="dashboard-container" onClick={() => { clicksOut(); }}>
+            <div className="header">
+                <h1>Sigfrido Vasquez Construction</h1>
+                <div>
+                    <button className="logout-btn">Logout</button>
+                    <button className="add-project-btn">Add Project</button>
+                </div>
+            </div>
+            <div className="dashboard-container">
                 <aside className="sidebar">
                     <h2>Welcome Sigfrido</h2>
                     <ul>
@@ -19,8 +25,8 @@ export default function page() {
                         <li>Upload Photos</li>
                     </ul>
                 </aside>
-                <section className="main-content">
-                    <div className="appointments-section">
+                <div className="main-content">
+                    <div className="section-card appointments-section">
                         <h3>Pending Appointments</h3>
                         <div className="appointment-list">
                             <div className="appointment-item">
@@ -40,14 +46,14 @@ export default function page() {
                             </div>
                         </div>
                     </div>
-                    <div className="calendar-section">
+                    <div className="section-card calendar-section">
                         <h3>Appointments</h3>
                         <div className="calendar">
-                            {/* Insert a calendar component or HTML structure */}
+                            {/* Use a calendar component here if possible */}
                             <p>Calendar placeholder for September 2021</p>
                         </div>
                     </div>
-                    <div className="feedback-section">
+                    <div className="section-card feedback-section">
                         <h3>Manage Feedback</h3>
                         <div className="feedback-list">
                             <div className="feedback-item">
@@ -67,8 +73,8 @@ export default function page() {
                             </div>
                         </div>
                     </div>
-                </section>
-            </main>
+                </div>
+            </div>
         </div>
     );
 }
