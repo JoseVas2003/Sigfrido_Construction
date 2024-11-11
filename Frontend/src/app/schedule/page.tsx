@@ -1,9 +1,8 @@
 'use client'
 import '../Assets/css/createAccount.modules.css';
 import Navbar from '../navbar/navBar';
-import {clicksOut} from '../navbar/navBar'
 import '../Assets/css/calendar.modules.css';
-import Calendar from '../calendar/Calendar'
+import Calendar from '../calendar/calendar';
 
 export default function page(){
     return (
@@ -12,4 +11,4 @@ export default function page(){
             <Calendar/>
             </div>
     );
-}
+}   
