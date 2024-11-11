@@ -5,7 +5,7 @@ import '../Assets/css/Reviews.modules.css';
 import { useEffect } from "react";
 
 
-export default function Reviews() {
+
     
     interface Review {
         name: string;
@@ -51,12 +51,21 @@ export default function Reviews() {
         return percentages;
     };
 
+    const ReviewCard = ({ review }: { review: Review }) => (
+        <div className="review-card">
+            <h3 className="review-name">{review.name}</h3>
+            <div className="review-stars">{renderStars(review.stars)}</div>
+            <h4 className="review-title">{review.title}</h4>
+            <p className="review-content">{review.content}</p>
+        </div>
+    );
+
     const renderStars = (num: number) => {
-            return Array(num).fill(null).map((_, i) => <span key={i} className="star">⭐</span>);
-        };
+        return Array(num).fill(null).map((_, i) => <span key={i} className="star">⭐</span>);
+    };
     // Gets average star rating from array of dummy review objects
     const averageStars = reviewsData.reduce((sum, obj) => sum + obj.stars, 0) / reviewsData.length
-    
+
 
     const renderRatingStars = (totalStars: number, filledStars: number) => {
         return (
@@ -71,8 +80,7 @@ export default function Reviews() {
         );
     };
 
-    
-    
+    export default function Reviews() {
 
      // State for storing and sorting reviews
      const [reviews, setReviews] = useState(reviewsData);
@@ -81,11 +89,9 @@ export default function Reviews() {
 
        // useEffect to update star percentages when reviews change
        useEffect(() => {
-        console.log("Initial Reviews: ", reviews);  // Check initial state
         const percentages = calculateStarPercentages(reviews);
-        console.log("Initial Calculated Percentages: ", percentages);  // Initial debugging output
         setStarPercentages(percentages);
-    }, []);  // This will run only once, when the component mounts
+    }, []); 
     
     return (
         <div>
@@ -128,14 +134,7 @@ export default function Reviews() {
             </div>
             {/* reviews section, should be rendered from database and sorted based on menu selection */}
             <div className="reviews">
-                {reviews.map((review, index) => (
-                    <div key={index} className="review-card">
-                        <h3 className="review-name">{review.name}</h3>
-                        <div className="review-stars">{renderStars(review.stars)}</div>
-                        <h4 className="review-title">{review.title}</h4>
-                        <p className="review-content">{review.content}</p>
-                    </div>
-                ))}
+                {reviews.map((review, index) => <ReviewCard key={index} review={review} />)}
             </div>
         </div>
     );
