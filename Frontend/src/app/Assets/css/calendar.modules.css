@@ -1,0 +1,53 @@
+.calendarContainer {
+    width: 80%;
+    max-width: 600px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.navButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.navButton {
+    padding: 5px 10px;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.monthLabel {
+    font-family: 'Avenir Next LT Pro', sans-serif;
+    font-size: 24px;
+}
+
+.calendarGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    color: #000;
+}
+
+.weekdayLabel {
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.calendarDay {
+    padding: 10px;
+    border-radius: 50%; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+}
