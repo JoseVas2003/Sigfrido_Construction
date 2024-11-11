@@ -2,9 +2,18 @@
 import React, { useState } from "react";
 import Navbar from "../navbar/navBar";
 import '../Assets/css/Reviews.modules.css';
+import { useEffect } from "react";
 
 
 export default function Reviews() {
+    
+    interface Review {
+        name: string;
+        stars: number;
+        title: string;
+        content: string;
+    }
+
     // Fake reviews data
     const reviewsData = [
         {
@@ -27,20 +36,59 @@ export default function Reviews() {
         }
     ];
 
-        // State for storing and sorting reviews
-        const [reviews, setReviews] = useState(reviewsData);
-        const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
+    // Function to calculate what percentage of reviews each star value makes up
+    const calculateStarPercentages = (reviews: Review[]) => {
+        const total = reviews.length;  // No need to call length as a method
+        const starCount = [0, 0, 0, 0, 0];
+    
+        reviews.forEach((review) => {
+            if (review.stars >= 1 && review.stars <= 5) {
+                starCount[review.stars - 1] += 1;  // Safely increment count
+            }
+        });
+    
+        const percentages = starCount.map(count => (count / total) * 100); // Convert counts to percentages
+        return percentages;
+    };
 
-        const renderStars = (num: number) => {
+    const renderStars = (num: number) => {
             return Array(num).fill(null).map((_, i) => <span key={i} className="star">⭐</span>);
         };
-        // Gets average star rating from array of dummy review objects
-        const averageStars = reviewsData.reduce((sum, obj) => sum + obj.stars, 0) / reviewsData.length
-        
-        
+    // Gets average star rating from array of dummy review objects
+    const averageStars = reviewsData.reduce((sum, obj) => sum + obj.stars, 0) / reviewsData.length
+    
+
+    const renderRatingStars = (totalStars: number, filledStars: number) => {
+        return (
+            <>
+                {Array.from({ length: filledStars }, (_, i) => (
+                    <span key={i} className="star filled">⭐</span>
+                ))}
+                {Array.from({ length: totalStars - filledStars }, (_, i) => (
+                    <span key={i} className="star outlined">☆</span>
+                ))}
+            </>
+        );
+    };
+
+    
+    
+
+     // State for storing and sorting reviews
+     const [reviews, setReviews] = useState(reviewsData);
+     const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
+     const [starPercentages, setStarPercentages] = useState(() => calculateStarPercentages(reviewsData));
+
+       // useEffect to update star percentages when reviews change
+       useEffect(() => {
+        console.log("Initial Reviews: ", reviews);  // Check initial state
+        const percentages = calculateStarPercentages(reviews);
+        console.log("Initial Calculated Percentages: ", percentages);  // Initial debugging output
+        setStarPercentages(percentages);
+    }, []);  // This will run only once, when the component mounts
+    
     return (
         <div>
-            {/* need header bar here */}
             <Navbar />
             <h1 className="reviews_title">Reviews</h1>
             <div className="top-level">
@@ -48,21 +96,19 @@ export default function Reviews() {
                     {/*average number of stars*/}
                     <h1>{Math.round(averageStars * 10)/10}⭐</h1>
                     <div className="star_bars">
-                        <div className="left">
-                            <h2>5 Stars:</h2>
-                            <h2>4 Stars:</h2>
-                            <h2>3 Stars:</h2>
-                            <h2>2 Stars:</h2>
-                            <h2>1 Stars:</h2>
-                        </div>
-                        <div className="right">
-                            <div className="star_bar"></div>
-                            <div className="star_bar"></div>
-                            <div className="star_bar"></div>
-                            <div className="star_bar"></div>
-                            <div className="star_bar"></div>
-                        </div>
+                        {[5, 4, 3, 2, 1].map((starCount, index) => (
+                            <div key={index} className="rating_row">
+                                <div className="rating_stars">
+                                    {renderRatingStars(5, starCount)}
+                                </div>
+                                <div className="star_bar" style={{width: `${starPercentages[starCount - 1]}%`, height: '20px', backgroundColor: 'orange'}}>
+                                    {starPercentages[starCount - 1]}
+                                </div>
+                            </div>
+                        ))}
                     </div>
+
+
                     <div className="sort_section">
                         <h2>Sort Reviews By:</h2>
                         {/* implement dropdown menu */}
