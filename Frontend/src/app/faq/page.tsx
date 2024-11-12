@@ -35,12 +35,9 @@ export default function ContactPage() {
                 <Navbar />
             </div>
 
-            {/* Main content section */}
-
-            <h1 style={styles.title}>Frequently Asked Questions</h1>
-            
-            <div style={styles.contentWrapper}>
-                {/* Left Image */}
+            {/* Title Section */}
+            <div style={styles.titleContainer}>
+                <h1 style={styles.title}>Frequently Asked Questions</h1>
                 <div style={styles.imageContainer}>
                     <img 
                         src="https://www.souderbrothersconstruction.com/blog/wp-content/uploads/2019/03/iStock-1316374976-825x510.jpg" 
@@ -48,10 +45,11 @@ export default function ContactPage() {
                         style={styles.image}
                     />
                 </div>
-
+            </div>
+            
+            <div style={styles.contentWrapper}>
                 {/* Accordion Section */}
                 <div style={styles.accordionContainer}>
-
                     <button
                         className="accordion"
                         onClick={() => handleAccordionClick(0)}
@@ -124,7 +122,33 @@ const styles: { [key: string]: CSSProperties } = {
     headerContainer: {
         width: '100%',
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    },
+    titleContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '20px',
+        backgroundColor: '#57bcd3',
         marginBottom: '20px',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    },
+    title: {
+        fontSize: '22px',
+        fontWeight: 'bold',
+        margin: 0,
+        color: '#fff',
+        flex: '1',
+    },
+    imageContainer: {
+        width: '250px', // Adjust the width as needed
+        marginLeft: '20px', // Adds some space between the title and the image
+    },
+    image: {
+        width: '100%',
+        height: 'auto',
+        borderRadius: '8px',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
     },
     contentWrapper: {
         display: 'flex',
@@ -134,28 +158,12 @@ const styles: { [key: string]: CSSProperties } = {
         maxWidth: '1200px',
         padding: '20px',
     },
-    imageContainer: {
-        flex: '1',
-        marginRight: '20px', // Adds space between the image and the accordion
-    },
-    image: {
-        width: '100%',
-        height: 'auto',
-        borderRadius: '8px',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-    },
     accordionContainer: {
-        flex: '2', // Take up more space than the image
+        flex: '2',
         backgroundColor: '#fff',
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
         padding: '20px',
         borderRadius: '8px',
-    },
-    title: {
-        textAlign: 'center',
-        marginBottom: '20px',
-        fontSize: '22px',
-        fontWeight: 'bold',
     },
     accordion: {
         backgroundColor: '#eee',
