@@ -90,20 +90,24 @@ export default function Reviews() {
     const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
     const [starPercentages, setStarPercentages] = useState(() => calculateStarPercentages(reviewsData));
     const [showModal, setShowModal] = useState(false);
-    const [newReview, setNewReview] = useState({
+    const [newReview, setNewReview] = useState<Review>({
         name: "",
         title: "",
         content: "",
-        imageFile: null,
+        image: null,
         stars: 0
     });
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setNewReview({...newReview, [name]: value});
     };
 
-    const handleFileChange = (e) => {
-        setNewReview({...newReview, imageFile: e.target.files[0]});
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setNewReview({...newReview, image: e.target.files[0]});
+        } else {
+            setNewReview({...newReview, image: null})
+        }
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -190,7 +194,7 @@ export default function Reviews() {
                                         </select>
                                     </label>
                                     <label className="block mt-4">
-                                        Review: <textarea name="content" required onChange={handleInputChange} className="mt-1 p-2 w-full border rounded-md"></textarea>
+                                        Review: <input name="content" required onChange={handleInputChange} className="mt-1 p-2 w-full border rounded-md"></input>
                                     </label>
                                     <button type="submit" className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                         Submit Review
