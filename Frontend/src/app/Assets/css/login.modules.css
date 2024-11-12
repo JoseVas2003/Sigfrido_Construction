@@ -1,0 +1,173 @@
+/************************************************************/
+/* Default Styling For Entire Page*/
+
+*
+{
+  padding: 0px;
+  margin: 0px;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Main Div For The Login
+   Page, Starts Below The Navigation Bar 
+*/
+
+.Container{
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  height: calc(100vh - 100px);
+  /* background-color: rgb(231, 232, 224); Red to see div*/
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Login Form */
+
+.loginForm{
+
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(231, 232, 224); /* Green to see div*/
+  padding: auto;
+  padding: 4rem;
+  border-radius: 5px;
+  border: 2px solid #B4B4B4;
+  box-shadow: 0px 0px 10px 2px black;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Email Input */
+
+.emailLabel{
+  display: inline;
+  color: black;
+}
+
+.emailInput{
+  width: 300px;
+  height: 30px;
+  font-size: 20px;
+  border: 2px solid #B4B4B4;
+  border-radius: 5px;
+  padding-left: 5px;
+  color: black;
+  background-color: rgb(231, 232, 224);
+}
+
+.emailInput:focus{
+  outline: none;
+  border-color: transparent;
+  border: 3px solid #2B96B7;
+  caret-color: #2B96B7;
+
+}
+
+.emailAsterisk{
+  color: red;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Password Input */
+
+.passwordLabel{
+  display: inline;
+  color: black;
+}
+
+.passwordInput{
+  width: 300px;
+  height: 30px;
+  font-size: 20px;
+  border: 2px solid #B4B4B4;
+  border-radius: 5px;
+  padding-left: 5px;
+  color: black;
+  background-color: rgb(231, 232, 224);
+}
+
+.passwordInput:focus{
+  outline: none;
+  border-color: transparent;
+  border: 3px solid #2B96B7;
+  caret-color: #2B96B7;
+
+}
+
+.passwordAsterisk{
+  color: red;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Forgot Password Button
+ */
+
+.forgotPasswordButtonContainer{
+  color: rgb(0, 0, 0);
+}
+
+.forgotPasswordButton{
+  font-size: 16px;
+  border: none;
+  background-color: transparent;
+  text-decoration: underline;
+  
+}
+
+/************************************************************/
+/* Contains Everything Related To The Login Button */
+
+.loginButtonContainer{
+  text-align: center;
+}
+
+.loginButton{
+  width: auto;
+  width: 175px;
+  padding: 0.5rem;
+  font-style: normal;
+  font-size: 25px;
+  border-radius: 5px;
+  border-color: transparent;
+  color: black;
+  background-color: #4FB6CE;
+  font-weight: 700;
+}
+
+.loginButton:hover{
+  color: rgb(231, 232, 224);
+  background-color: #034357;
+}
+
+/************************************************************/
+/* Contains Everything Related To The Create Account Button */
+
+.createAccountButtonContainer{
+  text-align: center;
+}
+
+.createAccountButton{
+
+  width: auto;
+  width: 200px;
+  padding: 0.5rem;
+  font-style: normal;
+  font-size: 20px;
+  border-radius: 5px;
+  border-color: transparent;
+  color: black;
+  background-color: rgb(231, 232, 224);
+
+}
+
+.createAccountButton:hover{
+
+  font-weight: 600;
+  color: black;
+  background-color: rgb(231, 232, 224);
+  box-shadow: 0px 2px 2px 0px black;
+
+}
+
+/************************************************************/
