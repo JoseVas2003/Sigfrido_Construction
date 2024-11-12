@@ -12,6 +12,7 @@ import { useEffect } from "react";
         stars: number;
         title: string;
         content: string;
+        image?: File | null;
     }
 
     // Fake reviews data
@@ -80,15 +81,16 @@ import { useEffect } from "react";
         );
     };
 
-    export default function Reviews() {
+    
+export default function Reviews() {
 
      // State for storing and sorting reviews
-     const [reviews, setReviews] = useState(reviewsData);
-     const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
-     const [starPercentages, setStarPercentages] = useState(() => calculateStarPercentages(reviewsData));
+    const [reviews, setReviews] = useState(reviewsData);
+    const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
+    const [starPercentages, setStarPercentages] = useState(() => calculateStarPercentages(reviewsData));
 
        // useEffect to update star percentages when reviews change
-       useEffect(() => {
+    useEffect(() => {
         const percentages = calculateStarPercentages(reviews);
         setStarPercentages(percentages);
     }, []); 
