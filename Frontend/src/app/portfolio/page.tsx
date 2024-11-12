@@ -4,6 +4,7 @@ import React, { CSSProperties } from 'react';
 import ProjectCard from './projectCard';
 import fountainImage from '../portfolio/fountainExample.jpg';
 import Navbar from '../navbar/navBar';
+import Link from 'next/link';
 
 
 export default function Portfolio() {
@@ -30,10 +31,12 @@ export default function Portfolio() {
                         <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                     </svg>                
                 </div>
-                {/* Plus Icon Button */}
-                <div style={styles.iconSquare}>
-                    <span style={styles.plusSign}>+</span>
-                </div>
+                {/* Plus Icon Button with Link to createProject*/}
+                <Link href="/createProject">
+                    <div style={styles.iconSquare} role="button">
+                        <span style={styles.plusSign}>+</span>
+                    </div>
+                </Link>
 
                 {/* Filter Dropdown */}
                 <div style={styles.filterContainer}>
@@ -47,14 +50,16 @@ export default function Portfolio() {
                 </div> 
             </div>
                 {/* Project Card */}
-                <ProjectCard
-                    title="Stone Mason Fountain"
-                    description="This project is a stone mason fountain made."
-                    category="Bath"
-                    time="2 weeks"
-                    cost="$600"
-                    image={fountainImage}
-                />
+                <div style={styles.projectCardContainer}>
+                    <ProjectCard
+                        title="Stone Mason Fountain"
+                        description="This project is a stone mason fountain made."
+                        category="Bath"
+                        time="2 weeks"
+                        cost="$600"
+                        image={fountainImage}
+                    />
+                </div>
         </div>
     );
 }
@@ -67,9 +72,10 @@ const styles: { [key: string]: CSSProperties } = {
     headerContainer: {
         position: 'relative',
         top: '5px',
-        right: '-1200px',
         display: 'flex',
         paddingTop: '100px', // Add padding to offset the fixed Navbar height
+        paddingRight: '20px', 
+        justifyContent: 'flex-end',
     },
     iconSquare: {
         width: '44px',
@@ -103,6 +109,12 @@ const styles: { [key: string]: CSSProperties } = {
         fontSize: '1rem',
         fontWeight: 'bold',
         padding: '5px',
+    },
+    projectCardContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: '20px',
     },
 Navbar: {
     width: '100%',

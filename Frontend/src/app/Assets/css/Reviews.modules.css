@@ -37,21 +37,76 @@ h1 {
     width: 100%;
 }
 
-.star_bars {
+
+/* .star_bars {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
+    align-items: center; Aligns items vertically */
+    /* margin-top: 10px;
+} */
+
+.star_bars {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Adjust alignment to start */
 }
 
-.left h2, .right .star_bar {
+.rating_stars {
+    margin-right: 10px; /* Space between stars and bar */
+}
+
+.star {
+    font-size: 18px; /* Adjust size as needed */
+    margin-right: 2px; /* Space between stars */
+}
+
+.filled {
+    color: orange; /* Color for filled stars */
+}
+
+.outlined {
+    color: #ccc; /* Color for outlined stars, adjust as needed */
+}
+
+.rating_row {
+    display: flex;
+    align-items: center;
+    width: 100%; /* Ensure this is maintaining the intended width */
     margin: 5px 0;
 }
 
 .star_bar {
+    background-color: orange;
+    height: 20px;
+    border-radius: 5px;
+    max-width: 70%; /* Limit the maximum width */
+}
+
+
+.left, .right {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.left h2 {
+    margin: 5px 0;
+}
+
+/* .star_bar {
     height: 20px;
     width: 200px;
     background: lightgray;
     border-radius: 5px;
+} */
+.right{
+    width: 70%;
+}
+
+.right .star_bar {
+    background-color: orange; /* Set default color for all bars */
+    height: 20px;
+    border-radius: 5px;
+    margin: 5px 0;
 }
 
 .sort_section {
