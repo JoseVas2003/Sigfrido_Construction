@@ -38,6 +38,8 @@ body{
 */
 
 .headerBar{
+    background-color: rgb(231, 232, 224); 
+    position: relative;
     display: flex;
     justify-content: space-around;
     align-items: center;
