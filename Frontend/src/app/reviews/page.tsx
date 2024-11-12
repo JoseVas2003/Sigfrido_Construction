@@ -130,22 +130,23 @@ export default function Reviews() {
             <h1 className="reviews_title">Reviews</h1>
             <div className="top-level">
                 <div className="star_box">
-                    {/*average number of stars*/}
-                    <h1>{Math.round(averageStars * 10)/10}⭐</h1>
-                    <div className="star_bars">
-                        {[5, 4, 3, 2, 1].map((starCount, index) => (
-                            <div key={index} className="rating_row">
-                                <div className="rating_stars">
-                                    {renderRatingStars(5, starCount)}
+                    <div className="star_box_top">
+                        {/*average number of stars*/}
+                        <h1 className="star_average">{Math.round(averageStars * 10)/10}⭐</h1>
+                        <div className="star_bars">
+                            {[5, 4, 3, 2, 1].map((starCount, index) => (
+                                <div key={index} className="rating_row">
+                                    <div className="rating_stars">
+                                        {renderRatingStars(5, starCount)}
+                                    </div>
+                                    <div className="star_bar" style={{width: `${starPercentages[starCount - 1]}%`, height: '20px', backgroundColor: 'orange'}}>
+                                        {starPercentages[starCount - 1]}
+                                    </div>
                                 </div>
-                                <div className="star_bar" style={{width: `${starPercentages[starCount - 1]}%`, height: '20px', backgroundColor: 'orange'}}>
-                                    {starPercentages[starCount - 1]}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-
-
+                    <hr></hr>
                     <div className="sort_section">
                         <h2>Sort Reviews By:</h2>
                         {/* implement dropdown menu */}
