@@ -2,9 +2,19 @@
 import React, { useState } from "react";
 import Navbar from "../navbar/navBar";
 import '../Assets/css/Reviews.modules.css';
+import { useEffect } from "react";
 
 
-export default function Reviews() {
+
+    
+    interface Review {
+        name: string;
+        stars: number;
+        title: string;
+        content: string;
+        image?: File | null;
+    }
+
     // Fake reviews data
     const reviewsData = [
         {
@@ -27,45 +37,91 @@ export default function Reviews() {
         }
     ];
 
-        // State for storing and sorting reviews
-        const [reviews, setReviews] = useState(reviewsData);
-        const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
-        const [showModal, setShowModal] = useState(false);
-        const [newReview, setNewReview] = useState({
-            name: "",
-            title: "",
-            content: "",
-            imageFile: null,
-            stars: 0
+    // Function to calculate what percentage of reviews each star value makes up
+    const calculateStarPercentages = (reviews: Review[]) => {
+        const total = reviews.length;  // No need to call length as a method
+        const starCount = [0, 0, 0, 0, 0];
+    
+        reviews.forEach((review) => {
+            if (review.stars >= 1 && review.stars <= 5) {
+                starCount[review.stars - 1] += 1;  // Safely increment count
+            }
         });
-
-        const handleInputChange = (e) => {
-            const { name, value } = e.target;
-            setNewReview({...newReview, [name]: value});
-        };
     
-        const handleFileChange = (e) => {
-            setNewReview({...newReview, imageFile: e.target.files[0]});
-        };
-    
-        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            setReviews([...reviews, {...newReview, stars: 5}]); // Assuming 5 stars for simplicity
-            setShowModal(false);
-            setNewReview({ name: "", title: "", content: "", imageFile: null }); // Reset form
-        };
-        
+        const percentages = starCount.map(count => (count / total) * 100); // Convert counts to percentages
+        return percentages;
+    };
 
-        const renderStars = (num: number) => {
-            return Array(num).fill(null).map((_, i) => <span key={i} className="star">⭐</span>);
-        };
-        // Gets average star rating from array of dummy review objects
-        const averageStars = reviewsData.reduce((sum, obj) => sum + obj.stars, 0) / reviewsData.length
-        
-        
+
+    const ReviewCard = ({ review }: { review: Review }) => (
+        <div className="review-card">
+            <h3 className="review-name">{review.name}</h3>
+            <div className="review-stars">{renderStars(review.stars)}</div>
+            <h4 className="review-title">{review.title}</h4>
+            <p className="review-content">{review.content}</p>
+        </div>
+    );
+
+    const renderStars = (num: number) => {
+        return Array(num).fill(null).map((_, i) => <span key={i} className="star">⭐</span>);
+    };
+    // Gets average star rating from array of dummy review objects
+    const averageStars = reviewsData.reduce((sum, obj) => sum + obj.stars, 0) / reviewsData.length
+
+
+    const renderRatingStars = (totalStars: number, filledStars: number) => {
+        return (
+            <>
+                {Array.from({ length: filledStars }, (_, i) => (
+                    <span key={i} className="star filled">⭐</span>
+                ))}
+                {Array.from({ length: totalStars - filledStars }, (_, i) => (
+                    <span key={i} className="star outlined">☆</span>
+                ))}
+            </>
+        );
+    };
+
+    
+export default function Reviews() {
+
+     // State for storing and sorting reviews
+    const [reviews, setReviews] = useState(reviewsData);
+    const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
+    const [starPercentages, setStarPercentages] = useState(() => calculateStarPercentages(reviewsData));
+    const [showModal, setShowModal] = useState(false);
+    const [newReview, setNewReview] = useState({
+        name: "",
+        title: "",
+        content: "",
+        imageFile: null,
+        stars: 0
+    });
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewReview({...newReview, [name]: value});
+    };
+
+    const handleFileChange = (e) => {
+        setNewReview({...newReview, imageFile: e.target.files[0]});
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setReviews([...reviews, {...newReview, stars: 5}]); // Assuming 5 stars for simplicity
+        setShowModal(false);
+        // setNewReview({ name: "", title: "", content: "", imageFile: null }); // Reset form
+    };
+    
+
+       // useEffect to update star percentages when reviews change
+    useEffect(() => {
+        const percentages = calculateStarPercentages(reviews);
+        setStarPercentages(percentages);
+    }, []); 
+    
     return (
         <div>
-            {/* need header bar here */}
             <Navbar />
             <h1 className="reviews_title">Reviews</h1>
             <div className="top-level">
@@ -73,21 +129,19 @@ export default function Reviews() {
                     {/*average number of stars*/}
                     <h1>{Math.round(averageStars * 10)/10}⭐</h1>
                     <div className="star_bars">
-                        <div className="left">
-                            <h2>5 Stars:</h2>
-                            <h2>4 Stars:</h2>
-                            <h2>3 Stars:</h2>
-                            <h2>2 Stars:</h2>
-                            <h2>1 Stars:</h2>
-                        </div>
-                        <div className="right">
-                            <div className="star_bar"></div>
-                            <div className="star_bar"></div>
-                            <div className="star_bar"></div>
-                            <div className="star_bar"></div>
-                            <div className="star_bar"></div>
-                        </div>
+                        {[5, 4, 3, 2, 1].map((starCount, index) => (
+                            <div key={index} className="rating_row">
+                                <div className="rating_stars">
+                                    {renderRatingStars(5, starCount)}
+                                </div>
+                                <div className="star_bar" style={{width: `${starPercentages[starCount - 1]}%`, height: '20px', backgroundColor: 'orange'}}>
+                                    {starPercentages[starCount - 1]}
+                                </div>
+                            </div>
+                        ))}
                     </div>
+
+
                     <div className="sort_section">
                         <h2>Sort Reviews By:</h2>
                         {/* implement dropdown menu */}
@@ -151,14 +205,7 @@ export default function Reviews() {
             </div>
             {/* reviews section, should be rendered from database and sorted based on menu selection */}
             <div className="reviews">
-                {reviews.map((review, index) => (
-                    <div key={index} className="review-card">
-                        <h3 className="review-name">{review.name}</h3>
-                        <div className="review-stars">{renderStars(review.stars)}</div>
-                        <h4 className="review-title">{review.title}</h4>
-                        <p className="review-content">{review.content}</p>
-                    </div>
-                ))}
+                {reviews.map((review, index) => <ReviewCard key={index} review={review} />)}
             </div>
         </div>
     );
