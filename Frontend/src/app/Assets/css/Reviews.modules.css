@@ -2,7 +2,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: #f4f4f4;
+    /* background: #f4f4f4; */
     color: black;
 
 }
@@ -20,6 +20,7 @@ h1, h2, h3, h4, p {
 
 h1 {
     color: #333;
+    font-weight: bold;
 }
 
 .top-level {
@@ -37,19 +38,27 @@ h1 {
     width: 100%;
 }
 
-
-/* .star_bars {
+.star_box_top {
     display: flex;
-    justify-content: space-between;
-    align-items: center; Aligns items vertically */
-    /* margin-top: 10px;
-} */
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.star_average {
+    font-size: 40px ;
+    font-weight: bold;
+}
 
 .star_bars {
+    border-left: solid;
+    padding-left: 10%;
+    margin-bottom: 5%;
     display: flex;
     flex-direction: column;
     align-items: flex-start; /* Adjust alignment to start */
 }
+
 
 .rating_stars {
     margin-right: 10px; /* Space between stars and bar */
@@ -72,7 +81,7 @@ h1 {
     display: flex;
     align-items: center;
     width: 100%; /* Ensure this is maintaining the intended width */
-    margin: 5px 0;
+    margin: -2px;
 }
 
 .star_bar {
@@ -92,27 +101,12 @@ h1 {
     margin: 5px 0;
 }
 
-/* .star_bar {
-    height: 20px;
-    width: 200px;
-    background: lightgray;
-    border-radius: 5px;
-} */
-.right{
-    width: 70%;
-}
-
-.right .star_bar {
-    background-color: orange; /* Set default color for all bars */
-    height: 20px;
-    border-radius: 5px;
-    margin: 5px 0;
-}
 
 .sort_section {
     display: flex;
     align-items: center;
     margin-top: 20px;
+    justify-content: center;
 }
 
 .sort_section select {
@@ -129,6 +123,14 @@ h1 {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
+
+.feedback_section h1 {
+    justify-content: center;
+    text-align: center;
+    padding-bottom: 10px;
 }
 
 .leave_review {
@@ -155,6 +157,27 @@ h1 {
     margin-bottom: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.review-name {
+    font-weight: bolder;
+    font-size: large;
+    padding-right: 20px;
+}
+
+.review-title {
+    font-weight: 700;
+}
+
+.review-hr{
+    max-width: 30%;
+    margin-left: 20px;
+}
+
+.review-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .review-stars {

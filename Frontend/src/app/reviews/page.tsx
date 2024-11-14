@@ -52,10 +52,14 @@ import { useEffect } from "react";
         return percentages;
     };
 
+
     const ReviewCard = ({ review }: { review: Review }) => (
         <div className="review-card">
-            <h3 className="review-name">{review.name}</h3>
-            <div className="review-stars">{renderStars(review.stars)}</div>
+            <div className="review-top">
+                <h3 className="review-name">{review.name}</h3>
+                <div className="review-stars">{renderStars(review.stars)}</div>
+            </div>
+            <hr className="review-hr" />
             <h4 className="review-title">{review.title}</h4>
             <p className="review-content">{review.content}</p>
         </div>
@@ -88,6 +92,37 @@ export default function Reviews() {
     const [reviews, setReviews] = useState(reviewsData);
     const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
     const [starPercentages, setStarPercentages] = useState(() => calculateStarPercentages(reviewsData));
+    const [showModal, setShowModal] = useState(false);
+    const [newReview, setNewReview] = useState<Review>({
+        name: "",
+        title: "",
+        content: "",
+        image: null,
+        stars: 0
+    });
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setNewReview({...newReview, [name]: value});
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setNewReview({...newReview, image: e.target.files[0]});
+        } else {
+            setNewReview({...newReview, image: null})
+        }
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setReviews([...reviews, {...newReview, stars: 5}]); // Assuming 5 stars for simplicity
+        setShowModal(false);
+        // setNewReview({ name: "", title: "", content: "", imageFile: null }); // Reset form
+    };
+
+    const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSortBy(e.target.value)
+    }
 
        // useEffect to update star percentages when reviews change
     useEffect(() => {
@@ -101,26 +136,32 @@ export default function Reviews() {
             <h1 className="reviews_title">Reviews</h1>
             <div className="top-level">
                 <div className="star_box">
-                    {/*average number of stars*/}
-                    <h1>{Math.round(averageStars * 10)/10}⭐</h1>
-                    <div className="star_bars">
-                        {[5, 4, 3, 2, 1].map((starCount, index) => (
-                            <div key={index} className="rating_row">
-                                <div className="rating_stars">
-                                    {renderRatingStars(5, starCount)}
+                    <div className="star_box_top">
+                        {/*average number of stars*/}
+                        <h1 className="star_average">{Math.round(averageStars * 10)/10}⭐</h1>
+                        <div className="star_bars">
+                            {[5, 4, 3, 2, 1].map((starCount, index) => (
+                                <div key={index} className="rating_row">
+                                    <div className="rating_stars">
+                                        {renderRatingStars(5, starCount)}
+                                    </div>
+                                    <div className="star_bar" style={{width: `${starPercentages[starCount - 1]}%`, height: '20px', backgroundColor: 'orange'}}>
+                                        {starPercentages[starCount - 1]}
+                                    </div>
                                 </div>
-                                <div className="star_bar" style={{width: `${starPercentages[starCount - 1]}%`, height: '20px', backgroundColor: 'orange'}}>
-                                    {starPercentages[starCount - 1]}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-
-
+                    <hr></hr>
                     <div className="sort_section">
                         <h2>Sort Reviews By:</h2>
                         {/* implement dropdown menu */}
-                        <select></select>
+                        <select value={sortBy} onChange={handleSortByChange}>
+                            <option>Newest First</option>
+                            <option>Oldest First</option>
+                            <option>Highest First</option>
+                            <option>Lowest First</option>
+                        </select>
                     </div>
                 </div>
                 <div className="feedback_section">
@@ -129,9 +170,53 @@ export default function Reviews() {
                         We strive to improve and tailor our services to best meet your needs. Please leave us
                         a review to let us know how we are doing and how we can make your experience even better.
                     </p>
-                    <button className="leave_review">
+                    <button className="leave_review" onClick={() => setShowModal(true)}>
                         Leave Review
                     </button>
+                    {showModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
+                            <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+                                <button onClick={() => setShowModal(false)} className="float-right text-3xl font-semibold">&times;</button>
+                                <form onSubmit={handleSubmit} className="mt-4">
+                                    <label className="block">
+                                        Name: <input type="text" name="name" required onChange={handleInputChange} className="mt-1 p-2 w-full border rounded-md"/>
+                                    </label>
+                                    <label className="block mt-4">
+                                        Image: <input type="file" name="image" onChange={handleFileChange} className="mt-1 p-2 w-full border rounded-md"/>
+                                    </label>
+                                    <label className="block mt-4">
+                                        Title: <input type="text" name="title" required onChange={handleInputChange} className="mt-1 p-2 w-full border rounded-md"/>
+                                    </label>
+                                    <label className="block mt-4">
+                                        Stars:
+                                        <select
+                                            name="stars"
+                                            value={newReview.stars}
+                                            onChange={(e) => setNewReview({...newReview, stars: Number(e.target.value)})}
+                                            required
+                                            className="mt-1 p-2 w-full border rounded-md"
+                                        >
+                                            <option value="" disabled>Select rating</option>
+                                            <option value="0">0 Stars</option>
+                                            <option value="1">1 Star</option>
+                                            <option value="2">2 Stars</option>
+                                            <option value="3">3 Stars</option>
+                                            <option value="4">4 Stars</option>
+                                            <option value="5">5 Stars</option>
+                                        </select>
+                                    </label>
+                                    <label className="block mt-4">
+                                        Review: <input name="content" required onChange={handleInputChange} className="mt-1 p-2 w-full border rounded-md"></input>
+                                    </label>
+                                    <button type="submit" className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                        Submit Review
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+                    )}
+
                 </div>
             </div>
             {/* reviews section, should be rendered from database and sorted based on menu selection */}
