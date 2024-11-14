@@ -55,8 +55,11 @@ import { useEffect } from "react";
 
     const ReviewCard = ({ review }: { review: Review }) => (
         <div className="review-card">
-            <h3 className="review-name">{review.name}</h3>
-            <div className="review-stars">{renderStars(review.stars)}</div>
+            <div className="review-top">
+                <h3 className="review-name">{review.name}</h3>
+                <div className="review-stars">{renderStars(review.stars)}</div>
+            </div>
+            <hr className="review-hr" />
             <h4 className="review-title">{review.title}</h4>
             <p className="review-content">{review.content}</p>
         </div>
@@ -116,7 +119,10 @@ export default function Reviews() {
         setShowModal(false);
         // setNewReview({ name: "", title: "", content: "", imageFile: null }); // Reset form
     };
-    
+
+    const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSortBy(e.target.value)
+    }
 
        // useEffect to update star percentages when reviews change
     useEffect(() => {
@@ -150,7 +156,12 @@ export default function Reviews() {
                     <div className="sort_section">
                         <h2>Sort Reviews By:</h2>
                         {/* implement dropdown menu */}
-                        <select></select>
+                        <select value={sortBy} onChange={handleSortByChange}>
+                            <option>Newest First</option>
+                            <option>Oldest First</option>
+                            <option>Highest First</option>
+                            <option>Lowest First</option>
+                        </select>
                     </div>
                 </div>
                 <div className="feedback_section">

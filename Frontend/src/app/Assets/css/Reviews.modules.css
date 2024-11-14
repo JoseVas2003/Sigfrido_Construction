@@ -20,6 +20,7 @@ h1, h2, h3, h4, p {
 
 h1 {
     color: #333;
+    font-weight: bold;
 }
 
 .top-level {
@@ -122,6 +123,14 @@ h1 {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
+
+.feedback_section h1 {
+    justify-content: center;
+    text-align: center;
+    padding-bottom: 10px;
 }
 
 .leave_review {
@@ -148,6 +157,27 @@ h1 {
     margin-bottom: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.review-name {
+    font-weight: bolder;
+    font-size: large;
+    padding-right: 20px;
+}
+
+.review-title {
+    font-weight: 700;
+}
+
+.review-hr{
+    max-width: 30%;
+    margin-left: 20px;
+}
+
+.review-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .review-stars {
