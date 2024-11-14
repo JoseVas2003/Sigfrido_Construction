@@ -65,7 +65,7 @@ h1 {
 }
 
 .star {
-    font-size: 18px; /* Adjust size as needed */
+    font-size: 18px; 
     margin-right: 2px; /* Space between stars */
 }
 
@@ -74,15 +74,26 @@ h1 {
 }
 
 .outlined {
-    color: #ccc; /* Color for outlined stars, adjust as needed */
+    color: #ccc;
 }
 
 .rating_row {
     display: flex;
     align-items: center;
-    width: 100%; /* Ensure this is maintaining the intended width */
-    margin: -2px;
+    width: 100%;
+    margin: 5px 0; 
 }
+
+.star_bar_container {
+    flex-grow: 1;
+    background-color: #e0e0e0; /* Background color for the empty bar */
+    height: 20px;
+    margin: 0 10px;
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
 
 .star_bar {
     background-color: orange;
@@ -166,7 +177,7 @@ h1 {
 }
 
 .review-title {
-    font-weight: 700;
+    font-weight: 00;
 }
 
 .review-hr{

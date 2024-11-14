@@ -39,16 +39,17 @@ import { useEffect } from "react";
 
     // Function to calculate what percentage of reviews each star value makes up
     const calculateStarPercentages = (reviews: Review[]) => {
-        const total = reviews.length;  // No need to call length as a method
+        const total = reviews.length; 
         const starCount = [0, 0, 0, 0, 0];
     
         reviews.forEach((review) => {
-            if (review.stars >= 1 && review.stars <= 5) {
-                starCount[review.stars - 1] += 1;  // Safely increment count
+            const stars = Number(review.stars)
+            if (stars >= 1 && stars <= 5) {
+                starCount[stars - 1] += 1;  //  increment count of reviews with that many stars
             }
         });
     
-        const percentages = starCount.map(count => (count / total) * 100); // Convert counts to percentages
+        const percentages = starCount.map(count => total > 0 ? (count / total) * 100 : 0); // Convert counts to percentages
         return percentages;
     };
 
@@ -66,11 +67,9 @@ import { useEffect } from "react";
     );
 
     const renderStars = (num: number) => {
-        return Array(num).fill(null).map((_, i) => <span key={i} className="star">⭐</span>);
+        const n = Number(num);
+        return Array(n).fill(null).map((_, i) => <span key={i} className="star">⭐</span>);
     };
-    // Gets average star rating from array of dummy review objects
-    const averageStars = reviewsData.reduce((sum, obj) => sum + obj.stars, 0) / reviewsData.length
-
 
     const renderRatingStars = (totalStars: number, filledStars: number) => {
         return (
@@ -93,16 +92,17 @@ export default function Reviews() {
     const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
     const [starPercentages, setStarPercentages] = useState(() => calculateStarPercentages(reviewsData));
     const [showModal, setShowModal] = useState(false);
+    const [averageStars, setAverageStars] = useState(reviewsData.reduce((sum, obj) => sum + obj.stars, 0) / reviewsData.length);
     const [newReview, setNewReview] = useState<Review>({
         name: "",
         title: "",
         content: "",
         image: null,
-        stars: 0
+        stars: 1
     });
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setNewReview({...newReview, [name]: value});
+        setNewReview(prev => ({ ...prev, [name]: name === 'stars' ? Number(value) : value }));
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,9 +115,9 @@ export default function Reviews() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setReviews([...reviews, {...newReview, stars: 5}]); // Assuming 5 stars for simplicity
+        setReviews(prevReviews => [...prevReviews, newReview]); 
+        setNewReview({name: '', title: "", content: "", image: null, stars: 1})
         setShowModal(false);
-        // setNewReview({ name: "", title: "", content: "", imageFile: null }); // Reset form
     };
 
     const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -128,7 +128,8 @@ export default function Reviews() {
     useEffect(() => {
         const percentages = calculateStarPercentages(reviews);
         setStarPercentages(percentages);
-    }, []); 
+        setAverageStars(reviews.reduce((sum, obj) => sum + Number(obj.stars), 0) / reviews.length); // Recalculate and update state
+    }, [reviews]); 
     
     return (
         <div>
@@ -142,11 +143,17 @@ export default function Reviews() {
                         <div className="star_bars">
                             {[5, 4, 3, 2, 1].map((starCount, index) => (
                                 <div key={index} className="rating_row">
+
                                     <div className="rating_stars">
                                         {renderRatingStars(5, starCount)}
                                     </div>
-                                    <div className="star_bar" style={{width: `${starPercentages[starCount - 1]}%`, height: '20px', backgroundColor: 'orange'}}>
-                                        {starPercentages[starCount - 1]}
+                                    <div className="star_bar_container">
+                                        <div className="star_bar" style={{width: `${starPercentages[starCount - 1]}%`,}}>
+                                            
+                                        </div>
+                                        <div className="star_percentage">
+                                            {starPercentages[starCount - 1]}
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -192,12 +199,11 @@ export default function Reviews() {
                                         <select
                                             name="stars"
                                             value={newReview.stars}
-                                            onChange={(e) => setNewReview({...newReview, stars: Number(e.target.value)})}
+                                            onChange={handleInputChange}
                                             required
                                             className="mt-1 p-2 w-full border rounded-md"
                                         >
                                             <option value="" disabled>Select rating</option>
-                                            <option value="0">0 Stars</option>
                                             <option value="1">1 Star</option>
                                             <option value="2">2 Stars</option>
                                             <option value="3">3 Stars</option>
