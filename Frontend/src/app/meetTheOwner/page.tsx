@@ -4,12 +4,14 @@ import Image from "next/image";
 import ownerPic from './default_profile.jpg';
 
 import Navbar from "../navbar/navBar";
+import {clicksOut} from '../navbar/navBar'
 
 export default function page(){
     return <html>
     
     <body> 
     <Navbar />
+    <div onClick= {() => {clicksOut()}}> 
         <div className="text-[#333] text-[48px] text-center font-[inter]">Meet The Owner</div>
         <div className="wrapper">
             <div className="max-w-[400px] text-[24px] text-[black] bg-[white] m-[.4em] p-[.3em] rounded-[3px] flex-[1] ">
@@ -122,6 +124,7 @@ export default function page(){
             <div className="text-[18px] text-[black] bg-[white] m-[.4em] p-[.3em] rounded-[3px] flex-[1] text-center font-[inter]">Dev Placeholder</div>
 
             </div>
+          </div>
           </div>
     </body>
 </html>
