@@ -34,7 +34,7 @@ export default function createUser(){
         },
       });
       console.log("Response from server:", response.data); // Debugging log
-      //alert('Account created successfully!');
+      alert('Account created successfully!');
     } catch (error) {
       const err = error as any;
       console.error("Error response:", err.response?.data || err.message); // Debugging log

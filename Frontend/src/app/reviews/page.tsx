@@ -3,10 +3,7 @@ import React, { useState } from "react";
 import Navbar from "../navbar/navBar";
 import '../Assets/css/Reviews.modules.css';
 
-
-export default function Reviews() {
-    // Fake reviews data
-    const reviewsData = [
+  export const reviewsData = [
         {
             name: "Emily R.",
             stars: 5,
@@ -26,6 +23,9 @@ export default function Reviews() {
             content: "We hired this team to construct a custom fountain in our garden, and the result is nothing short of magical. The craftsmanship is top-tier, and the design perfectly complements our outdoor space. They managed every aspect of the build with precision, from the initial design to the intricate stone work and water features. Truly a focal point that enhances our garden's beauty."
         }
     ];
+
+export default function Reviews() {
+    // Fake reviews data
 
         // State for storing and sorting reviews
         const [reviews, setReviews] = useState(reviewsData);
