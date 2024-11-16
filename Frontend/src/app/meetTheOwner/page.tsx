@@ -40,7 +40,7 @@ export default function page(){
             
             <div className="text-[18px] text-[black] bg-[white] m-[.4em] p-[.3em] rounded-[3px] flex-[1] font-[inter]">
               <div className='text-center text-[24px]'>Jose Vasquez</div>
-              <a href=''>
+              <a href='http://linkedin.com/in/josevasquez1280'>
                 <div className='text-center text-blue-600 visited:text-purple-600'>LinkedIn</div>
                 </a>
             </div>
@@ -86,7 +86,7 @@ export default function page(){
 
             <div className="text-[18px] text-[black] bg-[white] m-[.4em] p-[.3em] rounded-[3px] flex-[1] font-[inter]">
             <div className='text-center text-[24px]'>Nathan Kovak</div>
-            <a href=''>
+            <a href='https://www.linkedin.com/in/nathan-kovak-b79552338/'>
                 <div className='text-center text-blue-600 visited:text-purple-600'>LinkedIn</div>
                 </a>
             </div>
