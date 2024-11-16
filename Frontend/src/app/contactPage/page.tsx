@@ -3,6 +3,7 @@
 import React, { CSSProperties, useState } from 'react';
 import Navbar from '../navbar/navBar';
 import '../Assets/css/contact.modules.css';
+import Link from 'next/link';
 
 export default function ContactPage() {
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -26,9 +27,11 @@ export default function ContactPage() {
                 <div style={styles.splitContainer}>
                     {/* Text Section */}
                     <div style={styles.textSection}>
-                        <p><strong>Schedule a call</strong> to speak with us if you have additional questions or 
-                            need assistance regarding jobs or projects, and we’ll call you at your chosen time.</p>
-                        
+                        <p><Link href="/schedule"> {/* Link to the 'schedule' page */}
+                            <strong>Schedule a call  </strong>
+                            </Link>
+                            to speak with us if you have additional questions or need assistance regarding jobs or projects, and we’ll call you at your chosen time.
+                        </p>
                         <h2>ADDRESS</h2>
                         <p style={styles.centeredText}>Example Street</p>
                         <p style={styles.centeredText}>Salinas, CA 99999</p>

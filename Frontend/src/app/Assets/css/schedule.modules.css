@@ -1,0 +1,151 @@
+/* Overall page container styles */
+.pageContainer {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 20px;
+    color: #000;
+}
+
+.workerDescriptionContainer {
+    width: 35%;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #000;
+    max-height: 400px; /* Adjust this value as needed */
+    overflow-y: auto; /* Add scroll if content overflows */
+}
+
+.calendarAvailabilityContainer {
+    width: 60%;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #000;
+    height: 600px; /* Fixed height */
+    overflow-y: auto; /* Add scroll if content overflows */
+}
+
+/* Section headers */
+.workerDescriptionContainer h2,
+.calendarAvailabilityContainer h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+/* Availability styling */
+.availability h3 {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #000;
+    margin: 0; /* Remove any margin that might add extra space */
+    padding: 0; 
+}
+
+.availability p {
+    margin: 5px 0;
+    color: #000;
+}
+
+/* Time slot button styling */
+.timeSlots {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.timeSlotButton {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.timeSlotButton:hover {
+    background-color: #e0e0e0;
+}
+
+.timeSlotButton.selected {
+    background-color: #9E9E9E;
+    color: #fff;
+    border-color: #9E9E9E;
+}
+
+/* Submit button styling */
+.submitButton {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+    background-color: #007bff;
+}
+
+/* Form Group Styling (Horizontal labels and inputs) */
+.formGroup {
+    display: flex; /* Align label and input side by side */
+    align-items: center; /* Vertically center the label and input */
+    margin-bottom: 15px;
+}
+
+.formGroup label {
+    font-size: 1.1em;
+    margin-right: 10px; /* Space between label and input */
+    color: #333;
+    width: 120px; /* Fixed width for labels */
+    text-align: right; /* Align label text to the right for better alignment */
+}
+
+/* Input and textarea styling */
+.provideInfoForm input,
+.provideInfoForm textarea {
+    width: 100%; /* Inputs take up remaining space */
+    padding: 5px 0;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    font-size: 1em;
+    background-color: transparent;
+    transition: border-color 0.3s ease;
+}
+
+.provideInfoForm input:focus,
+.provideInfoForm textarea:focus {
+    border-bottom: 2px solid #007bff;
+    outline: none;
+}
+
+/* Make sure textarea resizes only vertically */
+.provideInfoForm textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+.informationForm h2,
+.informationForm p {
+    margin-bottom: 15px; /* Adds space between the header and paragraphs */
+    color: #333; /* Color for the text */
+}
+
+/* Specifically space out the first paragraphs */
+.informationForm h2 {
+    margin-bottom: 25px; /* Extra space for the title */
+}
+
+.informationForm p {
+    margin-bottom: 10px; /* Adds space between paragraphs */
+}
