@@ -52,11 +52,11 @@ export default function Portfolio() {
                             </label>
                             <label style={styles.checkboxLabel}>
                                 <input type="checkbox" name="category" value="money" style={styles.checkbox} />
-                                Housing
+                                Money
                                 </label>
                             <label style={styles.checkboxLabel}>
                                 <input type="checkbox" name="category" value="house" style={styles.checkbox} />
-                                Kitchen
+                                House
                             </label>
                         </div>
                     </div>
