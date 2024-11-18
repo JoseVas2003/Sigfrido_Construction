@@ -4,9 +4,7 @@ const UserSchema = mongoose.Schema(
     {
         firstName:{
             type:String,
-            required: [true, "please enter your first name"],
-
-        },
+            required: [true, "please enter your first name"], },
         lastName:{
             type:String,
             required: [true, " pleas enter your last name"]

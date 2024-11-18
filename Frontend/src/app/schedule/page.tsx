@@ -4,11 +4,19 @@ import Navbar from '../navbar/navBar';
 import '../Assets/css/calendar.modules.css';
 import Calendar from '../calendar/calendar';
 import React, { useState } from 'react';
+import axios from 'axios';
 
+const placeholderUserId = '672c51b59ccd804fc4195ed0';
 export default function Page() {
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [showForm, setShowForm] = useState<boolean>(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+    });
 
     const availableHours = ["5:00 PM", "6:00 PM", "7:00 PM", "8:00 PM", "9:00 PM"];
 
@@ -20,7 +28,46 @@ export default function Page() {
         setSelectedTime(time);
     };
 
-    const handleSubmit = () => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleSubmitForm = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!selectedDate || !selectedTime) {
+            alert("Please select a date and time.");
+            return;
+        }
+
+        try {
+            const appointmentData = {
+                date: selectedDate.toISOString(),
+                time: selectedTime, 
+                email: formData.email,
+                userId: placeholderUserId, // Placeholder user ID
+                name: formData.name,
+                phone: formData.phone,
+                message: formData.message,
+            };
+
+            const response = await axios.post('http://localhost:3000/api/appointments', appointmentData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            alert("Appointment scheduled successfully!");
+            console.log("Response from server:", response.data);
+        } catch (error) {
+            const err = error as any;
+            console.error("Error scheduling appointment:", err.response?.data || err.message);
+            alert(`Error: ${err.response?.data?.message || err.message}`);
+        }
+    };
+
+    const handleNextStep = () => {
         if (selectedDate && selectedTime) {
             setShowForm(true);
         } else {
@@ -43,7 +90,7 @@ export default function Page() {
                     <br />
                     <p>Your call will vary depending on the criteria of the potential project. We are working to figure out exactly what you need and how to make it happen. We’ll provide pricing and a quote for the jobs discussed.</p>
                 </div>
-                
+
                 {/* Right Container */}
                 <div className="calendarAvailabilityContainer">
                     {showForm ? (
@@ -54,28 +101,52 @@ export default function Page() {
                             <p>Requested Date: {selectedDate?.toLocaleDateString()}, {selectedTime}</p>
                             <p>Worker: Sigfrido Vasquez</p>
                             <p>Language: English</p>
-                            <form className="provideInfoForm">
-    <div className="formGroup">
-        <label htmlFor="customerName">Name:</label>
-        <input type="text" id="customerName" name="customerName" required />
-    </div>
-    <div className="formGroup">
-        <label htmlFor="customerEmail">Email:</label>
-        <input type="email" id="customerEmail" name="customerEmail" required />
-    </div>
-    <div className="formGroup">
-        <label htmlFor="customerPhone">Phone Number:</label>
-        <input type="tel" id="customerPhone" name="customerPhone" required />
-    </div>
-    <div className="formGroup">
-        <label htmlFor="customerMessage">How can we help you?</label>
-        <textarea id="customerMessage" name="customerMessage" required />
-    </div>
-    <button type="submit" className="submitButton">
-        Submit Information
-    </button>
-</form>
-
+                            <form className="provideInfoForm" onSubmit={handleSubmitForm}>
+                                <div className="formGroup">
+                                    <label htmlFor="name">Name:</label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="formGroup">
+                                    <label htmlFor="email">Email:</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="formGroup">
+                                    <label htmlFor="phone">Phone Number:</label>
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="formGroup">
+                                    <label htmlFor="message">How can we help you?</label>
+                                    <textarea
+                                        id="message"
+                                        name="message"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <button type="submit" className="submitButton">Submit Information</button>
+                            </form>
                         </div>
                     ) : (
                         // Calendar Section
@@ -98,7 +169,7 @@ export default function Page() {
                                         </button>
                                     ))}
                                 </div>
-                                <button onClick={handleSubmit} className="submitButton">Submit</button>
+                                <button onClick={handleNextStep} className="submitButton">Next</button>
                             </div>
                         </>
                     )}
