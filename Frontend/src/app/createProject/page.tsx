@@ -4,6 +4,8 @@ import React, { CSSProperties } from 'react';
 import Navbar from '../navbar/navBar';
 import galleryIcon from '../createProject/galleryIcon.png'
 import Image from 'next/image';
+import {clicksOut} from '../navbar/navBar'
+
 export default function Portfolio() {
     const handleImageClick = () => {
         // Placeholder function; will add functionality in future
@@ -15,71 +17,73 @@ export default function Portfolio() {
             <div style={styles.Navbar}>
                 <Navbar />
             </div>
-            {/* White Box with Input Fields */}
-            <div style={styles.formContainer}>
-                <form style={styles.form}>
-                    <div style={styles.inputGroup}>
-                        <label htmlFor='projectName'>Project Name:</label>
-                        <input type="text" id="name" name="name" style={styles.input} />
-                    </div>
-                    {/* Description Section */}
-                    <div style={styles.inputGroup}>
-                        <label htmlFor="description">Description:</label>
-                        <textarea id="description" name="description" style={styles.textarea}></textarea>
-                    </div>
-                    {/* Time Taken & Cost Sections */}
-                    {/* Time Taken Section */}
+            <div onClick= {() => {clicksOut()}}>
+                {/* White Box with Input Fields */}
+                <div style={styles.formContainer}>
+                    <form style={styles.form}>
+                        <div style={styles.inputGroup}>
+                            <label htmlFor='projectName'>Project Name:</label>
+                            <input type="text" id="name" name="name" style={styles.input} />
+                        </div>
+                        {/* Description Section */}
+                        <div style={styles.inputGroup}>
+                            <label htmlFor="description">Description:</label>
+                            <textarea id="description" name="description" style={styles.textarea}></textarea>
+                        </div>
+                        {/* Time Taken & Cost Sections */}
+                        {/* Time Taken Section */}
+                        <div style={styles.row}>
+                            <div style={styles.halfInputGroup}>
+                                <label htmlFor='projectTime'>Time Taken:</label>
+                                <input type="text" id="projectTime" name="projectTime" style={styles.input} />
+                            </div>
+                            {/* Cost Section */}
+                            <div style={styles.halfInputGroup}>
+                                <label htmlFor='projectCost'>Cost:</label>
+                                <input type="text" id="projectCost" name="projectCost" style={styles.input} />
+                            </div>
+                        </div>
+                        {/* Project Category & Add an Image Sections */}
                     <div style={styles.row}>
+                        {/* Project Category Section */}
                         <div style={styles.halfInputGroup}>
-                            <label htmlFor='projectTime'>Time Taken:</label>
-                            <input type="text" id="projectTime" name="projectTime" style={styles.input} />
-                        </div>
-                        {/* Cost Section */}
-                        <div style={styles.halfInputGroup}>
-                            <label htmlFor='projectCost'>Cost:</label>
-                            <input type="text" id="projectCost" name="projectCost" style={styles.input} />
-                        </div>
-                    </div>
-                    {/* Project Category & Add an Image Sections */}
-                <div style={styles.row}>
-                    {/* Project Category Section */}
-                    <div style={styles.halfInputGroup}>
-                        <label style={styles.label}>Project Category:</label>
-                        <div style={styles.checkboxGroup}>
-                            <label style={styles.checkboxLabel}>
-                                <input type="checkbox" name="category" value="bath" style={styles.checkbox} />
-                                Bath
-                            </label>
-                            <label style={styles.checkboxLabel}>
-                                <input type="checkbox" name="category" value="money" style={styles.checkbox} />
-                                Housing
+                            <label style={styles.label}>Project Category:</label>
+                            <div style={styles.checkboxGroup}>
+                                <label style={styles.checkboxLabel}>
+                                    <input type="checkbox" name="category" value="bath" style={styles.checkbox} />
+                                    Bath
                                 </label>
-                            <label style={styles.checkboxLabel}>
-                                <input type="checkbox" name="category" value="house" style={styles.checkbox} />
-                                Kitchen
-                            </label>
+                                <label style={styles.checkboxLabel}>
+                                    <input type="checkbox" name="category" value="money" style={styles.checkbox} />
+                                    Housing
+                                </label>
+                                <label style={styles.checkboxLabel}>
+                                    <input type="checkbox" name="category" value="house" style={styles.checkbox} />
+                                    Kitchen
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                    {/* Add an Image Section */}
-                    <div style={styles.halfInputGroup}>
-                        <label style={styles.label}>Add an Image:</label>
-                        <div style={styles.imageContainer}>
-                            <Image
-                                src={galleryIcon}
-                                alt="Gallery Icon"
-                                className='companyLogo'
-                                width={80}
-                                height={80}
-                                onClick={handleImageClick}
-                                style={{ cursor: 'pointer' }}
-                            />
-                        </div>                       
-                    </div>
+                        {/* Add an Image Section */}
+                        <div style={styles.halfInputGroup}>
+                            <label style={styles.label}>Add an Image:</label>
+                            <div style={styles.imageContainer}>
+                                <Image
+                                    src={galleryIcon}
+                                    alt="Gallery Icon"
+                                    className='companyLogo'
+                                    width={80}
+                                    height={80}
+                                    onClick={handleImageClick}
+                                    style={{ cursor: 'pointer' }}
+                                />
+                            </div>                       
+                        </div>
                     </div>
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
                         <button type="submit" style={styles.button}>Create Project</button>                
-                        </div>
-                </form>
+                    </div>
+                    </form>
+                </div>
             </div>
         </div>
     );
