@@ -41,7 +41,7 @@ const Navbar = () =>{
             <div className="navMenuBar" id="navMenuBar" style={{visibility: 'hidden'}}>
 
                 <div className="navMenuBarItems">
-                    <Link href="../home">
+                    <Link href="../">
                         <button type="button" className="menuePageButtons">Home</button>
                     </Link>
 

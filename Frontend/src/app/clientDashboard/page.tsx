@@ -7,41 +7,64 @@ import Message from '../Assets/clientDashboardIcons/Message.png';
 import Question from '../Assets/clientDashboardIcons/Question.png';
 import Settings from '../Assets/clientDashboardIcons/Setting_line_light@3x.png';
 import Signout from '../Assets/clientDashboardIcons/Sign_out_squre.png';
+import Bathroom from '../Assets/clientStaticImages/Bathroom-static.jpg';
+import House from '../Assets/clientStaticImages/House-static.jpg';
+import Kitchen from '../Assets/clientStaticImages/Kitchen-static.jpg';
 
 export default function page(){
     return (
         <div>
             <Navbar/>
-            <div>
+            <div className="container">
                 <div className="Left_profile_bar">
                     <div className="Circle">J</div>
                     <h1>Welcome back, John!</h1>
-                    
                     <div className="SideButtons">
-                        <a href="../faq">
-                            <Image src={Question} alt="" height={25} width={25} />
+                        <Link href="../faq">
+                            <Image src={Question} alt="FAQ Icon" height={25} width={25} />
                             F.A.Q.
-                        </a>
-
-                        <a href="../contactPage">
-                            <Image src={Message} alt="" height={25} width={25} />
+                        </Link>
+                        <Link href="../contactPage">
+                            <Image src={Message} alt="Message Icon" height={25} width={25} />
                             Contact Us
-                        </a>
-                            
-                        <a href="../clientsettings">
-                            <Image src={Settings} alt="" height={25} width={25} />
+                        </Link>
+                        <Link href="../clientSettingsPage">
+                            <Image src={Settings} alt="Settings Icon" height={25} width={25} />
                             Settings
-                        </a>
-
-                        <a href="../home">
-                            <Image src={Signout} alt="" height={25} width={25} />
+                        </Link>
+                        <Link href="../home">
+                            <Image src={Signout} alt="Logout Icon" height={25} width={25} />
                             Logout
-                        </a>
-
+                        </Link>
                     </div>
                 </div>
-            </div>
+                <div className="Body">
+                    <h1 className="UpcomingText">Upcoming Contracts</h1>
+                    <div className="ImageRow">
+                        <div className="ProjectItem">
+                        <Image src={Bathroom} alt="Project 1" className="ProjectImage" />
+                        <p className="ProjectName">Bathroom</p>
+                        </div>
+                        <div className="ProjectItem">
+                        <Image src={House} alt="Project 2" className="ProjectImage" />
+                        <p className="ProjectName">House</p>
+                        </div>
+                        <div className="ProjectItem">
+                        <Image src={Kitchen} alt="Project 3" className="ProjectImage" />
+                        <p className="ProjectName">Kitchen</p>
+                        </div>
+                    </div>
 
+                   {/* <div className="GridList">
+                        <div className="GridItem">Item 1</div>
+                        <div className="GridItem">Item 2</div>
+                        <div className="GridItem">Item 3</div>
+                        <div className="GridItem">Item 4</div>
+                        <div className="GridItem">Item 5</div>
+                        <div className="GridItem">Item 6</div>
+                    </div>  */}
+                </div>
+            </div>
         </div>
     );
 }
