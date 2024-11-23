@@ -1,180 +1,100 @@
 'use client';
-import '../Assets/css/schedule.modules.css';
+import '../Assets/css/adminDashboard.modules.css'; // Import global CSS
 import Navbar from '../navbar/navBar';
-import '../Assets/css/calendar.modules.css';
-import Calendar from '../calendar/calendar';
-import React, { useState } from 'react';
-import axios from 'axios';
+import Calendar from '../calendar/calendar'; 
+import { reviewsData } from '../reviews/page'; 
+import CustomerReviewsList from './reviewList';
+import Sidebar from './sidebar';
 
-const placeholderUserId = '672c51b59ccd804fc4195ed0';
 export default function Page() {
-    const [selectedTime, setSelectedTime] = useState<string | null>(null);
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [showForm, setShowForm] = useState<boolean>(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        message: '',
-    });
-
-    const availableHours = ["5:00 PM", "6:00 PM", "7:00 PM", "8:00 PM", "9:00 PM"];
-
-    const handleDateChange = (date: Date) => {
-        setSelectedDate(date);
-    };
-
-    const handleTimeClick = (time: string) => {
-        setSelectedTime(time);
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSubmitForm = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!selectedDate || !selectedTime) {
-            alert("Please select a date and time.");
-            return;
-        }
-
-        try {
-            const appointmentData = {
-                date: selectedDate.toISOString(),
-                time: selectedTime, 
-                email: formData.email,
-                userId: placeholderUserId, // Placeholder user ID
-                name: formData.name,
-                phone: formData.phone,
-                message: formData.message,
-            };
-
-            const response = await axios.post('http://localhost:3000/api/appointments', appointmentData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            alert("Appointment scheduled successfully!");
-            console.log("Response from server:", response.data);
-        } catch (error) {
-            const err = error as any;
-            console.error("Error scheduling appointment:", err.response?.data || err.message);
-            alert(`Error: ${err.response?.data?.message || err.message}`);
-        }
-    };
-
-    const handleNextStep = () => {
-        if (selectedDate && selectedTime) {
-            setShowForm(true);
-        } else {
-            alert("Please select a date and time slot.");
-        }
-    };
-
     return (
         <div>
-            <Navbar />
-            <div className="pageContainer">
-                {/* Left Container: Worker Description */}
-                <div className="workerDescriptionContainer">
-                    <h2>Worker Information</h2>
-                    <p>Name: Sigfrido Vasquez</p>
-                    <p>Role: Owner</p>
-                    <p>Specialties: Construction</p>
-                    <br />
-                    <p>Thank you for scheduling a call to speak with us about your construction projects and goals.</p>
-                    <br />
-                    <p>Your call will vary depending on the criteria of the potential project. We are working to figure out exactly what you need and how to make it happen. We’ll provide pricing and a quote for the jobs discussed.</p>
+        <Navbar />
+        <div className="dashboard">
+            {/* Sidebar */}
+            <aside className="sidebar">
+                <ul>
+                    <li>Welcome Sigfrido</li>
+                    <li>Dashboard</li>
+                    <li>Messages</li>
+                    <li>Projects</li>
+                    <li>Settings</li>
+                    <li>Reviews</li>
+                    <li>Upload Photos</li>
+                </ul>
+            </aside>
+
+            {/* Main Content */}
+            <main className="mainContent">
+                {/* Appointments Section */}
+                <div className="sectionWrapper">
+                    <button className="sectionHeader">Pending Appointments</button>
+                    <section className="appointments">
+                        <ul>
+                            <li>
+                                <input type="checkbox" defaultChecked />
+                                Residential Home Construction <br />
+                                <span>6:00pm - 7:00pm</span> <br />
+                                <span>10/10/2024</span>
+                                <button>X</button>
+                            </li>
+                            <li>
+                                <input type="checkbox" defaultChecked />
+                                Office Renovation <br />
+                                <span>7:00pm - 8:00pm</span> <br />
+                                <span>11/12/2024</span>
+                                <button>X</button>
+                            </li>
+                            <li>
+                                <input type="checkbox" defaultChecked />
+                                Residential Bathroom Remodeling <br />
+                                <span>8:30pm - 9:30pm</span> <br />
+                                <span>10/23/2024</span>
+                                <button>X</button>
+                            </li>
+                        </ul>
+                    </section>
                 </div>
 
-                {/* Right Container */}
-                <div className="calendarAvailabilityContainer">
-                    {showForm ? (
-                        // Form Section
-                        <div className="informationForm">
-                            <h2>Provide Your Information</h2>
-                            <p>Project Inquiry - 20-min. Touch base</p>
-                            <p>Requested Date: {selectedDate?.toLocaleDateString()}, {selectedTime}</p>
-                            <p>Worker: Sigfrido Vasquez</p>
-                            <p>Language: English</p>
-                            <form className="provideInfoForm" onSubmit={handleSubmitForm}>
-                                <div className="formGroup">
-                                    <label htmlFor="name">Name:</label>
-                                    <input
-                                        type="text"
-                                        id="name"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="formGroup">
-                                    <label htmlFor="email">Email:</label>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="formGroup">
-                                    <label htmlFor="phone">Phone Number:</label>
-                                    <input
-                                        type="tel"
-                                        id="phone"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="formGroup">
-                                    <label htmlFor="message">How can we help you?</label>
-                                    <textarea
-                                        id="message"
-                                        name="message"
-                                        value={formData.message}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <button type="submit" className="submitButton">Submit Information</button>
-                            </form>
+                {/* Calendar Section */}
+                <div className="sectionWrapper">
+                    <button className="sectionHeader">Appointments</button>
+                    <section className="calendar">
+                        <div className="calendarWidget">
+                            <p>Calendar Placeholder</p>
                         </div>
-                    ) : (
-                        // Calendar Section
-                        <>
-                            <h2>Pick a Date and Time</h2>
-                            <p>Duration: 20 Minutes</p>
-                            <p>Time Zone: United States; Pacific Time (GMT-7:00) [DST]</p>
-                            <Calendar onDateChange={handleDateChange} />
-                            <div className="availability">
-                                <h2>Availability</h2>
-                                <p>Selected Date: {selectedDate ? selectedDate.toLocaleDateString() : "None"}</p>
-                                <div className="timeSlots">
-                                    {availableHours.map((time) => (
-                                        <button
-                                            key={time}
-                                            onClick={() => handleTimeClick(time)}
-                                            className={`timeSlotButton ${selectedTime === time ? 'selected' : ''}`}
-                                        >
-                                            {time}
-                                        </button>
-                                    ))}
-                                </div>
-                                <button onClick={handleNextStep} className="submitButton">Next</button>
-                            </div>
-                        </>
-                    )}
+                    </section>
                 </div>
-            </div>
+
+                {/* Reviews Section */}
+                <div className="sectionWrapper">
+                    <button className="sectionHeader">Manage Feedback</button>
+                    <section className="reviews">
+                        <div className="review">
+                            <p>
+                                <strong>Jordan K</strong> <span>⭐⭐⭐⭐⭐</span>
+                            </p>
+                            <p>
+                                Reliable and Quality General Contracting <br />
+                                If you're looking for reliability and high-quality construction...
+                            </p>
+                            <button>Reply</button>
+                        </div>
+                        <div className="review">
+                            <p>
+                                <strong>Emily R</strong> <span>⭐⭐⭐⭐⭐</span>
+                            </p>
+                            <p>
+                                Stunning Bathroom Makeover Achieved <br />
+                                I can't praise this team enough! They completely transformed...
+                            </p>
+                            <button>Reply</button>
+                        </div>
+                        <button>Delete Review</button>
+                    </section>
+                </div>
+            </main>
+        </div>
         </div>
     );
 }

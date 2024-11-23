@@ -25,8 +25,6 @@ const getAppointment = async (req, res) => {
 };
 
 const createAppointment = async (req, res) => {
-
-
     const placeholderUserId = "672c51b59ccd804fc4195ed0";
   try {
     const appointment = await Appointment.create(req.body);
