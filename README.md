@@ -11,6 +11,10 @@ A modern, responsive website created for Sigfrido Construction, a leading constr
 - Admin project management system
 - Account management system
 
+## Entity-Relationship Diagram 
+
+<IMG src= "https://github.com/user-attachments/assets/d6b4e943-76aa-431b-b07b-8dcc59a05439" width="518" />
+
 ## Prototype Images Section
 <IMG src= "https://github.com/user-attachments/assets/394e6420-65b3-40e9-9701-1a13d735338d" width="300" />
 <IMG src= "https://github.com/user-attachments/assets/db5c770a-44cf-4733-b937-728ac9726d4d" width="300" />
