@@ -40,6 +40,7 @@ const updateReview = async (req, res) => {
     }
 };
 
+// Delete review
 const deleteReview = async (req, res) => {
     try {
         const {id} = req.params;
@@ -56,3 +57,9 @@ const deleteReview = async (req, res) => {
       }
 };
 
+module.exports = {
+    getReviews,
+    createReview,
+    updateReview,
+    deleteReview
+};

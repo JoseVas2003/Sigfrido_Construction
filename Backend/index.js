@@ -2,9 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const User = require("./models/users.model.js");
 const appointmentRoutes = require("./routes/appointments.routes");
+const reviewRoutes = require("./routes/reviews.routes.js");
 const userRoute = require("./routes/user.routes.js");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const cors = require("cors");
 
 app.use(cors());
@@ -18,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/users", userRoute);
 app.use("/api/appointments", appointmentRoutes);
 
-
+app.use("/api/reviews", reviewRoutes);  
 
 app.get("/", (req, res) => {
   res.send("Hello from Node API Server Updated");
