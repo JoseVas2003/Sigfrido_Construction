@@ -5,12 +5,12 @@ import '../Assets/css/Reviews.modules.css';
 import axios from "axios";
 
 interface Review {
-    _id?: string; // Made _id optional for new reviews
+    _id?: string;
     name: string;
     stars: number;
     title: string;
     content: string;
-    image?: File | null;
+    image?: string | File | null; // Allow both string (Base64) and File
 }
 
 // Function to calculate star percentages
@@ -103,19 +103,48 @@ export default function Reviews() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
     
+        let base64Image = null;
+    
+        if (newReview.image && newReview.image instanceof File) {
+            base64Image = await convertToBase64(newReview.image);
+        }
+    
+        const reviewData = {
+            name: newReview.name,
+            title: newReview.title,
+            content: newReview.content,
+            stars: newReview.stars,
+            image: base64Image,
+        };
+    
         try {
-            const response = await axios.post("http://localhost:3001/api/reviews", newReview, {
+            const response = await axios.post("http://localhost:3001/api/reviews", reviewData, {
                 headers: { "Content-Type": "application/json" },
             });
     
-            setReviews([...reviews, response.data]); 
+            setReviews([...reviews, response.data]);
+    
+            // ✅ Clear the form after submission
             setNewReview({ name: "", title: "", content: "", image: null, stars: 1 });
-            setShowModal(false);
+    
+            setShowModal(false); // Close the modal
         } catch (error) {
             console.error("❌ Error submitting review:", error);
             alert("Error submitting review.");
         }
     };
+    
+    
+    // Convert image file to Base64
+    const convertToBase64 = (file: File) => {
+        return new Promise<string | null>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        });
+    };
+    
     
 
     // Handle deleting a review
@@ -297,6 +326,13 @@ export default function Reviews() {
                         <h3>{review.name}</h3>
                         <p>{review.title}</p>
                         <p>{review.content}</p>
+
+                        {typeof review.image === "string" && review.image.startsWith("data:image/") && (
+                            <img src={review.image} alt="Review" style={{ width: "150px", height: "auto" }} />
+                        )}
+
+
+
                         <button onClick={() => handleDeleteReview(review._id!)}>Delete</button>
                     </div>
                 ))}
