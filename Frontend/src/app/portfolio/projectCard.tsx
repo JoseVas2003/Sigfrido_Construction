@@ -8,7 +8,7 @@ interface ProjectCardProps {
   category: string;
   time: string;
   cost: string;
-  imageUrl: string;
+  image: StaticImageData;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -17,7 +17,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   category,
   time,
   cost,
-  imageUrl,
+  image,
 }) => {
   return (
     <div style={styles.cardContainer}>
@@ -27,12 +27,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       {/* Content Area */}
       <div style={styles.contentArea}>
         {/* Image */}
-        <img
-          src={imageUrl}
-          alt={title}
-          style={styles.image}
-
-          />
+        <Image src={image} alt={title} style={styles.image} />
         {/* Text Details */}
         <div style={styles.textContainer}>
           <p style={styles.descriptionTitle}>Description:</p>
@@ -71,9 +66,8 @@ const styles: { [key: string]: CSSProperties } = {
     alignItems: 'flex-start',
   },
   image: {
-    width: '400px',
-    height: '300px',
-    objectFit: 'contain',
+    width: '200px',
+    height: 'auto',
     marginRight: '20px',
     borderRadius: '4px',
   },
