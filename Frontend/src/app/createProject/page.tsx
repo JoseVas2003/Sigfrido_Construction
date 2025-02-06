@@ -1,105 +1,16 @@
 "use client";
 
-import React, { CSSProperties, useState, useRef} from 'react';
+import React, { CSSProperties } from 'react';
 import Navbar from '../navbar/navBar';
 import galleryIcon from '../createProject/galleryIcon.png'
 import Image from 'next/image';
 import {clicksOut} from '../navbar/navBar'
-import axios from "axios"
 
-
-
-export default function CreateProjectPage() {
-    const [formData, setFormData] = useState({
-        name: '',
-        description: '',
-        timeTaken: '',
-        cost: '',
-        categories: [] as string[], 
-        image: null as File | null,
-    });
-
-
-  // Ref for hidden file input
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // Handle text changes
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
-        }));
-    };
-
-    // Handle multiple checkboxes
-    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { value, checked } = e.target;
-        setFormData((prevFormData) => {
-            // If checked, add category
-            if (checked) {
-            return {
-                ...prevFormData,
-                categories: [...prevFormData.categories, value],
-            };
-            } 
-            // If unchecked, remove category
-            else {
-            return {
-                ...prevFormData,
-                categories: prevFormData.categories.filter((cat) => cat !== value),
-            };
-            }
-        });
-    };
-
+export default function Portfolio() {
     const handleImageClick = () => {
-        if (fileInputRef.current) {
-          fileInputRef.current.click();
-        }
-      };
-
-    
-  // Handle file selected
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Check file type or trust 'accept' attribute
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        image: file,
-      }));
-    }
-  };
-
-
-    // Submitting form using Axios
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-    try {
-        // necessary since I am sending a reg file and text together
-        const data = new FormData();
-        data.append("name", formData.name);
-        data.append("description", formData.description);
-        data.append("timeTaken", formData.timeTaken);
-        data.append("cost", formData.cost);
-        formData.categories.forEach((cat) => data.append("categories", cat));
-        
-        // Append file if it exists
-        if (formData.image) {
-            data.append("image", formData.image);
-        }
-
-        const response = await axios.post(
-            'http://localhost:3001/api/projects', data);
-        console.log('Response from server:', response.data);
-        alert('Project created successfully!');
-    }catch (error: any) {
-        console.error('Error response:', error.response?.data || error.message);
-        alert(`Error: ${error.response?.data?.message || error.message}`);
-    }
-};
-
+        // Placeholder function; will add functionality in future
+        console.log('Image icon clicked');
+    };
     return (
         <div>
             {/* Header Bar */}
@@ -109,56 +20,27 @@ export default function CreateProjectPage() {
             <div onClick= {() => {clicksOut()}}>
                 {/* White Box with Input Fields */}
                 <div style={styles.formContainer}>
-                    <form style={styles.form} onSubmit={handleSubmit}>
-                        {/* Project Name */}
+                    <form style={styles.form}>
                         <div style={styles.inputGroup}>
-                            <label htmlFor='name'>Project Name:</label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                style={styles.input}
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                            />
+                            <label htmlFor='projectName'>Project Name:</label>
+                            <input type="text" id="name" name="name" style={styles.input} />
                         </div>
                         {/* Description Section */}
                         <div style={styles.inputGroup}>
                             <label htmlFor="description">Description:</label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                style={styles.textarea}
-                                value={formData.description}
-                                onChange={handleChange}
-                            />                    
+                            <textarea id="description" name="description" style={styles.textarea}></textarea>
                         </div>
                         {/* Time Taken & Cost Sections */}
                         {/* Time Taken Section */}
                         <div style={styles.row}>
                             <div style={styles.halfInputGroup}>
-                                <label htmlFor='timeTaken'>Time Taken:</label>
-                                <input
-                                    type="text"
-                                    id="timeTaken"
-                                    name="timeTaken"
-                                    style={styles.input}
-                                    value={formData.timeTaken}
-                                    onChange={handleChange}
-                                />
+                                <label htmlFor='projectTime'>Time Taken:</label>
+                                <input type="text" id="projectTime" name="projectTime" style={styles.input} />
                             </div>
                             {/* Cost Section */}
                             <div style={styles.halfInputGroup}>
-                                <label htmlFor='cost'>Cost:</label>
-                                <input
-                                    type="text"
-                                    id="cost"
-                                    name="cost"
-                                    style={styles.input}
-                                    value={formData.cost}
-                                    onChange={handleChange}
-                                />
+                                <label htmlFor='projectCost'>Cost:</label>
+                                <input type="text" id="projectCost" name="projectCost" style={styles.input} />
                             </div>
                         </div>
                         {/* Project Category & Add an Image Sections */}
@@ -168,36 +50,15 @@ export default function CreateProjectPage() {
                             <label style={styles.label}>Project Category:</label>
                             <div style={styles.checkboxGroup}>
                                 <label style={styles.checkboxLabel}>
-                                <input
-                                    type="checkbox"
-                                    name="category"
-                                    value="bath"
-                                    checked={formData.categories.includes('bath')}
-                                    onChange={handleCheckboxChange}
-                                    style={styles.checkbox}
-                                />
+                                    <input type="checkbox" name="category" value="bath" style={styles.checkbox} />
                                     Bath
                                 </label>
                                 <label style={styles.checkboxLabel}>
-                                    <input
-                                    type="checkbox"
-                                    name="category"
-                                    value="housing"
-                                    checked={formData.categories.includes('housing')}
-                                    onChange={handleCheckboxChange}
-                                    style={styles.checkbox}
-                                    />
+                                    <input type="checkbox" name="category" value="money" style={styles.checkbox} />
                                     Housing
                                 </label>
                                 <label style={styles.checkboxLabel}>
-                                    <input
-                                    type="checkbox"
-                                    name="category"
-                                    value="kitchen"
-                                    checked={formData.categories.includes('kitchen')}
-                                    onChange={handleCheckboxChange}
-                                    style={styles.checkbox}
-                                    />
+                                    <input type="checkbox" name="category" value="house" style={styles.checkbox} />
                                     Kitchen
                                 </label>
                             </div>
@@ -215,21 +76,11 @@ export default function CreateProjectPage() {
                                     onClick={handleImageClick}
                                     style={{ cursor: 'pointer' }}
                                 />
-                                {/* Hidden file input */}
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    style={{ display: 'none' }}
-                                    accept=".heic,.jpg,.jpeg,.png"
-                                    onChange={handleFileChange}
-                                />
                             </div>                       
                         </div>
                     </div>
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                        <button type="submit" style={styles.button}>
-                            Create Project
-                        </button>                
+                        <button type="submit" style={styles.button}>Create Project</button>                
                     </div>
                     </form>
                 </div>
