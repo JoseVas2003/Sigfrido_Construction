@@ -1,5 +1,12 @@
 .container{
   display: flex;
+  min-width: 100vw;
+}
+
+.Body{
+  flex-grow: 1;
+  /* border: 2px dashed blue;
+  box-sizing: border-box; */
 }
 
 .Left_profile_bar{
@@ -11,8 +18,7 @@
   background-color: #D9D9D9;
   width: 240px;
   height: 800px;
-  padding-top: 5px;
-  box-sizing: border-box;
+  padding-top: 20px;
 }
 
 .Circle{
@@ -45,25 +51,22 @@
   margin-right: 10px;
 }
 
-.Body{
-  flex-grow: 1;
-  /* border: 2px dashed blue;
-  box-sizing: border-box; */
-  margin-left: 20px;
+.UpcomingText {
+  margin-left: 30px;
 }
 
 .ImageRow {
   display: flex;
-  justify-content: space-evenly;  /* Evenly space the images */
-  gap: 80px;  /* Add space between images */
-  margin-top: 40px;  /* Optional: Space above the images */
+  justify-content: space-evenly;
+  gap: 100px;
+  margin-top: 40px;
 }
 
 .ProjectImage {
-  width: 250px; /* Adjust width to make the images vertical */
-  height: 300px; /* Adjust height for the vertical rectangle */
-  object-fit: cover; /* Ensures the image covers the area, focusing on the center */
-  border-radius: 5px; /* Optional: rounded corners */
+  width: 250px;
+  height: 300px;
+  object-fit: cover; /*Focus on center of image*/
+  border-radius: 5px; 
 }
 
 .UpcomingText{
@@ -78,11 +81,23 @@
   margin: 10px;
 }
 
-.GridItem {
-  padding: 10px;
-  border: 1px solid #ddd;
+.GridList {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 20px;
   border-radius: 5px;
   background-color: #f9f9f9;
+  margin: 60px;
+}
+
+.GridItem {
+  padding: 10px;
   text-align: center;
   font-size: 18px;
+}
+
+.GridItemHeader {
+  font-weight: bold;
+  text-decoration: underline;
 }

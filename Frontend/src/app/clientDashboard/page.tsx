@@ -12,6 +12,12 @@ import House from '../Assets/clientStaticImages/House-static.jpg';
 import Kitchen from '../Assets/clientStaticImages/Kitchen-static.jpg';
 
 export default function page(){
+    const projects = [
+        { type: 'Bathroom', dateStarted: '2025-01-10', cost: 1500, expectedCompletion: '2025-02-10' },
+        { type: 'House', dateStarted: '2025-01-15', cost: 3500, expectedCompletion: '2025-03-01' },
+        { type: 'Kitchen', dateStarted: '2025-01-12', cost: 2000, expectedCompletion: '2025-02-25' },
+      ];
+
     return (
         <div>
             <Navbar/>
@@ -55,14 +61,21 @@ export default function page(){
                         </div>
                     </div>
 
-                   {/* <div className="GridList">
-                        <div className="GridItem">Item 1</div>
-                        <div className="GridItem">Item 2</div>
-                        <div className="GridItem">Item 3</div>
-                        <div className="GridItem">Item 4</div>
-                        <div className="GridItem">Item 5</div>
-                        <div className="GridItem">Item 6</div>
-                    </div>  */}
+                    <div className="GridList">
+                        <div className="GridItem GridItemHeader">Type</div>
+                        <div className="GridItem GridItemHeader">Date Started</div>
+                        <div className="GridItem GridItemHeader">Cost</div>
+                        <div className="GridItem GridItemHeader">Expected Completion</div>
+
+                        {projects.map((project, index) => (
+                            <>
+                                <div className="GridItem">{project.type}</div>
+                                <div className="GridItem">{new Date(project.dateStarted).toLocaleDateString()}</div>
+                                <div className="GridItem">${project.cost}</div>
+                                <div className="GridItem">{new Date(project.expectedCompletion).toLocaleDateString()}</div>
+                            </>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
