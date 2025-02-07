@@ -183,30 +183,7 @@ export default function Reviews() {
             <h1 className="reviews_title">Reviews</h1>
 
             <div className="top-level">
-                <div className="star_box">
-                    <div className="star_box_top">
-                        <h1 className="star_average">{Math.round(averageStars * 10) / 10}⭐</h1>
-                        <div className="star_bars">
-                            {[5, 4, 3, 2, 1].map((starCount, index) => (
-                                <div key={index} className="rating_row">
-                                    <div className="rating_stars">{starCount} ⭐</div>
-                                    <div className="star_bar_container">
-                                        <div className="star_bar" style={{ width: `${starPercentages[starCount - 1]}%` }}></div>
-                                        <div className="star_percentage">{starPercentages[starCount - 1]}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="sort_section">
-                        <select value={sortBy} onChange={handleSortByChange}>
-                            <option>Newest First</option>
-                            <option>Oldest First</option>
-                            <option>Highest First</option>
-                            <option>Lowest First</option>
-                        </select>
-                    </div>
-                </div>
+                vvv
                 {/* Leave a Review Section */}
                 <div className="feedback_section">
                     <h1>We Value Your Feedback</h1>
@@ -323,17 +300,15 @@ export default function Reviews() {
                 {reviews.length === 0 && <div>No reviews available.</div>}
                 {reviews.map((review) => (
                     <div key={review._id} className="review-card">
-                        <h3>{review.name}</h3>
-                        <p>{review.title}</p>
-                        <p>{review.content}</p>
+                        <h3 className="review-name">{review.name}</h3>
+                        <hr />
+                        <p className="review-title">{review.title}</p>
+                        <p className="review-content">{review.content}</p>
 
                         {typeof review.image === "string" && review.image.startsWith("data:image/") && (
                             <img src={review.image} alt="Review" style={{ width: "150px", height: "auto" }} />
                         )}
-
-
-
-                        <button onClick={() => handleDeleteReview(review._id!)}>Delete</button>
+                        <button className="delete-button" onClick={() => handleDeleteReview(review._id!)}>Delete</button>
                     </div>
                 ))}
             </div>
