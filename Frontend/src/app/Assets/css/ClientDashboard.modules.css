@@ -1,14 +1,17 @@
+/* Main layout */
 .container{
   display: flex;
   min-width: 100vw;
 }
 
+/* Body section */
 .Body{
   flex-grow: 1;
   /* border: 2px dashed blue;
   box-sizing: border-box; */
 }
 
+/* Profile bar */
 .Left_profile_bar{
   font-weight: bold;
   font-size: 26px;
@@ -21,6 +24,7 @@
   padding-top: 20px;
 }
 
+/* Circle inside profile bar */
 .Circle{
   width: 100px;
   height: 100px;
@@ -34,6 +38,7 @@
   margin: 25px auto;
 }
 
+/* Side buttons inside profile bar */
 .SideButtons{
   display: flex;
   flex-direction: column;
@@ -42,19 +47,26 @@
   gap: 40px;
 }
 
+/* Way for icons to be next to button text */
 .SideButtons a {
   display: flex;       
   align-items: center;
 }
 
+/* Gap between icon and button text */
 .SideButtons a img {
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
-.UpcomingText {
+/* Body title */
+.UpcomingText{
+  font-weight: bold;
+  font-size: 32px;
+  text-decoration: underline;
   margin-left: 30px;
 }
 
+/* Images in body */
 .ImageRow {
   display: flex;
   justify-content: space-evenly;
@@ -62,28 +74,25 @@
   margin-top: 40px;
 }
 
+/* Image properties */
 .ProjectImage {
   width: 250px;
   height: 300px;
-  object-fit: cover; /*Focus on center of image*/
+  object-fit: cover;
   border-radius: 5px; 
 }
 
-.UpcomingText{
-  font-weight: bold;
-  font-size: 32px;
-  text-decoration: underline;
-}
-
+/* Text under images */
 .ProjectName{
   text-align: center;
   font-size: 24px;
   margin: 10px;
 }
 
+/* Grid list */
 .GridList {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
   gap: 10px;
   padding: 20px;
   border-radius: 5px;
@@ -91,12 +100,14 @@
   margin: 60px;
 }
 
+/* Grid items */
 .GridItem {
   padding: 10px;
   text-align: center;
   font-size: 18px;
 }
 
+/* Grid header */
 .GridItemHeader {
   font-weight: bold;
   text-decoration: underline;
