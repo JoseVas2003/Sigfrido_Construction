@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, CSSProperties, useRef } from 'react';
+import React, { useState, CSSProperties, useRef, DragEvent } from 'react';
 import Navbar from '../navbar/navBar';
 
 export default function ContactPage() {
@@ -51,6 +51,25 @@ export default function ContactPage() {
         });
     };
 
+    const handleDragStart = (index: number, event: DragEvent) => {
+        event.dataTransfer.setData("index", index.toString());
+    };
+
+    const handleDrop = (index: number, event: DragEvent) => {
+        const fromIndex = Number(event.dataTransfer.getData("index"));
+        if (fromIndex !== index) {
+            const newQuestions = [...questionsAndAnswers];
+            const movedItem = newQuestions[fromIndex];
+            newQuestions.splice(fromIndex, 1);
+            newQuestions.splice(index, 0, movedItem);
+            setQuestionsAndAnswers(newQuestions);
+        }
+    };
+
+    const handleDragOver = (event: DragEvent) => {
+        event.preventDefault();
+    };
+
     return (
         <div style={styles.container}>
             {/* Navbar */}
@@ -74,7 +93,13 @@ export default function ContactPage() {
                 {/* Accordion Section */}
                 <div style={styles.accordionContainer}>
                     {questionsAndAnswers.map((qa, index) => (
-                        <div key={index}>
+                        <div 
+                            key={index} 
+                            draggable={isEditing}
+                            onDragStart={(e) => handleDragStart(index, e)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(index, e)}
+                        >
                             <button
                                 className="accordion"
                                 onClick={() => handleAccordionClick(index)}
