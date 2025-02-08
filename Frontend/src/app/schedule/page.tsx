@@ -32,40 +32,63 @@ export default function Page() {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
-
-    const handleSubmitForm = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!selectedDate || !selectedTime) {
-            alert("Please select a date and time.");
-            return;
-        }
-
+    const sendEmail = async () => {
         try {
-            const appointmentData = {
-                date: selectedDate.toISOString(),
-                time: selectedTime, 
-                email: formData.email,
-                userId: placeholderUserId, // Placeholder user ID
-                name: formData.name,
-                phone: formData.phone,
-                message: formData.message,
+            const emailData = {
+                to: formData.email,
+                subject: "Appointment Confirmation",
+                text: `Hello ${formData.name},\n\nYour appointment is scheduled for ${selectedDate?.toDateString()} at ${selectedTime}.\n\nThank you!`,
             };
-
-            const response = await axios.post('http://localhost:3000/api/appointments', appointmentData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+    
+            const response = await axios.post('http://localhost:3000/api/emails/send', emailData, {
+                headers: { 'Content-Type': 'application/json' },
             });
-
-            alert("Appointment scheduled successfully!");
-            console.log("Response from server:", response.data);
+    
+            console.log("Email sent:", response.data);
+            alert("Email sent successfully!");
         } catch (error) {
-            const err = error as any;
-            console.error("Error scheduling appointment:", err.response?.data || err.message);
-            alert(`Error: ${err.response?.data?.message || err.message}`);
+            console.error("Error sending email:", error);
+            alert("Failed to send email.");
         }
     };
+    
+ const handleSubmitForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedDate || !selectedTime) {
+        alert("Please select a date and time.");
+        return;
+    }
+
+    try {
+        const appointmentData = {
+            date: selectedDate.toISOString(),
+            time: selectedTime,
+            email: formData.email,
+            userId: placeholderUserId,
+            name: formData.name,
+            phone: formData.phone,
+            message: formData.message,
+        };
+
+        await axios.post('http://localhost:3000/api/appointments', appointmentData, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        alert("Appointment scheduled successfully!");
+        
+        // Send email confirmation
+        await sendEmail();
+        
+    } catch (error) {
+        console.error("Error scheduling appointment:", error);
+        alert(`Error: ${error.response?.data?.message || error.message}`);
+    }
+};
+
+    
 
     const handleNextStep = () => {
         if (selectedDate && selectedTime) {
