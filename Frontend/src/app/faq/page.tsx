@@ -1,11 +1,18 @@
 "use client";
 
-import React, { useState, CSSProperties, useRef } from 'react';
+import React, { useState, CSSProperties, useRef, DragEvent } from 'react';
 import Navbar from '../navbar/navBar';
 
 export default function ContactPage() {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [panelHeights, setPanelHeights] = useState<number[]>([0, 0, 0]);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [questionsAndAnswers, setQuestionsAndAnswers] = useState([
+        { question: 'How many days?', answer: '10 days.' },
+        { question: 'How many months?', answer: '100 months.' },
+        { question: 'How many years?', answer: '1000 years.' },
+    ]);
+
     const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const handleAccordionClick = (index: number) => {
@@ -27,6 +34,52 @@ export default function ContactPage() {
             updatePanelHeight(activeIndex);
         }
     }, [activeIndex]);
+
+    const handleEditToggle = () => {
+        setIsEditing(prev => !prev);
+    };
+
+    const handleSave = () => {
+        setIsEditing(false);
+    };
+
+    const handleChange = (index: number, field: 'question' | 'answer', value: string) => {
+        setQuestionsAndAnswers(prev => {
+            const newQuestions = [...prev];
+            newQuestions[index] = { ...newQuestions[index], [field]: value };
+            return newQuestions;
+        });
+    };
+
+    const handleDragStart = (index: number, event: DragEvent) => {
+        event.dataTransfer.setData("index", index.toString());
+    };
+
+    const handleDrop = (index: number, event: DragEvent) => {
+        const fromIndex = Number(event.dataTransfer.getData("index"));
+        if (fromIndex !== index) {
+            const newQuestions = [...questionsAndAnswers];
+            const movedItem = newQuestions[fromIndex];
+            newQuestions.splice(fromIndex, 1);
+            newQuestions.splice(index, 0, movedItem);
+            setQuestionsAndAnswers(newQuestions);
+        }
+    };
+
+    const handleDragOver = (event: DragEvent) => {
+        event.preventDefault();
+    };
+
+    const addQuestion = () => {
+        setQuestionsAndAnswers(prev => [
+            ...prev,
+            { question: 'New question?', answer: 'New answer.' }
+        ]);
+    };
+
+    const removeQuestion = (index: number) => {
+        setQuestionsAndAnswers(prev => prev.filter((_, i) => i !== index));
+    };
 
     return (
         <div style={styles.container}>
@@ -50,59 +103,78 @@ export default function ContactPage() {
             <div style={styles.contentWrapper}>
                 {/* Accordion Section */}
                 <div style={styles.accordionContainer}>
-                    <button
-                        className="accordion"
-                        onClick={() => handleAccordionClick(0)}
-                        style={styles.accordion}
-                    >
-                        How many days?
-                    </button>
-                    <div
-                        ref={(el) => (panelRefs.current[0] = el)}
-                        className="panel"
-                        style={{
-                            ...styles.panel,
-                            maxHeight: activeIndex === 0 ? `${panelHeights[0]}px` : '0',
-                        }}
-                    >
-                        <p>10 days.</p>
-                    </div>
+                    {questionsAndAnswers.map((qa, index) => (
+                        <div 
+                            key={index} 
+                            draggable={isEditing}
+                            onDragStart={(e) => handleDragStart(index, e)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(index, e)}
+                        >
+                            <button
+                                className="accordion"
+                                onClick={() => handleAccordionClick(index)}
+                                style={styles.accordion}
+                            >
+                                {isEditing ? (
+                                    <input 
+                                        type="text" 
+                                        value={qa.question} 
+                                        onChange={(e) => handleChange(index, 'question', e.target.value)} 
+                                        style={styles.input} 
+                                    />
+                                ) : (
+                                    qa.question
+                                )}
+                            </button>
+                            <div
+                                ref={(el) => (panelRefs.current[index] = el)}
+                                className="panel"
+                                style={{
+                                    ...styles.panel,
+                                    maxHeight: activeIndex === index ? `${panelHeights[index]}px` : '0',
+                                }}
+                            >
+                                {isEditing ? (
+                                    <textarea 
+                                        value={qa.answer} 
+                                        onChange={(e) => handleChange(index, 'answer', e.target.value)} 
+                                        style={styles.textarea}
+                                    />
+                                ) : (
+                                    <p>{qa.answer}</p>
+                                )}
+                            </div>
 
-                    <button
-                        className="accordion"
-                        onClick={() => handleAccordionClick(1)}
-                        style={styles.accordion}
-                    >
-                        How many months?
-                    </button>
-                    <div
-                        ref={(el) => (panelRefs.current[1] = el)}
-                        className="panel"
-                        style={{
-                            ...styles.panel,
-                            maxHeight: activeIndex === 1 ? `${panelHeights[1]}px` : '0',
-                        }}
-                    >
-                        <p>100 months.</p>
-                    </div>
+                            {/* Remove Question Button */}
+                            {isEditing && (
+                                <button 
+                                    onClick={() => removeQuestion(index)} 
+                                    style={styles.removeButton}
+                                >
+                                    Remove
+                                </button>
+                            )}
+                        </div>
+                    ))}
 
-                    <button
-                        className="accordion"
-                        onClick={() => handleAccordionClick(2)}
-                        style={styles.accordion}
+                    {/* Add Question Button */}
+                    {isEditing && (
+                        <button 
+                            onClick={addQuestion} 
+                            style={styles.addButton}
+                        >
+                            Add Question
+                        </button>
+                    )}
+
+                    {/* Toggle Edit/Save Button */}
+                    <button 
+                        onClick={handleEditToggle} 
+                        style={styles.editButton}
                     >
-                        How many years?
+                        {isEditing ? 'Save' : 'Edit'}
                     </button>
-                    <div
-                        ref={(el) => (panelRefs.current[2] = el)}
-                        className="panel"
-                        style={{
-                            ...styles.panel,
-                            maxHeight: activeIndex === 2 ? `${panelHeights[2]}px` : '0',
-                        }}
-                    >
-                        <p>1000 years.</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -183,5 +255,47 @@ const styles: { [key: string]: CSSProperties } = {
         backgroundColor: 'white',
         overflow: 'hidden',
         transition: 'max-height 0.3s ease-out',
+    },
+    input: {
+        width: '100%',
+        padding: '8px',
+        fontSize: '14px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+    },
+    textarea: {
+        width: '100%',
+        padding: '8px',
+        fontSize: '14px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+        minHeight: '50px',
+    },
+    editButton: {
+        backgroundColor: '#57bcd3',
+        color: '#fff',
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        marginTop: '10px',
+    },
+    addButton: {
+        backgroundColor: '#57bcd3',
+        color: '#fff',
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        marginTop: '10px',
+    },
+    removeButton: {
+        backgroundColor: '#f44336',
+        color: '#fff',
+        padding: '5px 10px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        marginTop: '10px',
     },
 };
