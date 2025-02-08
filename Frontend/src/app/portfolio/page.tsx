@@ -1,13 +1,26 @@
 "use client";
 
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState, useEffect } from 'react';
 import ProjectCard from './projectCard';
-import fountainImage from '../portfolio/fountainExample.jpg';
 import Navbar from '../navbar/navBar';
 import Link from 'next/link';
 import {clicksOut} from '../navbar/navBar'
+import axios from 'axios';
 
 export default function Portfolio() {
+
+    const [projects, setProjects] = useState<any[]>([]);
+    // we fetch all the projects
+    useEffect(() => {
+        axios.get('http://localhost:3001/api/projects')
+          .then((response: { data: React.SetStateAction<any[]>; }) => {
+            setProjects(response.data);
+          })
+          .catch((error: any) => {
+            console.error('Error fetching projects:', error);
+          });
+      }, []);    
+          
     return (
         <div>
             {/* Header Bar */}
@@ -45,21 +58,24 @@ export default function Portfolio() {
                         <select id="filter" style={styles.dropdown}>
                             <option value="All">All</option>
                             <option value="Projects">Bath</option>
-                            <option value="Articles">Housing</option>
-                            <option value="Tutorials">Kitchen</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Kitchen">Kitchen</option>
                         </select>
                     </div> 
                 </div>
                     {/* Project Card */}
                     <div style={styles.projectCardContainer}>
-                        <ProjectCard
-                            title="Stone Mason Fountain"
-                            description="This project is a stone mason fountain made."
-                            category="Bath"
-                            time="2 weeks"
-                            cost="$600"
-                            image={fountainImage}
-                        />
+                        {projects.map((proj) => (
+                            <ProjectCard
+                                key={proj._id}
+                                title={proj.name}                               
+                                description={proj.description}
+                                category={proj.categories?.join(', ') || ''}
+                                time={proj.timeTaken}
+                                cost={proj.cost}                                
+                                imageUrl={`http://localhost:3001/api/projects/${proj._id}/image`}                            
+                            />
+                        ))}
                     </div>
             </div>
         </div>
