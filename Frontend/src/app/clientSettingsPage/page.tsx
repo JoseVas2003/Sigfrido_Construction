@@ -15,7 +15,12 @@ import Signout from '../Assets/clientDashboardIcons/Sign_out_squre.png';
 // Static image
 import Construction from '../Assets/clientStaticImages/Construction-static.jpg';
 
+import {useSession} from 'next-auth/react';
+
 export default function page(){
+  const {data: session, status} = useSession();
+  const names = session?.user?.name;
+  const initial = names?.charAt(0);
   return (
     <div>
       {/* Top navbar */}
@@ -26,8 +31,8 @@ export default function page(){
 
         {/* Left profile bar */}
         <div className="Left_profile_bar">
-        <div className="Circle">J</div>
-          <h1>Welcome back, John!</h1>
+        <div className="Circle">{initial}</div>
+          <h1>Welcome back, {names}!</h1>
           <div className="SideButtons">
               <Link href="../faq">
                   <Image src={Question} alt="FAQ Icon" height={25} width={25} />

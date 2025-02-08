@@ -16,6 +16,8 @@ import Bathroom from '../Assets/clientStaticImages/Bathroom-static.jpg';
 import House from '../Assets/clientStaticImages/House-static.jpg';
 import Kitchen from '../Assets/clientStaticImages/Kitchen-static.jpg';
 
+import {useSession} from 'next-auth/react';
+
 export default function page(){
   // Array for list
   const projects = [
@@ -24,6 +26,10 @@ export default function page(){
       { type: 'Kitchen', dateStarted: '2025-01-12', cost: 2000, expectedCompletion: '2025-02-25' },
     ];
 
+
+  const {data: session, status} = useSession();
+  const names = session?.user?.name;
+  const initial = names?.charAt(0);
   return (
     <div>
       {/* Top navbar */}
@@ -34,8 +40,8 @@ export default function page(){
 
         {/* Left profile bar */}
         <div className="Left_profile_bar">
-          <div className="Circle">J</div>
-          <h1>Welcome back, John!</h1>
+          <div className="Circle">{initial}</div>
+          <h1>Welcome back, {names}!</h1>
           <div className="SideButtons">
             <Link href="../faq">
               <Image src={Question} alt="FAQ Icon" height={25} width={25} />
