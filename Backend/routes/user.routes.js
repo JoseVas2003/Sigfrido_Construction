@@ -1,11 +1,12 @@
 const express = require("express");
 const User = require("../models/users.model.js");
 const router = express.Router();
-const { getUsers, getUser, createUser, updateUser, deleteUser } = require('../controllers/users.controllers.js');
+const { getUsers, getUser, createUser, updateUser, deleteUser, getUserByEmail } = require('../controllers/users.controllers.js');
 
 
 router.get('/', getUsers);
-router.get("/:id", getUser);
+// Find User By Email: Used For Login Authentication
+router.get("/:email", getUserByEmail);
 router.post("/", createUser);
 // update a user
 router.put("/:id", updateUser);
