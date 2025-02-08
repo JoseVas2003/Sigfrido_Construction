@@ -1,80 +1,109 @@
 'use client';
-import '../Assets/css/createAccount.modules.css';
+import '../Assets/css/adminDashboard.modules.css'; // Import global CSS
 import Navbar from '../navbar/navBar';
+import Calendar from '../calendar/calendar'; 
+import { reviewsData } from '../reviews/page'; 
+import CustomerReviewsList from './reviewList';
+import Sidebar from './sidebar';
 
 export default function Page() {
     return (
         <div>
-            <Navbar />
-            <div className="header">
-                <h1>Sigfrido Vasquez Construction</h1>
-                <div>
-                    <button className="logout-btn">Logout</button>
-                    <button className="add-project-btn">Add Project</button>
-                </div>
-            </div>
-            <div className="dashboard-container">
-                <aside className="sidebar">
-                    <h2>Welcome Sigfrido</h2>
+        <Navbar />
+
+        <div className="dashboard"> {/* Use global class names */}
+            {/* Sidebar */}
+            <aside className="sidebar">
+                <ul>
+                    <li>Welcome Sigfrido</li>
+                    <li>Dashboard</li>
+                    <li>Messages</li>
+                    <li>Projects</li>
+                    <li>Settings</li>
+                    <li>Reviews</li>
+                    <li>Upload Photos</li>
+                </ul>
+            </aside>
+
+            {/* Main Content */}
+            <main className="mainContent">
+                {/* Appointments Section */}
+                <div className="sectionWrapper">
+                <section className="appointments">
+                    <button className="sectionHeader">Pending Appointments</button>
                     <ul>
-                        <li>Dashboard</li>
-                        <li>Messages</li>
-                        <li>Projects</li>
-                        <li>Settings</li>
-                        <li>Reviews</li>
-                        <li>Upload Photos</li>
+                        <li>
+                            <input type="checkbox" defaultChecked />
+                            Residential Home Construction <br />
+                            <span>6:00pm - 7:00pm</span> <br />
+                            <span>10/10/2024</span>
+                            <button>X</button>
+                        </li>
+                        <li>
+                            <input type="checkbox" defaultChecked />
+                            Office Renovation <br />
+                            <span>7:00pm - 8:00pm</span> <br />
+                            <span>11/12/2024</span>
+                            <button>X</button>
+                        </li>
+                        <li>
+                            <input type="checkbox" defaultChecked />
+                            Residential Bathroom Remodeling <br />
+                            <span>8:30pm - 9:30pm</span> <br />
+                            <span>10/23/2024</span>
+                            <button>X</button>
+                        </li>
                     </ul>
-                </aside>
-                <div className="main-content">
-                    <div className="section-card appointments-section">
-                        <h3>Pending Appointments</h3>
-                        <div className="appointment-list">
-                            <div className="appointment-item">
-                                <input type="checkbox" checked />
-                                <p>Residential Home Construction 6:00pm-7:00pm 10/10/2024</p>
-                                <button className="delete-btn">X</button>
-                            </div>
-                            <div className="appointment-item">
-                                <input type="checkbox" checked />
-                                <p>Office Renovation 7:00pm-8:00pm 11/12/2024</p>
-                                <button className="delete-btn">X</button>
-                            </div>
-                            <div className="appointment-item">
-                                <input type="checkbox" checked />
-                                <p>Residential Bathroom Remodeling 8:30pm-9:30pm 10/23/2024</p>
-                                <button className="delete-btn">X</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="section-card calendar-section">
-                        <h3>Appointments</h3>
-                        <div className="calendar">
-                            {/* Use a calendar component here if possible */}
-                            <p>Calendar placeholder for September 2021</p>
-                        </div>
-                    </div>
-                    <div className="section-card feedback-section">
-                        <h3>Manage Feedback</h3>
-                        <div className="feedback-list">
-                            <div className="feedback-item">
-                                <p><strong>Jordan K</strong> <span>★★★★★</span></p>
-                                <p>Reliable and Quality General Contracting...</p>
-                                <button className="reply-btn">Reply</button>
-                            </div>
-                            <div className="feedback-item">
-                                <p><strong>Emily R</strong> <span>★★★★★</span></p>
-                                <p>Stunning Bathroom Makeover Achieved...</p>
-                                <button className="reply-btn">Reply</button>
-                            </div>
-                            <div className="feedback-item">
-                                <p><strong>Emily R</strong> <span>★★★★★</span></p>
-                                <p>Outstanding Renovation Work...</p>
-                                <button className="reply-btn">Reply</button>
-                            </div>
-                        </div>
-                    </div>
+                </section>
+
                 </div>
+
+                {/* Calendar Section */}
+                <div className="sectionWrapper">
+                <section className="calendar">
+                    <button className="sectionHeader">Appointments</button>
+                    <div className="calendarWidget">
+                        {/* Replace with actual calendar component */}
+                        <p>Calendar Placeholder</p>
+                    </div>
+                </section>
+                </div>
+
+                {/* Reviews Section */}
+                <div className="sectionWrapper">
+                <section className="reviews">
+                    <button className="sectionHeader">Manage Feedback</button>
+                    <div className="review">
+                        <p>
+                            <strong>Jordan K</strong> <span>⭐⭐⭐⭐⭐</span>
+                        </p>
+                        <p>
+                            Reliable and Quality General Contracting <br />
+                            If you're looking for reliability and high-quality construction...
+                        </p>
+                        <button>Reply</button>
+                    </div>
+                    <div className="review">
+                        <p>
+                            <strong>Emily R</strong> <span>⭐⭐⭐⭐⭐</span>
+                        </p>
+                        <p>
+                            Stunning Bathroom Makeover Achieved <br />
+                            I can't praise this team enough! They completely transformed...
+                        </p>
+                        <button>Reply</button>
+                    </div>
+                    <button>Delete Review</button>
+                </section>
+                </div>
+            </main>
+
+            {/* Add Project Button */}
+            <div className="addProjectButtonContainer">
+                <button className="addProjectButton">Add Project</button>
             </div>
         </div>
+        </div>
+
     );
 }

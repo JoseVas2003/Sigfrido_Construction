@@ -1,0 +1,17 @@
+/* CustomReviews.module.css */
+
+.reviewsOverride {
+    max-width: 300px; /* Make it smaller */
+    margin-left: auto; /* Push it to the right side */
+    margin-right: 20px; /* Add some space on the right */
+    display: flex;
+    flex-direction: column;
+}
+
+.reviewCardOverride {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+

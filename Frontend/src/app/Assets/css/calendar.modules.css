@@ -1,26 +1,11 @@
-/* Container styling */
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #EBECE5;
-    min-height: 100vh;
-    font-family: Arial, sans-serif;
-    color: #000;
-}
+/* Main container styling */
 
-/* Header container for navbar */
-.headerContainer {
-    width: 100%;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
 
 /* Calendar container styling */
 .calendarContainer {
-    width: 80%;
-    max-width: 600px;
-    padding: 20px;
+    width: 100%;
+    max-width: 500px; /* Adjust max-width to reduce width */
+    padding: 10px; /* Reduced padding for a more compact look */
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -32,51 +17,57 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
-.navButton {
-    padding: 5px 10px;
-    color: #000;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
+/* Month label */
 .monthLabel {
-    font: 'Avenir Next LT Pro', sans-serif;
-    font-size: 24px;
+    font-size: 20px;
+    margin: 0; /* Removes extra space above and below the label */
 }
 
-/* Grid layout for calendar days */
+/* Calendar grid layout */
 .calendarGrid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    gap: 3px; /* Reduced gap between grid items */
 }
 
 /* Weekday label styling */
 .weekdayLabel {
     font-weight: bold;
-    padding: 10px;
+    padding: 5px; /* Reduced padding */
     border-radius: 4px;
 }
 
 /* Calendar day styling */
 .calendarDay {
-    padding: 10px;
+    padding: 5px; /* Smaller padding to fit content better */
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 40px;
-    height: 40px;
+    width: 35px; /* Reduced size for a tighter look */
+    height: 35px;
     color: #000;
 }
 
-/* Highlight styling for the current day */
+/* Current day highlight */
 .currentDay {
+    background-color: grey;
+    color: #fff;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.selectedDay {
     background-color: red;
     color: #fff;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
