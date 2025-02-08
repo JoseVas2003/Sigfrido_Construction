@@ -1,65 +1,142 @@
-'use client';
-import '../Assets/css/createAccount.modules.css'; // Include the main CSS file here
-import Navbar from '../navbar/navBar';
-import Calendar from '../calendar/calendar'; 
-import { reviewsData } from '../reviews/page'; 
-import CustomerReviewsList from './reviewList';
-import Sidebar from './sidebar';
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Navbar from "../navbar/navBar";
+import '../Assets/css/adminDashboard.modules.css'; // Import global CSS
 
-export default function Page() {
+
+interface Review {
+    _id: string;
+    name: string;
+    stars: number;
+    title: string;
+    content: string;
+    createdAt: string;
+}
+
+interface Appointment {
+    _id: string;
+    clientName: string;
+    date: string;
+    time: string;
+    location: string;
+    notes?: string;
+    email?: string;
+    phone?: string;
+}
+
+export default function AdminDashboard() {
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch reviews from MongoDB
+    useEffect(() => {
+        axios.get("http://localhost:3001/api/reviews")
+            .then((response) => {
+                setReviews(response.data);
+            })
+            .catch((error) => console.error("Error fetching reviews:", error));
+    }, []);
+
+    // Fetch appointments from MongoDB
+    useEffect(() => {
+        axios.get("http://localhost:3001/api/appointments")
+            .then((response) => {
+                setAppointments(response.data);
+                setLoading(false);
+            })
+            .catch((error) => console.error("Error fetching appointments:", error));
+    }, []);
+
+    // Delete a review
+    const handleDeleteReview = (id: string) => {
+        axios.delete(`http://localhost:3001/api/reviews/${id}`)
+            .then(() => {
+                setReviews(reviews.filter((review) => review._id !== id));
+            })
+            .catch((error) => console.error("Error deleting review:", error));
+    };
     return (
         <div>
             <Navbar />
-            <Sidebar />
-            <div className="header">
-                <h1>Sigfrido Vasquez Construction</h1>
-                <div>
-                    <button className="logout-btn">Logout</button>
-                    <button className="add-project-btn">Add Project</button>
+              {/* Add Project Button */}
+        <div className="addProjectButtonContainer">
+            <button className="addProjectButton">Add Project</button>
+        </div>
+            <div className="admin-dashboard">
+                {/* Sidebar */}
+                <div className="sidebar">
+                    <ul>
+                        <li>Dashboard</li>
+                        <li>Messages</li>
+                        <li>Projects</li>
+                        <li>Settings</li>
+                        <li>Reviews</li>
+                        <li>Upload Photos</li>
+                    </ul>
                 </div>
-            </div>
-            <div className="dashboard-container">
-                <div className="main-content">
+    
+                {/* Main Content Container */}
+                <div className="mainContent">
                     
-                    {/* Appointments Section */}
-                    <div className="section-card appointments-section">
-                        <h3>Pending Appointments</h3>
-                        <div className="appointment-list">
-                            <div className="appointment-item">
-                                <input type="checkbox" defaultChecked onChange={() => {}} />
-                                <p>Residential Home Construction 6:00pm-7:00pm 10/10/2024</p>
-                                <button className="delete-btn">X</button>
-                            </div>
-                            <div className="appointment-item">
-                                <input type="checkbox" defaultChecked onChange={() => {}} />
-                                <p>Office Renovation 7:00pm-8:00pm 11/12/2024</p>
-                                <button className="delete-btn">X</button>
-                            </div>
-                            <div className="appointment-item">
-                                <input type="checkbox" defaultChecked onChange={() => {}} />
-                                <p>Residential Bathroom Remodeling 8:30pm-9:30pm 10/23/2024</p>
-                                <button className="delete-btn">X</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Calendar Section */}
-                    <div className="section-card calendar-section">
-                        <h3>Appointments</h3>
-                        <div className="calendar">
-                            <Calendar /> {/* Calendar component added here */}
-                        </div>
-                    </div>
-
                     {/* Reviews Section */}
-                    <div className="section-card review-section">
-                        <h3>Manage Feedback</h3>
-                        <section>
-                            <h2>Customer Reviews</h2>
-                            <CustomerReviewsList reviews={reviewsData} />
+                    <div className="sectionWrapper">
+                        <section className="reviews">
+                            <h2 className="sectionHeader">Manage Reviews</h2>
+                            {reviews.length > 0 ? (
+                                reviews.map((review) => (
+                                    <div key={review._id} className="review-card">
+                                        <p>
+                                            <strong>{review.name}</strong>{" "}
+                                            <span>{"⭐".repeat(review.stars)}</span>
+                                        </p>
+                                        <p><em>{new Date(review.createdAt).toLocaleString()}</em></p>
+                                        <p><strong>{review.title}</strong></p>
+                                        <p>{review.content}</p>
+                                        <button onClick={() => handleDeleteReview(review._id)}>Delete</button>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No reviews available.</p>
+                            )}
                         </section>
                     </div>
-
+                    
+    
+                    {/* Appointments Section */}
+                    <div className="sectionWrapper">
+                        <section className="appointments">
+                            <h2 className="sectionHeader">Upcoming & Past Appointments</h2>
+                            {loading ? (
+                                <p>Loading appointments...</p>
+                            ) : appointments.length > 0 ? (
+                                appointments.map((appointment) => (
+                                    <div key={appointment._id} className="appointment-card">
+                                        <p><strong>{appointment.clientName}</strong></p>
+                                        <p>{appointment.date} - {appointment.time}</p>
+                                        <p><strong>Location:</strong> {appointment.location}</p>
+                                        {appointment.notes && <p><strong>Notes:</strong> {appointment.notes}</p>}
+                                        {appointment.email && <button onClick={() => window.location.href = `mailto:${appointment.email}`}>Email</button>}
+                                        {appointment.phone && <button onClick={() => window.location.href = `tel:${appointment.phone}`}>Call</button>}
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No appointments available.</p>
+                            )}
+                        </section>
+                    </div>
+    
+                    {/* Calendar Section */}
+                    <div className="sectionWrapper">
+                        <section className="calendar">
+                            <h2 className="sectionHeader">Appointments</h2>
+                            <div className="calendarWidget">
+                                {/* Replace with actual calendar component */}
+                                <p>Calendar Placeholder</p>
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,3 +1,4 @@
+'use client'
 import '../Assets/css/HeaderBar.modules.css';
 import Image from 'next/image';
 import Logo from '../Assets/headerBarImages/SeniorLogo.png';
@@ -5,10 +6,15 @@ import Menue from '../Assets/headerBarImages/menuOpen.png';
 import Close from '../Assets/headerBarImages/menuClose.png';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import {signOut} from 'next-auth/react';
+import {useSession} from 'next-auth/react';
+import axios from 'axios';
+
 
 const Navbar = () =>{
 
     const [displayedImage, imageSetter] = useState(true);
+    const {data: session, status} = useSession();
 
     useEffect(() => {
         const imageToggle = () => {
@@ -56,14 +62,28 @@ const Navbar = () =>{
                     <Link href="../reviews">
                         <button type="button" className="menuePageButtons">Reviews</button>
                     </Link>
-            
-                    <Link href="#">
-                        <button type="button" className="menuePageButtons">Dashboard</button>
-                    </Link>
-            
-                    <Link href="../login">
+
+                    {session?.user?.admin? (
+                        <Link href="../adminDashboard">
+                            <button type="button" className="menuePageButtons">Dashboard</button>
+                        </Link>
+                    ) : (
+                        <Link href="../clientDashboard">
+                            <button type="button" className="menuePageButtons">Dashboard</button>
+                        </Link>
+                    )}
+
+                    {session? (
+                        <Link href="../">
+                            <button onClick={() => {signOut()}} type="button" className="menuePageButtons">Logout</button>
+                        </Link>
+                    ) :(
+                        <Link href="../login">
                         <button type="button" className="menuePageButtons">Login</button>
                     </Link>
+                    )}
+
+
                 </div>
             </div>
         </div>
@@ -98,6 +118,26 @@ export function clicksOut()
     const outsideClicked = new Event('menuImageToggle');
     window.dispatchEvent(outsideClicked);
   } 
+};
+
+const userStatus = async (email) =>{
+    const connection = 'http://localhost:3000/api/users/';
+
+    const authenticationURL = connection + (email);
+
+    try{
+        const user = await axios.get(authenticationURL, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+        return user.data.admin;
+
+       }catch(error){
+        const err = error;
+        console.error("Error response:", err.response?.data || err.message);
+       }
 };
 
 export default Navbar;
