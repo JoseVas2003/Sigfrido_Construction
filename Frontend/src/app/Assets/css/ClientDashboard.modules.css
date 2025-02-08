@@ -1,7 +1,17 @@
+/* Main layout */
 .container{
   display: flex;
+  min-width: 100vw;
 }
 
+/* Body section */
+.Body{
+  flex-grow: 1;
+  /* border: 2px dashed blue;
+  box-sizing: border-box; */
+}
+
+/* Profile bar */
 .Left_profile_bar{
   font-weight: bold;
   font-size: 26px;
@@ -11,10 +21,10 @@
   background-color: #D9D9D9;
   width: 240px;
   height: 800px;
-  padding-top: 5px;
-  box-sizing: border-box;
+  padding-top: 20px;
 }
 
+/* Circle inside profile bar */
 .Circle{
   width: 100px;
   height: 100px;
@@ -28,6 +38,7 @@
   margin: 25px auto;
 }
 
+/* Side buttons inside profile bar */
 .SideButtons{
   display: flex;
   flex-direction: column;
@@ -36,53 +47,68 @@
   gap: 40px;
 }
 
+/* Way for icons to be next to button text */
 .SideButtons a {
   display: flex;       
   align-items: center;
 }
 
+/* Gap between icon and button text */
 .SideButtons a img {
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
-.Body{
-  flex-grow: 1;
-  /* border: 2px dashed blue;
-  box-sizing: border-box; */
-  margin-left: 20px;
-}
-
-.ImageRow {
-  display: flex;
-  justify-content: space-evenly;  /* Evenly space the images */
-  gap: 80px;  /* Add space between images */
-  margin-top: 40px;  /* Optional: Space above the images */
-}
-
-.ProjectImage {
-  width: 250px; /* Adjust width to make the images vertical */
-  height: 300px; /* Adjust height for the vertical rectangle */
-  object-fit: cover; /* Ensures the image covers the area, focusing on the center */
-  border-radius: 5px; /* Optional: rounded corners */
-}
-
+/* Body title */
 .UpcomingText{
   font-weight: bold;
   font-size: 32px;
   text-decoration: underline;
+  margin-left: 30px;
 }
 
+/* Images in body */
+.ImageRow {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 100px;
+  margin-top: 40px;
+}
+
+/* Image properties */
+.ProjectImage {
+  width: 250px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 5px; 
+}
+
+/* Text under images */
 .ProjectName{
   text-align: center;
   font-size: 24px;
   margin: 10px;
 }
 
-.GridItem {
-  padding: 10px;
-  border: 1px solid #ddd;
+/* Grid list */
+.GridList {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 20px;
   border-radius: 5px;
   background-color: #f9f9f9;
+  margin: 60px;
+}
+
+/* Grid items */
+.GridItem {
+  padding: 10px;
   text-align: center;
   font-size: 18px;
+}
+
+/* Grid header */
+.GridItemHeader {
+  font-weight: bold;
+  text-decoration: underline;
 }

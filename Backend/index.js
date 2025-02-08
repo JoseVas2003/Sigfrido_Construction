@@ -4,6 +4,7 @@ const User = require("./models/users.model.js");
 const appointmentRoutes = require("./routes/appointments.routes");
 const reviewRoutes = require("./routes/reviews.routes.js");
 const userRoute = require("./routes/user.routes.js");
+const projectRoutes = require("./routes/projects.routes.js");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const cors = require("cors");
@@ -18,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 // routes
 app.use("/api/users", userRoute);
 app.use("/api/appointments", appointmentRoutes);
-
+app.use("/api/projects", projectRoutes);
 app.use("/api/reviews", reviewRoutes);  
 
 app.get("/", (req, res) => {
