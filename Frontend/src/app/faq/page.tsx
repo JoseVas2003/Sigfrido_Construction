@@ -70,6 +70,17 @@ export default function ContactPage() {
         event.preventDefault();
     };
 
+    const addQuestion = () => {
+        setQuestionsAndAnswers(prev => [
+            ...prev,
+            { question: 'New question?', answer: 'New answer.' }
+        ]);
+    };
+
+    const removeQuestion = (index: number) => {
+        setQuestionsAndAnswers(prev => prev.filter((_, i) => i !== index));
+    };
+
     return (
         <div style={styles.container}>
             {/* Navbar */}
@@ -134,8 +145,28 @@ export default function ContactPage() {
                                     <p>{qa.answer}</p>
                                 )}
                             </div>
+
+                            {/* Remove Question Button */}
+                            {isEditing && (
+                                <button 
+                                    onClick={() => removeQuestion(index)} 
+                                    style={styles.removeButton}
+                                >
+                                    Remove
+                                </button>
+                            )}
                         </div>
                     ))}
+
+                    {/* Add Question Button */}
+                    {isEditing && (
+                        <button 
+                            onClick={addQuestion} 
+                            style={styles.addButton}
+                        >
+                            Add Question
+                        </button>
+                    )}
 
                     {/* Toggle Edit/Save Button */}
                     <button 
@@ -244,6 +275,24 @@ const styles: { [key: string]: CSSProperties } = {
         backgroundColor: '#57bcd3',
         color: '#fff',
         padding: '10px 20px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        marginTop: '10px',
+    },
+    addButton: {
+        backgroundColor: '#57bcd3',
+        color: '#fff',
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        marginTop: '10px',
+    },
+    removeButton: {
+        backgroundColor: '#f44336',
+        color: '#fff',
+        padding: '5px 10px',
         border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',
