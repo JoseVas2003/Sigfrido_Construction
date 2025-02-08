@@ -2,9 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import "../app/Assets/css/HomePage.css";
-import Logo from "../app/Assets/headerBarImages/SeniorLogo.png";
 import service1 from "../app/Assets/homepageImages/blueprint.png";
 import house from "../app/Assets/homepageImages/Custom-home.png";
 import service2 from "../app/Assets/homepageImages/diary.png";
@@ -12,37 +10,15 @@ import service5 from "../app/Assets/homepageImages/excavator.png";
 import service6 from "../app/Assets/homepageImages/house-frame.png";
 import service3 from "../app/Assets/homepageImages/school-material.png";
 import service4 from "../app/Assets/homepageImages/workers.png";
+import Footer from "../app/footer/footer";
+import Navbar from "../app/navbar/navBar";
 
 export default function Home() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="page-container">
       {/* Section for Header */}
-      <header className="header">
-        <nav className="nav-bar">
-          <div className="logo-container">
-            <Image src={Logo} alt="Company Logo" width={100} height={100} />
-          </div>
-          <div className="nav-links">
-            <Link href="#services">
-              <button className="nav-link">Services</button>
-            </Link>
-            <Link href="../portfolio" className="nav-link">
-              <button className="nav-link">Portfolio</button>
-            </Link>
-            <Link href="../reviews" className="nav-link">
-              <button className="nav-link">Review</button>
-            </Link>
-            <Link href="../meetTheOwner" className="nav-link">
-              <button className="nav-link">About Us</button>
-            </Link>
-          </div>
-          <Link href="../login" className="sign-in-link">
-            <button className="nav-link">Sign in →</button>
-          </Link>
-        </nav>
-      </header>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="hero-section">
@@ -122,36 +98,9 @@ export default function Home() {
 
       <hr className="section-separator" />
 
-      {/* Section for Footer */}
-      <footer className="footer">
-        <div className="footer-container">
-          <ul className="footer-links">
-            <Link href="../services">
-              <button type="button">About</button>
-            </Link>
-            <Link href="../contactPage">
-              <button type="button">Contact</button>
-            </Link>
-            <Link href="../reviews">
-              <button type="button">Review</button>
-            </Link>
-            <Link href="../portfolio">
-              <button type="button">Portfolio</button>
-            </Link>
-            <Link href="../faq">
-              <button type="button">FAQ</button>
-            </Link>
-          </ul>
-          <Image
-            src={Logo}
-            alt="Company Logo"
-            className="footer-logo"
-            width={70}
-            height={70}
-          />
-          <p>&copy; 2024 Sigfrido Vasquez Construction. All rights reserved.</p>
-        </div>
-      </footer>
+      {/* Footer Section */}
+      <Footer></Footer>
+     
     </div>
   );
 }
