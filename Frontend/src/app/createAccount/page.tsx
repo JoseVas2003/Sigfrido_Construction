@@ -40,7 +40,7 @@ export default function createUser(){
     console.log("Submitting form with data:", formData); // Debugging log
   
     try {
-      const response = await axios.post('http://localhost:3000/api/users', formData, {
+      const response = await axios.post('http://localhost:3001/api/users', formData, {
         headers: {
           'Content-Type': 'application/json',
         },

@@ -7,7 +7,7 @@ const userRoute = require("./routes/user.routes.js");
 const emailRoutes = require("./routes/email.routes.js"); 
 const projectRoutes = require("./routes/projects.routes.js");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const cors = require("cors");
 
 app.use(cors());
