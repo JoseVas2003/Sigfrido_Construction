@@ -12,7 +12,6 @@ interface Appointment {
     date: string;
     time: string;
 }
-
 export default function Page() {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
@@ -35,7 +34,7 @@ export default function Page() {
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get("http://localhost:3000/api/appointments");
+            const response = await axios.get("http://localhost:3001/api/appointments");
             console.log("Fetched Appointments:", response.data);
             setAppointments(response.data);
             setLoading(false);
@@ -71,43 +70,47 @@ export default function Page() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmitForm = async (e: React.FormEvent) => {
-        e.preventDefault();
+const handleSubmitForm = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        if (!selectedDate || !selectedTime) {
-            alert("Please select a date and time.");
-            return;
-        }
+    if (!selectedDate || !selectedTime) {
+        alert("Please select a date and time.");
+        return;
+    }
 
-        if (!formData.name || !formData.email || !formData.phone || !formData.message) {
-            alert("Please fill in all the fields.");
-            return;
-        }
+    if (!formData.name || !formData.email || !formData.phone || !formData.message) {
+        alert("Please fill in all the fields.");
+        return;
+    }
 
-        try {
-            const appointmentData = {
-                date: selectedDate.toISOString(),
-                time: selectedTime,
-                email: formData.email,
-                userId: placeholderUserId,
-                name: formData.name,
-                phone: formData.phone,
-                message: formData.message,
-            };
+    try {
+        const appointmentData = {
+            date: selectedDate.toISOString(),
+            time: selectedTime,
+            email: formData.email,
+            userId: placeholderUserId,
+            name: formData.name,
+            phone: formData.phone,
+            message: formData.message,
+        };
 
-            await axios.post('http://localhost:3000/api/appointments', appointmentData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+        // Save appointment to database
+        await axios.post("http://localhost:3001/api/appointments", appointmentData, {
+            headers: { "Content-Type": "application/json" },
+        });
 
-            alert("Appointment scheduled successfully!");
-            fetchAppointments();
-        } catch (error) {
-            console.error("Error scheduling appointment:", error);
-            alert(`Error: ${error.response?.data?.message || error.message}`);
-        }
-    };
+        // Send email notification
+        await axios.post("http://localhost:3001/api/emails/send", appointmentData, {
+            headers: { "Content-Type": "application/json" },
+        });
+
+        alert("Appointment scheduled successfully!");
+        fetchAppointments();
+    } catch (error) {
+        console.error("Error scheduling appointment:", error);
+        alert(`Error: ${error.response?.data?.message || error.message}`);
+    }
+};
 
     return (
         <div>

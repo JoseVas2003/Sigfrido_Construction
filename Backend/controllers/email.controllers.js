@@ -1,10 +1,12 @@
 const nodemailer = require("nodemailer");
 
+require("dotenv").config();
+
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-        user: 'senior191work@gmail.com',
-        pass: 'mbte pbzi qlsq ultp', // App password
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASS
     },
 });
 
@@ -18,31 +20,74 @@ const verifyTransporter = async () => {
 };
 verifyTransporter();
 
+const mailOptions = {
+    from: 'senior191work@gmail.com',
+    to: 'senior191work@gmail.com',
+}
+
+// const sendData = async (data) =>
+//     fetch("Frontend/app/schedule"{
+//         Method: "POST",
+//         body: JSON.stringify(data),
+//         headers: {
+//             "Content-Type":"application/json",
+//             Accept: "Application/json",
+//         ),
+//     });
+
 const sendEmail = async (req, res) => {
-    const { userEmail, userName, adminEmail, subject, userMessage, adminMessage } = req.body;
+    const { name, email, phone, message, date, time } = req.body;
 
     // Validate required fields
-    if (!userEmail || !userName || !adminEmail || !subject || !userMessage || !adminMessage) {
-        return res.status(400).json({ message: "Missing required fields." });
+    if (!name || !email || !date || !time || !message || !phone) {
+        console.error("Missing field! Request body:", req.body); // Log the missing data
+        return res.status(400).json({ message: "Missing required fields.", receivedData: req.body });
     }
 
+
+    const formattedDate = new Date(date).toLocaleDateString();
+
+    const clientMailOptions = {
+        from: 'senior191work@gmail.com',
+        to: email, // Send to client
+        subject: "Your Appointment Confirmation",
+        text: `Hello ${name},
+
+Thank you for scheduling an appointment.
+
+Here are the details:
+Date: ${formattedDate}
+Time: ${time}
+
+We look forward to speaking with you!
+
+Best regards,
+Sigfrido Vasquez
+Owner, Construction Services
+        `,
+    };
+    const adminMailOptions = {
+        from: process.env.EMAIL,
+        to:, // Admin email (change it)
+        subject: "New Appointment Scheduled",
+        text: `New appointment booked!
+
+Client: ${name}
+Email: ${email}
+Phone: ${phone}
+Date: ${formattedDate}
+Time: ${time}
+Message: ${message}
+
+Please review and confirm with the client.
+        `,
+    };
     try {
-        await transporter.sendMail({
-            from: 'senior191work@gmail.com',
-            to,
-            subject,
-            text,
-        });
-        
+        // Send email to client
+        await transporter.sendMail(clientMailOptions);
 
-        // Send email to the admin
-        await transporter.sendMail({
-            from: 'senior191work@gmail.com',
-            to: adminEmail || 'mkouiyoth45@gmail.com', // Use the provided adminEmail if available
-            subject: `Admin Notification: ${subject}`,
-            text: adminMessage,
-        });
-
+        // Send email to admin
+        await transporter.sendMail(adminMailOptions);
 
         console.log("Emails sent successfully!");
         return res.status(200).json({ message: "Emails sent successfully!" });
