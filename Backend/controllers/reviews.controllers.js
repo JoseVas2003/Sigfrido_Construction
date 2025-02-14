@@ -1,5 +1,4 @@
 const Review = require("../models/reviews.model");
-const User = require("../models/users.model");
 
 // Get all reviews
 const getReviews = async (req, res) => {
@@ -14,31 +13,45 @@ const getReviews = async (req, res) => {
 // Create a new review
 const createReview = async (req, res) => {
     try {
-        const newReview = await Review.create(req.body);
+        const { name, title, content, stars, image } = req.body;
+
+        const newReview = new Review({
+            name,
+            title,
+            content,
+            stars,
+            image, // Store the Base64 image string
+        });
+
+        await newReview.save();
         res.status(201).json(newReview);
     } catch (error) {
-        res.status(400).json({ message: error.message})
+        res.status(400).json({ message: error.message });
     }
 };
+
 
 // Update existing review
 const updateReview = async (req, res) => {
     try {
         const { id } = req.params;
-        const updatedReview = await Review.findByIdAndUpdate( id, req.body, {
-            new: true, //Return updated document
-            runValidators: true, // Make sure update follows schema
-        } );
+        const updatedData = req.body;
+
+        const updatedReview = await Review.findByIdAndUpdate(id, updatedData, {
+            new: true, // Return the updated document
+            runValidators: true, // Enforce schema validation
+        });
 
         if (!updatedReview) {
-            return res.status(404).json({ message: 'Review not found'});
+            return res.status(404).json({ message: 'Review not found' });
         }
 
         res.status(200).json(updatedReview);
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        res.status(400).json({ error: error.message });
     }
 };
+
 
 // Delete review
 const deleteReview = async (req, res) => {
@@ -54,7 +67,7 @@ const deleteReview = async (req, res) => {
         res.status(200).json({ message: 'Review deleted successfully'});
     } catch (error) {
         res.status(500).json({ error: error.message });
-      }
+    }
 };
 
 module.exports = {
