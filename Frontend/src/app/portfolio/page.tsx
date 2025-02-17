@@ -8,8 +8,9 @@ import {clicksOut} from '../navbar/navBar'
 import axios from 'axios';
 
 export default function Portfolio() {
-
     const [projects, setProjects] = useState<any[]>([]);
+    const [editMode, setEditMode] = useState(false);
+  
     // we fetch all the projects
     useEffect(() => {
         axios.get('http://localhost:3001/api/projects')
@@ -21,6 +22,22 @@ export default function Portfolio() {
           });
       }, []);    
           
+      // For when pencil is clicked
+      const toggleEditMode = () => {
+        setEditMode((prev) => !prev);
+      };
+    
+      // Delete a project by its id
+      const handleDelete = async (id: string) => {
+        try {
+          await axios.delete(`http://localhost:3001/api/projects/${id}`);
+          setProjects(prev => prev.filter(proj => proj._id !== id));
+        } catch (error) {
+          console.error('Failed to delete project:', error);
+        }
+      };
+
+
     return (
         <div>
             {/* Header Bar */}
@@ -31,8 +48,7 @@ export default function Portfolio() {
                 {/* Header Container */}
                 <div style={styles.headerContainer}>
                     {/* Pencil Icon Button */}
-                    <div style={styles.iconSquare}>
-                        <svg
+                    <div style={styles.iconSquare} onClick={toggleEditMode}>                        <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="32"
                             height="32"
@@ -67,13 +83,15 @@ export default function Portfolio() {
                     <div style={styles.projectCardContainer}>
                         {projects.map((proj) => (
                             <ProjectCard
-                                key={proj._id}
+                                id={proj._id} //i changed key to id//
                                 title={proj.name}                               
                                 description={proj.description}
                                 category={proj.categories?.join(', ') || ''}
                                 time={proj.timeTaken}
                                 cost={proj.cost}                                
-                                imageUrl={`http://localhost:3001/api/projects/${proj._id}/image`}                            
+                                imageUrl={`http://localhost:3001/api/projects/${proj._id}/image`}
+                                editMode={editMode}
+                                onDelete={handleDelete}                            
                             />
                         ))}
                     </div>
