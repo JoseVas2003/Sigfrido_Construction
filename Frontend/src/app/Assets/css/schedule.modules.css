@@ -9,15 +9,37 @@
     color: #000;
 }
 
-.workerDescriptionContainer {
+.workerSection {
     width: 35%;
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    gap: 15px; /* Adds space between worker info and appointments */
+}
+
+/* Worker Description Container (Dynamic Height) */
+.workerDescriptionContainer {
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     color: #000;
-    max-height: 400px; /* Adjust this value as needed */
-    overflow-y: auto; /* Add scroll if content overflows */
+    max-height: none; /* Remove fixed height */
+    height: auto; /* Allow height to adjust based on content */
+    overflow: visible; /* Prevent unnecessary scrolling */
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Existing Appointments Container */
+.appContainer {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #000;
+    max-height: 200px; /* Adjust height to match design */
+    overflow-y: auto;
 }
 
 .calendarAvailabilityContainer {
