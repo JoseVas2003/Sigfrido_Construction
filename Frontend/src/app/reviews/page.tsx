@@ -4,9 +4,6 @@ import Navbar from "../navbar/navBar";
 import '../Assets/css/Reviews.modules.css';
 import { useEffect } from "react";
 
-<<<<<<< HEAD
-  export const reviewsData = [
-=======
 
 
     
@@ -20,7 +17,6 @@ import { useEffect } from "react";
 
     // Fake reviews data
     const reviewsData = [
->>>>>>> main
         {
             name: "Emily R.",
             stars: 5,
@@ -41,14 +37,6 @@ import { useEffect } from "react";
         }
     ];
 
-<<<<<<< HEAD
-export default function Reviews() {
-    // Fake reviews data
-
-        // State for storing and sorting reviews
-        const [reviews, setReviews] = useState(reviewsData);
-        const [sortBy, setSortBy] = useState(''); // could be 'name', 'rating', etc.
-=======
     // Function to calculate what percentage of reviews each star value makes up
     const calculateStarPercentages = (reviews: Review[]) => {
         const total = reviews.length; 
@@ -64,7 +52,6 @@ export default function Reviews() {
         const percentages = starCount.map(count => total > 0 ? (count / total) * 100 : 0); // Convert counts to percentages
         return percentages;
     };
->>>>>>> main
 
 
     const ReviewCard = ({ review }: { review: Review }) => (
