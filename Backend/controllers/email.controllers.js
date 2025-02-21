@@ -68,7 +68,7 @@ Owner, Construction Services
     };
     const adminMailOptions = {
         from: process.env.EMAIL,
-        to:, // Admin email (change it)
+        to: 'fake@email.com', // Admin email (change it)
         subject: "New Appointment Scheduled",
         text: `New appointment booked!
 

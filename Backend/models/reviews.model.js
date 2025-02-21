@@ -6,6 +6,10 @@ const ReviewSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Please enter your name'],
         },
+        email: {
+            type: String,
+            required: true, // Ties the review to the user’s email
+          },
         title: {
             type: String,
             required: [true, 'Title'],
