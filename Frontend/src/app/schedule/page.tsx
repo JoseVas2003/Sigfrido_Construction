@@ -1,12 +1,116 @@
 'use client';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import '../Assets/css/adminDashboard.modules.css'; // Import global CSS
+import '../Assets/css/calendar.modules.css';
 import Navbar from '../navbar/navBar';
-import Calendar from '../calendar/calendar'; 
-import { reviewsData } from '../reviews/page'; 
-import CustomerReviewsList from './reviewList';
-import Sidebar from './sidebar';
 
+const placeholderUserId = '672c51b59ccd804fc4195ed0';
+
+interface Appointment {
+    date: string;
+    time: string;
+}
 export default function Page() {
+    const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedTime, setSelectedTime] = useState<string | null>(null);
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+    const [showForm, setShowForm] = useState<boolean>(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+    });
+
+    const [emailStatus, setEmailStatus] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetchAppointments();
+    }, []);
+
+    const fetchAppointments = async () => {
+        try {
+            const response = await axios.get("http://localhost:3001/api/appointments");
+            console.log("Fetched Appointments:", response.data);
+            setAppointments(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching appointments:", error);
+            setLoading(false);
+        }
+    };
+
+    const availableHours = ["5:00 PM", "6:00 PM", "7:00 PM", "8:00 PM", "9:00 PM"];
+
+    const handleDateChange = (date: Date) => {
+        setSelectedDate(date);
+        setShowForm(false);
+        setSelectedTime(null);
+
+        const formattedDate = date.toISOString().split("T")[0];
+        const bookedTimes = appointments
+            .filter(appointment => appointment.date === formattedDate)
+            .map(appointment => appointment.time);
+
+        const freeTimes = availableHours.filter(time => !bookedTimes.includes(time));
+        setAvailableTimes(freeTimes);
+    };
+
+    const handleTimeClick = (time: string) => {
+        setSelectedTime(time);
+        setShowForm(true);
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+const handleSubmitForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedDate || !selectedTime) {
+        alert("Please select a date and time.");
+        return;
+    }
+
+    if (!formData.name || !formData.email || !formData.phone || !formData.message) {
+        alert("Please fill in all the fields.");
+        return;
+    }
+
+    try {
+        const appointmentData = {
+            date: selectedDate.toISOString(),
+            time: selectedTime,
+            email: formData.email,
+            userId: placeholderUserId,
+            name: formData.name,
+            phone: formData.phone,
+            message: formData.message,
+        };
+
+        // Save appointment to database
+        await axios.post("http://localhost:3001/api/appointments", appointmentData, {
+            headers: { "Content-Type": "application/json" },
+        });
+
+        // Send email notification
+        await axios.post("http://localhost:3001/api/emails/send", appointmentData, {
+            headers: { "Content-Type": "application/json" },
+        });
+
+        alert("Appointment scheduled successfully!");
+        fetchAppointments();
+    } catch (error) {
+        console.error("Error scheduling appointment:", error);
+        alert(`Error: ${error.response?.data?.message || error.message}`);
+    }
+};
+
     return (
         <div>
         <Navbar />
