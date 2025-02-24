@@ -322,6 +322,11 @@ export default function Reviews() {
                 {reviews.map((review) => (
                     <div key={review._id} className="review-card">
                         <h3 className="review-name">{review.name}</h3>
+                        <h3 className="review-rating"> 
+                            {Array.from({ length: review.stars }).map((_, i) => (
+                                <span key={i}>⭐</span>
+                            ))}
+                        </h3>
                         <hr />
                         <p className="review-title">{review.title}</p>
                         <p className="review-content">{review.content}</p>
