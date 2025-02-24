@@ -11,7 +11,7 @@ const nextAuthenticationOptions = {
             async authorize(credentials){
 
                const {email, password} = credentials;
-               const connection = 'http://localhost:3000/api/users/';
+               const connection = 'http://localhost:3001/api/users/';
                const authenticationURL = connection + (email);
 
                try{

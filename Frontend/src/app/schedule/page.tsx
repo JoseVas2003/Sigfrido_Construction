@@ -6,6 +6,8 @@ import Calendar from '../calendar/calendar';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+import {useSession} from 'next-auth/react';
+
 const placeholderUserId = '672c51b59ccd804fc4195ed0';
 
 interface Appointment {
@@ -25,17 +27,24 @@ export default function Page() {
         phone: '',
         message: '',
     });
+    
+    const {data: session, status} = useSession();
+    const email = session?.user?.email;
+    const names = session?.user?.name;
+    const isAdmin = session?.user?.admin;
 
     const [emailStatus, setEmailStatus] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!email) return;
         fetchAppointments();
-    }, []);
+    }, [email]);
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get("http://localhost:3001/api/appointments");
-            console.log("Fetched Appointments:", response.data);
+            const response = await axios.get("http://localhost:3001/api/appointments", {
+                params: { email, isAdmin },
+            });
             setAppointments(response.data);
             setLoading(false);
         } catch (error) {
@@ -70,66 +79,96 @@ export default function Page() {
         setFormData({ ...formData, [name]: value });
     };
 
-const handleSubmitForm = async (e: React.FormEvent) => {
-    e.preventDefault();
+    const handleSubmitForm = async (e: React.FormEvent) => {
+        e.preventDefault();
+    
+        if (!selectedDate || !selectedTime) {
+            alert("Please select a date and time.");
+            return;
+        }
+    
+        if (!formData.name || !formData.email || !formData.phone || !formData.message) {
+            alert("Please fill in all the fields.");
+            return;
+        }
+    
+        try {
+            // Data to save in the database (use email from session)
+            const appointmentData = {
+                date: selectedDate.toISOString(),
+                time: selectedTime,
+                email: email,  // Use email from session
+                userId: placeholderUserId,
+                name: formData.name,
+                phone: formData.phone,
+                message: formData.message,
+            };
+    
+            // Data for the email notification (use formData.email for the recipient)
+            const emailData = {
+                date: selectedDate.toISOString(),
+                time: selectedTime,
+                email: formData.email,  // Use email from the form
+                userId: placeholderUserId,
+                name: formData.name,
+                phone: formData.phone,
+                message: formData.message,
+            };
+    
+            // Save the appointment to the database
+            await axios.post("http://localhost:3001/api/appointments", appointmentData, {
+                headers: { "Content-Type": "application/json" },
+            });
+    
+            // Send the email notification (email is from formData.email)
+            await axios.post("http://localhost:3001/api/emails/send", emailData, {
+                headers: { "Content-Type": "application/json" },
+            });
+    
+            alert("Appointment scheduled successfully!");
+            fetchAppointments();
+        } catch (error) {
+            console.error("Error scheduling appointment:", error);
+            alert(`Error: ${error.response?.data?.message || error.message}`);
+        }
+    };    
 
-    if (!selectedDate || !selectedTime) {
-        alert("Please select a date and time.");
-        return;
+    // If session is loading or there's no session
+    if (status === 'loading') {
+        return <p>Loading session...</p>;
     }
 
-    if (!formData.name || !formData.email || !formData.phone || !formData.message) {
-        alert("Please fill in all the fields.");
-        return;
+    if (!session) {
+        return <p>You need to sign in to book an appointment.</p>;
     }
-
-    try {
-        const appointmentData = {
-            date: selectedDate.toISOString(),
-            time: selectedTime,
-            email: formData.email,
-            userId: placeholderUserId,
-            name: formData.name,
-            phone: formData.phone,
-            message: formData.message,
-        };
-
-        // Save appointment to database
-        await axios.post("http://localhost:3001/api/appointments", appointmentData, {
-            headers: { "Content-Type": "application/json" },
-        });
-
-        // Send email notification
-        await axios.post("http://localhost:3001/api/emails/send", appointmentData, {
-            headers: { "Content-Type": "application/json" },
-        });
-
-        alert("Appointment scheduled successfully!");
-        fetchAppointments();
-    } catch (error) {
-        console.error("Error scheduling appointment:", error);
-        alert(`Error: ${error.response?.data?.message || error.message}`);
-    }
-};
 
     return (
         <div>
             <Navbar />
             <div className="pageContainer">
+                {/* Display User Session Information */}
+                <div className="userSessionInfo">
+                    <h2>User Session Information</h2>
+                    <p><strong>Name:</strong> {session.user?.name}</p>
+                    <p><strong>Email:</strong> {session.user?.email}</p>
+                    <p><strong>Role:</strong> {session.user?.admin ? 'Admin' : 'User'}</p>
+                    {/* You can display more session data here */}
+                </div>
+
                 {/* Left Container: Worker Information */}
                 <div className="workerSection">
                     <div className="workerDescriptionContainer">
                         <h2>Worker Information</h2>
                         <p>Name: Sigfrido Vasquez</p>
                         <p>Role: Owner</p>
-                        <p>Specialties: Construction</p><br></br>
-                        <p>Thank you for scheduling a call to speak with us about your construction projects and goals.</p><br></br>
+                        <p>Specialties: Construction</p><br />
+                        <p>Thank you for scheduling a call to speak with us about your construction projects and goals.</p><br />
                         <p>Your call will vary depending on the criteria of the potential project. We are working to figure out exactly what you need and how to make it happen. We’ll provide pricing and a quote for the jobs discussed.</p>
                     </div>
 
-                    {/*Below workers: Appointments */}
+                    {/* Below workers: Appointments */}
                     <div className="appContainer">
-                        <h2>Existing Appointments</h2>
+                        <h2>Existing Appointments for {names}</h2>
                         {loading ? (
                             <p>Loading appointments...</p>
                         ) : appointments.length > 0 ? (
@@ -153,7 +192,7 @@ const handleSubmitForm = async (e: React.FormEvent) => {
                     <Calendar onDateChange={handleDateChange} />
 
                     <div className="availability">
-                        <h2>Availability</h2>   
+                        <h2>Availability</h2>
                         <p>Selected Date: {selectedDate ? selectedDate.toLocaleDateString() : "None"}</p>
                         <div className="timeSlots">
                             {availableTimes.length > 0 ? (
@@ -184,6 +223,16 @@ const handleSubmitForm = async (e: React.FormEvent) => {
                     )}
                 </div>
             </div>
+
+            {/* Render Admin-Specific Content */}
+            {isAdmin && (
+                <div className="adminPanel">
+                    <h2>Admin Control Panel</h2>
+                    <p>Manage appointments, users, and more.</p>
+                    {/* Add any additional admin features you want here */}
+                </div>
+            )}
+
         </div>
     );
 }
