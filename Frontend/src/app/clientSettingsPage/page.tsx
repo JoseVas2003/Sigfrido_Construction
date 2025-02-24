@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {useSession} from 'next-auth/react';
 import axios from 'axios';
 
@@ -30,6 +30,14 @@ export default function page(){
   const [phoneNumber, setPhoneNumber] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+
+  // Ref for password popup
+  const popupRef = useRef<HTMLDivElement | null>(null);
+
+  const handleChangePassword = () => {
+    setShowPasswordPopup(true); // Show the popup
+  };
 
   // Fetching user info from backend when email is available
   useEffect(() => {
@@ -71,6 +79,22 @@ export default function page(){
       return phone;
     }
   };
+
+  // Close popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+        setShowPasswordPopup(false);
+      }
+    };        
+
+    if (showPasswordPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPasswordPopup]);
    
   return (
     <div>
@@ -116,7 +140,7 @@ export default function page(){
               <p><strong>Email:</strong> {email}</p>
             </div>
             <div className="SettingsOptions">
-              <div className="SettingsBox">
+              <div className="SettingsBox" onClick={handleChangePassword}>
               <strong>Change Password</strong>
               </div>
               <div className="SettingsBox"> <strong>Change Phone Number</strong> </div>
@@ -130,6 +154,22 @@ export default function page(){
           </div>
         </div>
       </div>
+
+      {/* Password popup */}
+      {showPasswordPopup && (
+        <div className="PopupOverlay">
+          <div ref={popupRef} className="PopupBox">
+            <h2 className="PopupTitle">Old Password</h2>
+            <input type="password" placeholder="Enter old password" />
+
+            <h2 className="PopupTitle">New Password</h2>
+            <input type="password" placeholder="Enter new password" />
+
+            <button className="PopupButton">Confirm</button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
