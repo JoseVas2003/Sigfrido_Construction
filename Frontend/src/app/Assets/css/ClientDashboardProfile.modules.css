@@ -80,8 +80,8 @@
   margin-top: auto;
 }
 
-/* Overlay for both the password change form */
-.PopupOverlay {
+/* Overlay for both the password change form and success popup */
+.PopupOverlay, .SuccessPopupOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -95,7 +95,7 @@
 }
 
 /* Popup box for password change */
-.PopupBox {
+.PopupBox, .SuccessPopupBox {
   background-color: #EBECE5;
   padding: 20px;
   border-radius: 8px;
@@ -133,4 +133,11 @@
 
 .PopupButton:hover {
   background-color: #1f7d8f;
+}
+
+/* Success message popup */
+.SuccessMessage {
+  font-weight: bold;
+  font-size: 25px;
+  color: black;
 }

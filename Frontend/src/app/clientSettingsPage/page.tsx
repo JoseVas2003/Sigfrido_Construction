@@ -31,12 +31,21 @@ export default function page(){
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(true);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [showPasswordSuccess, setShowPasswordSuccess] = useState(false);
 
   // Ref for password popup
   const popupRef = useRef<HTMLDivElement | null>(null);
 
   const handleChangePassword = () => {
     setShowPasswordPopup(true); // Show the popup
+  };
+
+  const handleConfirmPasswordChange = () => {
+    setShowPasswordPopup(false); // Hide the password popup
+    setShowPasswordSuccess(true); // Show the success message
+
+    // Hide the success message after 3 seconds
+    setTimeout(() => setShowPasswordSuccess(false), 3000);
   };
 
   // Fetching user info from backend when email is available
@@ -165,7 +174,18 @@ export default function page(){
             <h2 className="PopupTitle">New Password</h2>
             <input type="password" placeholder="Enter new password" />
 
-            <button className="PopupButton">Confirm</button>
+            <button className="PopupButton" onClick={handleConfirmPasswordChange}>Confirm</button>
+          </div>
+        </div>
+      )}
+
+      {/* Success message for Password Change */}
+      {showPasswordSuccess && (
+        <div className="SuccessPopupOverlay">
+          <div className="SuccessPopupBox">
+            <h2 className="SuccessMessage" style={{ fontWeight: 'bold' }}>
+              Password Has Been Changed Successfully!
+            </h2>
           </div>
         </div>
       )}
