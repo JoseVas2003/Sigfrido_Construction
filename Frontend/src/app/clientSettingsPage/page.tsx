@@ -30,15 +30,18 @@ export default function page(){
   const [phoneNumber, setPhoneNumber] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(true);
+
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [showPasswordSuccess, setShowPasswordSuccess] = useState(false);
 
-  // Ref for password popup
-  const popupRef = useRef<HTMLDivElement | null>(null);
+  const [showPhonePopup, setShowPhonePopup] = useState(false);
 
-  const handleChangePassword = () => {
-    setShowPasswordPopup(true); // Show the popup
-  };
+  // Ref for password popup
+  const passwordPopupRef = useRef<HTMLDivElement | null>(null);
+  const phonePopupRef = useRef<HTMLDivElement | null>(null);
+
+  const handleChangePassword = () => setShowPasswordPopup(true);
+  const handleChangePhone = () => setShowPhonePopup(true);
 
   const handleConfirmPasswordChange = () => {
     setShowPasswordPopup(false); // Hide the password popup
@@ -92,18 +95,21 @@ export default function page(){
   // Close popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (passwordPopupRef.current && !passwordPopupRef.current.contains(event.target as Node)) {
         setShowPasswordPopup(false);
       }
-    };        
+      if (phonePopupRef.current && !phonePopupRef.current.contains(event.target as Node)) {
+        setShowPhonePopup(false);
+      }
+    };
 
-    if (showPasswordPopup) {
+    if (showPasswordPopup || showPhonePopup) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showPasswordPopup]);
+  }, [showPasswordPopup, showPhonePopup]);
    
   return (
     <div>
@@ -152,7 +158,7 @@ export default function page(){
               <div className="SettingsBox" onClick={handleChangePassword}>
               <strong>Change Password</strong>
               </div>
-              <div className="SettingsBox"> <strong>Change Phone Number</strong> </div>
+              <div className="SettingsBox" onClick={handleChangePhone}> <strong>Change Phone Number</strong> </div>
               <div className="SettingsBox"> <strong>Delete Account</strong> </div>
             </div>
           </div>
@@ -167,7 +173,7 @@ export default function page(){
       {/* Password popup */}
       {showPasswordPopup && (
         <div className="PopupOverlay">
-          <div ref={popupRef} className="PopupBox">
+          <div ref={passwordPopupRef} className="PopupBox">
             <h2 className="PopupTitle">Old Password</h2>
             <input type="password" placeholder="Enter old password" />
 
@@ -175,6 +181,21 @@ export default function page(){
             <input type="password" placeholder="Enter new password" />
 
             <button className="PopupButton" onClick={handleConfirmPasswordChange}>Confirm</button>
+          </div>
+        </div>
+      )}
+
+      {/* Phone number popup */}
+      {showPhonePopup && (
+        <div className="PopupOverlay">
+          <div ref={phonePopupRef} className="PopupBox">
+            <h2 className="PopupTitle">Enter New Phone Number</h2>
+            <input type="text" placeholder="Enter new phone number" />
+
+            <h2 className="PopupTitle">Confirm New Phone Number</h2>
+            <input type="text" placeholder="Confirm new phone number" />
+
+            <button className="PopupButton">Confirm</button>
           </div>
         </div>
       )}
