@@ -35,6 +35,7 @@ export default function page(){
   const [showPasswordSuccess, setShowPasswordSuccess] = useState(false);
 
   const [showPhonePopup, setShowPhonePopup] = useState(false);
+  const [showPhoneSuccess, setShowPhoneSuccess] = useState(false);
 
   // Ref for password popup
   const passwordPopupRef = useRef<HTMLDivElement | null>(null);
@@ -49,6 +50,12 @@ export default function page(){
 
     // Hide the success message after 3 seconds
     setTimeout(() => setShowPasswordSuccess(false), 3000);
+  };
+
+  const handleConfirmPhoneChange = () => {
+    setShowPhonePopup(false);
+    setShowPhoneSuccess(true);
+    setTimeout(() => setShowPhoneSuccess(false), 3000);
   };
 
   // Fetching user info from backend when email is available
@@ -195,7 +202,7 @@ export default function page(){
             <h2 className="PopupTitle">Confirm New Phone Number</h2>
             <input type="text" placeholder="Confirm new phone number" />
 
-            <button className="PopupButton">Confirm</button>
+            <button className="PopupButton" onClick={handleConfirmPhoneChange}>Confirm</button>
           </div>
         </div>
       )}
@@ -206,6 +213,17 @@ export default function page(){
           <div className="SuccessPopupBox">
             <h2 className="SuccessMessage" style={{ fontWeight: 'bold' }}>
               Password Has Been Changed Successfully!
+            </h2>
+          </div>
+        </div>
+      )}
+
+      {/* Success message for Phone Number Change */}
+      {showPhoneSuccess && (
+        <div className="SuccessPopupOverlay">
+          <div className="SuccessPopupBox">
+            <h2 className="SuccessMessage" style={{ fontWeight: 'bold' }}>
+              Phone Number Has Been Changed Successfully!
             </h2>
           </div>
         </div>
