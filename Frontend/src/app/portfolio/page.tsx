@@ -53,6 +53,7 @@ export default function Portfolio() {
             <div onClick= {() => {clicksOut()}}>
                 {/* Header Container */}
                 <div style={styles.headerContainer}>
+                    {/* Only show add / edit buttons to admin */}
                     {/* Pencil Icon Button */}
                     {(session?.user?.admin) && (
                         <div style={styles.iconSquare} onClick={toggleEditMode}>                        
