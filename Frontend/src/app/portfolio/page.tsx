@@ -6,8 +6,14 @@ import Navbar from '../navbar/navBar';
 import Link from 'next/link';
 import {clicksOut} from '../navbar/navBar'
 import axios from 'axios';
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Portfolio() {
+
+    // session info
+    const { data: session, status } = useSession();
+
     const [projects, setProjects] = useState<any[]>([]);
     const [editMode, setEditMode] = useState(false);
   
@@ -48,25 +54,31 @@ export default function Portfolio() {
                 {/* Header Container */}
                 <div style={styles.headerContainer}>
                     {/* Pencil Icon Button */}
-                    <div style={styles.iconSquare} onClick={toggleEditMode}>                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="32"
-                            height="32"
-                            viewBox="0 0 24 24"
-                            stroke="#EBECE5"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                        >
-                            <path d="M12 20h9" />
-                            <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                        </svg>                
-                    </div>
-                    {/* Plus Icon Button with Link to createProject*/}
-                    <Link href="/createProject">
-                        <div style={styles.iconSquare} role="button">
-                            <span style={styles.plusSign}>+</span>
+                    {(session?.user?.admin) && (
+                        <div style={styles.iconSquare} onClick={toggleEditMode}>                        
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="32"
+                                height="32"
+                                viewBox="0 0 24 24"
+                                stroke="#EBECE5"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                            >
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                            </svg>    
                         </div>
-                    </Link>
+                    )}
+                    {/* Plus Icon Button with Link to createProject*/}
+                    {(session?.user?.admin) && (
+                        <Link href="/createProject">
+                            <div style={styles.iconSquare} role="button">
+                                <span style={styles.plusSign}>+</span>
+                            </div>
+                        </Link>
+                    )}
+
 
                     {/* Filter Dropdown */}
                     <div style={styles.filterContainer}>
