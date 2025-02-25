@@ -17,7 +17,7 @@ export default function Portfolio() {
     const [projects, setProjects] = useState<any[]>([]);
     const [editMode, setEditMode] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState("All");
-
+    const [deleteNotification, setDeleteNotification] = useState("");
   
     // we fetch all the projects
     useEffect(() => {
@@ -40,6 +40,12 @@ export default function Portfolio() {
         try {
           await axios.delete(`http://localhost:3001/api/projects/${id}`);
           setProjects(prev => prev.filter(proj => proj._id !== id));
+          
+          // Deletion Message
+          setDeleteNotification("Project has been deleted!");
+          setTimeout(() => {
+            setDeleteNotification("");
+          }, 5000);          
         } catch (error) {
           console.error('Failed to delete project:', error);
         }
@@ -113,6 +119,13 @@ export default function Portfolio() {
                         </select>
                     </div> 
                 </div>
+
+                {/* Notification Rectangle */}
+                {deleteNotification && (
+                <div style={styles.deleteNotification}>
+                    {deleteNotification}
+                </div>
+                )}
                     {/* Project Card */}
                     <div style={styles.projectCardContainer}>
                     {filteredProjects.map((proj) => (
@@ -173,6 +186,19 @@ const styles: { [key: string]: CSSProperties } = {
         color: '#EBECE5', 
         marginRight: '10px',
     },
+    deleteNotification: {
+        position: 'fixed',
+        bottom: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        backgroundColor: '#4FB6CE',
+        padding: '10px 20px',
+        borderRadius: '8px',
+        color: '#000',
+        fontSize: '18px',
+        zIndex: 1500,
+        fontWeight: 'bold',
+      },
     dropdown: {
         backgroundColor: '#1E2D3D',
         color: '#EBECE5',  
