@@ -131,8 +131,43 @@ export default function Page() {
             console.error("Error scheduling appointment:", error);
             alert(`Error: ${error.response?.data?.message || error.message}`);
         }
+    };
+    
+    const handleReschedule = async (appointmentId: string) => {
+        // Prepare the updated appointment data (this is based on the form data)
+        const updatedAppointmentData = {
+            date: selectedDate?.toISOString(),
+            time: selectedTime,
+            email: formData.email,
+            name: formData.name,
+            phone: formData.phone,
+            message: formData.message,
+        };
+    
+        try {
+            // Send the PUT request to update the appointment in the backend
+            await axios.put(`http://localhost:3001/api/appointments/${appointmentId}`, updatedAppointmentData, {
+                headers: { "Content-Type": "application/json" },
+            });
+    
+            alert("Appointment rescheduled successfully.");
+            fetchAppointments();  // Refresh the appointment list after rescheduling
+        } catch (error) {
+            console.error("Error rescheduling appointment:", error);
+            alert(`Error: ${error.response?.data?.message || error.message}`);
+        }
+    };
+    
+    const handleCancel = async (appointmentId: string) => {
+        try {
+            await axios.delete(`http://localhost:3001/api/appointments/${appointmentId}`);
+            alert("Appointment canceled successfully.");
+            fetchAppointments();  // Refresh the appointment list
+        } catch (error) {
+            console.error("Error canceling appointment:", error);
+            alert(`Error: ${error.response?.data?.message || error.message}`);
+        }
     };    
-
     // If session is loading or there's no session
     if (status === 'loading') {
         return <p>Loading session...</p>;
@@ -146,13 +181,13 @@ export default function Page() {
         <div>
             <Navbar />
             <div className="pageContainer">
-                {/* Display User Session Information */}
+                {/* Display User Session Information (temp)*/}
                 <div className="userSessionInfo">
                     <h2>User Session Information</h2>
                     <p><strong>Name:</strong> {session.user?.name}</p>
                     <p><strong>Email:</strong> {session.user?.email}</p>
                     <p><strong>Role:</strong> {session.user?.admin ? 'Admin' : 'User'}</p>
-                    {/* You can display more session data here */}
+                    
                 </div>
 
                 {/* Left Container: Worker Information */}
@@ -172,13 +207,28 @@ export default function Page() {
                         {loading ? (
                             <p>Loading appointments...</p>
                         ) : appointments.length > 0 ? (
-                            <ul>
-                                {appointments.map((appt, index) => (
-                                    <li key={index}>
-                                        <strong>{new Date(appt.date).toLocaleDateString()}</strong> at {appt.time}
-                                    </li>
-                                ))}
-                            </ul>
+                        <ul>
+                        {appointments.map((appt) => (
+                            <li key={appt._id}>
+                                <strong>{new Date(appt.date).toLocaleDateString()}</strong> at {appt.time}
+                                <div className="appointmentActions">
+                                    <button
+                                        className="rescheduleButton"
+                                        onClick={() => handleReschedule(appt._id)}  // Call handleReschedule to pre-fill form
+                                    >
+                                        Reschedule
+                                    </button>
+                                    <button
+                                        className="cancelButton"
+                                        onClick={() => handleCancel(appt._id)} // Call handleCancel for canceling
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </li>
+                        ))}
+                        </ul>
+
                         ) : (
                             <p>No appointments available.</p>
                         )}
@@ -204,7 +254,7 @@ export default function Page() {
                                     >
                                         {time}
                                     </button>
-                                ))
+                                ))  
                             ) : (
                                 <p>No available slots for this date.</p>
                             )}

@@ -171,3 +171,35 @@
 .informationForm p {
     margin-bottom: 10px; /* Adds space between paragraphs */
 }
+
+/* Container for Reschedule and Cancel Buttons */
+.appointmentActions {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    margin-top: 10px;
+}
+
+/* Button Styling for Reschedule and Cancel */
+.rescheduleButton,
+.cancelButton {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Reschedule Button */
+.rescheduleButton {
+    background-color: #007bff; /* Yellow for rescheduling */
+    color: #fff;
+}
+
+/* Cancel Button */
+.cancelButton {
+    background-color: #007bff; /* Red for canceling */
+    color: #fff;
+}
+
+
