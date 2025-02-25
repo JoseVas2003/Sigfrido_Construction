@@ -20,21 +20,6 @@ const verifyTransporter = async () => {
 };
 verifyTransporter();
 
-const mailOptions = {
-    from: 'senior191work@gmail.com',
-    to: 'senior191work@gmail.com',
-}
-
-// const sendData = async (data) =>
-//     fetch("Frontend/app/schedule"{
-//         Method: "POST",
-//         body: JSON.stringify(data),
-//         headers: {
-//             "Content-Type":"application/json",
-//             Accept: "Application/json",
-//         ),
-//     });
-
 const sendEmail = async (req, res) => {
     const { name, email, phone, message, date, time } = req.body;
 
@@ -68,7 +53,7 @@ Owner, Construction Services
     };
     const adminMailOptions = {
         from: process.env.EMAIL,
-        to: , // Admin email (change it)
+        to: 'senior191work@gmail.com',// Admin email (change it)
         subject: "New Appointment Scheduled",
         text: `New appointment booked!
 
