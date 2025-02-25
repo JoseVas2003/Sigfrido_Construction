@@ -1,13 +1,49 @@
 "use client";
 
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState, useEffect } from 'react';
 import ProjectCard from './projectCard';
-import fountainImage from '../portfolio/fountainExample.jpg';
 import Navbar from '../navbar/navBar';
 import Link from 'next/link';
 import {clicksOut} from '../navbar/navBar'
+import axios from 'axios';
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Portfolio() {
+
+    // session info
+    const { data: session, status } = useSession();
+
+    const [projects, setProjects] = useState<any[]>([]);
+    const [editMode, setEditMode] = useState(false);
+  
+    // we fetch all the projects
+    useEffect(() => {
+        axios.get('http://localhost:3001/api/projects')
+          .then((response: { data: React.SetStateAction<any[]>; }) => {
+            setProjects(response.data);
+          })
+          .catch((error: any) => {
+            console.error('Error fetching projects:', error);
+          });
+      }, []);    
+          
+      // For when pencil is clicked
+      const toggleEditMode = () => {
+        setEditMode((prev) => !prev);
+      };
+    
+      // Delete a project by its id
+      const handleDelete = async (id: string) => {
+        try {
+          await axios.delete(`http://localhost:3001/api/projects/${id}`);
+          setProjects(prev => prev.filter(proj => proj._id !== id));
+        } catch (error) {
+          console.error('Failed to delete project:', error);
+        }
+      };
+
+
     return (
         <div>
             {/* Header Bar */}
@@ -17,27 +53,33 @@ export default function Portfolio() {
             <div onClick= {() => {clicksOut()}}>
                 {/* Header Container */}
                 <div style={styles.headerContainer}>
+                    {/* Only show add / edit buttons to admin */}
                     {/* Pencil Icon Button */}
-                    <div style={styles.iconSquare}>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="32"
-                            height="32"
-                            viewBox="0 0 24 24"
-                            stroke="#EBECE5"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                        >
-                            <path d="M12 20h9" />
-                            <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                        </svg>                
-                    </div>
-                    {/* Plus Icon Button with Link to createProject*/}
-                    <Link href="/createProject">
-                        <div style={styles.iconSquare} role="button">
-                            <span style={styles.plusSign}>+</span>
+                    {(session?.user?.admin) && (
+                        <div style={styles.iconSquare} onClick={toggleEditMode}>                        
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="32"
+                                height="32"
+                                viewBox="0 0 24 24"
+                                stroke="#EBECE5"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                            >
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                            </svg>    
                         </div>
-                    </Link>
+                    )}
+                    {/* Plus Icon Button with Link to createProject*/}
+                    {(session?.user?.admin) && (
+                        <Link href="/createProject">
+                            <div style={styles.iconSquare} role="button">
+                                <span style={styles.plusSign}>+</span>
+                            </div>
+                        </Link>
+                    )}
+
 
                     {/* Filter Dropdown */}
                     <div style={styles.filterContainer}>
@@ -45,21 +87,26 @@ export default function Portfolio() {
                         <select id="filter" style={styles.dropdown}>
                             <option value="All">All</option>
                             <option value="Projects">Bath</option>
-                            <option value="Articles">Housing</option>
-                            <option value="Tutorials">Kitchen</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Kitchen">Kitchen</option>
                         </select>
                     </div> 
                 </div>
                     {/* Project Card */}
                     <div style={styles.projectCardContainer}>
-                        <ProjectCard
-                            title="Stone Mason Fountain"
-                            description="This project is a stone mason fountain made."
-                            category="Bath"
-                            time="2 weeks"
-                            cost="$600"
-                            image={fountainImage}
-                        />
+                        {projects.map((proj) => (
+                            <ProjectCard
+                                id={proj._id} //i changed key to id//
+                                title={proj.name}                               
+                                description={proj.description}
+                                category={proj.categories?.join(', ') || ''}
+                                time={proj.timeTaken}
+                                cost={proj.cost}                                
+                                imageUrl={`http://localhost:3001/api/projects/${proj._id}/image`}
+                                editMode={editMode}
+                                onDelete={handleDelete}                            
+                            />
+                        ))}
                     </div>
             </div>
         </div>

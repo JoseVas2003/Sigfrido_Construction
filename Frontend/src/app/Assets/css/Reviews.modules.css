@@ -37,38 +37,85 @@ h1 {
     margin: 20px;
     border-radius: 8px;
     width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .star_box_top {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-around;
+    justify-content: flex-start;
+    gap: 20px;
+    position: relative;
 }
 
 .star_average {
-    font-size: 40px ;
+    font-size: 40px;
     font-weight: bold;
-}
-
-.star_bars {
-    border-left: solid;
-    padding-left: 10%;
-    margin-bottom: 5%;
+    min-width: 80px; 
+    text-align: right;  
+    padding-right: 10px; 
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Adjust alignment to start */
+    align-items: flex-end; 
+    gap: 5px;  
 }
 
 
+
+.star_bars {
+    border-left: 2px solid #333;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 8px;
+    margin-left: 10px;  
+}
+
 .rating_stars {
-    margin-right: 10px; /* Space between stars and bar */
+    min-width: 30px;
+    display: flex;
+    justify-content: center;
 }
 
 .star {
     font-size: 18px; 
     margin-right: 2px; /* Space between stars */
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .top-level {
+        flex-direction: column;  /* Stack vertically on small screens */
+    }
+
+    .star_box {
+        max-width: 100%;  /* Take full width on small screens */
+    }
+
+    .star_box_top {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .star_bars {
+        padding-left: 10px;
+        width: 90%;  /* Prevent overflow */
+    }
+}
+
+@media (min-width: 1200px) {
+    .star_box {
+        max-width: 600px;  /* Even wider on large screens */
+    }
+}
+
+
+
 
 .filled {
     color: orange; /* Color for filled stars */
@@ -82,26 +129,23 @@ h1 {
     display: flex;
     align-items: center;
     width: 100%;
-    margin: 5px 0; 
+    gap: 10px;
 }
 
 .star_bar_container {
-    flex-grow: 1;
-    background-color: #e0e0e0; /* Background color for the empty bar */
-    height: 20px;
-    margin: 0 10px;
-    position: relative;
+    flex: 1;  /* Allows the bar to fill available space */
+    background-color: #e0e0e0;
+    height: 15px;
     border-radius: 5px;
     overflow: hidden;
-    min-width: 80%;
+    position: relative;
 }
-
 
 .star_bar {
     background-color: orange;
-    height: 20px;
+    height: 100%;
+    transition: width 0.3s ease-in-out;
     border-radius: 5px;
-    max-width: 70%; /* Limit the maximum width */
 }
 
 
@@ -156,6 +200,21 @@ h1 {
     align-self: center;
     border: solid;
     border-color: #ffa600;
+}
+
+.delete-button{
+    padding: 5px 8px;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 20px;
+    font-size: 12px;
+    max-width: 50%;
+    align-self: center;
+    border: solid;
+    color: white;
+    border-color: #ff0000; 
+    background-color: #ff3c3c;
 }
 
 .reviews {

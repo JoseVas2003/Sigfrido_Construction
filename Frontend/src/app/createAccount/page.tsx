@@ -1,12 +1,21 @@
 'use client'
 import '../Assets/css/createAccount.modules.css';
 import Navbar from '../navbar/navBar';
-import axios from "axios"
+import axios from 'axios';
 import { useState } from 'react';
-
+import Link from 'next/link';
 import {clicksOut} from '../navbar/navBar'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function createUser(){
+
+  const {data: session, status} = useSession();
+  const changePage = useRouter();
+
+  if(session){
+      changePage.replace('/');
+  }
 
      // State to hold form data
   const [formData, setFormData] = useState({
@@ -15,7 +24,10 @@ export default function createUser(){
     phone: '',
     email: '',
     password: '',
+    admin: false,
   });
+
+  let usersName = formData.firstName;
 
   // Handle change in form inputs
   const handleChange = (e) => {
@@ -28,25 +40,37 @@ export default function createUser(){
     console.log("Submitting form with data:", formData); // Debugging log
   
     try {
-      const response = await axios.post('http://localhost:3000/api/users', formData, {
+      const response = await axios.post('http://localhost:3001/api/users', formData, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
       console.log("Response from server:", response.data); // Debugging log
-      alert('Account created successfully!');
+      //alert('Account created successfully!');
+      openPopup();
     } catch (error) {
       const err = error as any;
       console.error("Error response:", err.response?.data || err.message); // Debugging log
       alert(`Error: ${err.response?.data?.message || err.message}`);
   }
   };
+
+  const openPopup = () => {
+
+    let successPopup = document.getElementById("successPopup");
+    let createAccountForm = document.getElementById("createAccountForm");
+    if (successPopup?.style.visibility == "hidden" && createAccountForm?.style.pointerEvents == "auto") {
+      successPopup.style.visibility = "visible";
+      createAccountForm.style.pointerEvents = "none";
+    }
+  };
+
   return (
     <div>
       <Navbar />
       <main>
-        <div className="Container" onClick={() => { clicksOut(); }}>
-          <form className="createAccountForm" onSubmit={handleSubmit}>
+        <div className="Container" onClick={() => { clicksOut();}}>
+          <form className="createAccountForm" onSubmit={handleSubmit} id="createAccountForm" style={{pointerEvents: 'auto'}}>
             <label className="firstNameLabel">First Name</label>
             <label className="firstNameAsterisk"> *</label>
             <label className="lastNameLabel">Last Name</label>
@@ -128,8 +152,6 @@ export default function createUser(){
                 <input className="confirmPasswordInput" type="password"/>
             </div>
 
-
-
             <br />
 
             <div className="CreateAccountButtonContainer">
@@ -138,6 +160,17 @@ export default function createUser(){
 
             <br />
           </form>
+
+          <div className="successPopup" id="successPopup" style={{visibility: 'hidden'}}>
+              <p className="accountCreatedSuccessMessage">Welcome, {usersName}!</p>
+              <p className="accountCreatedSuccessMessage">Your Account Was Created Successfully!</p>
+              <br></br>
+              <div className="successHomeButtonContainer">
+                <Link href="../">
+                  <button className="successHomeButton">HOME</button>
+                </Link>
+              </div>
+          </div>
         </div>
       </main>
     </div>
