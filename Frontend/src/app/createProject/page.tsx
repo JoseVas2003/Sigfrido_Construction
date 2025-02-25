@@ -8,7 +8,6 @@ import {clicksOut} from '../navbar/navBar'
 import axios from "axios"
 
 
-
 export default function CreateProjectPage() {
     const [formData, setFormData] = useState({
         name: '',
@@ -161,7 +160,7 @@ export default function CreateProjectPage() {
                                 />
                             </div>
                         </div>
-                        {/* Project Category & Add an Image Sections */}
+                    {/* Project Category & Add an Image Sections */}
                     <div style={styles.row}>
                         {/* Project Category Section */}
                         <div style={styles.halfInputGroup}>
@@ -171,34 +170,67 @@ export default function CreateProjectPage() {
                                 <input
                                     type="checkbox"
                                     name="category"
-                                    value="bath"
-                                    checked={formData.categories.includes('bath')}
+                                    value="adu"
+                                    checked={formData.categories.includes('adu')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                 />
-                                    Bath
+                                    ADU
                                 </label>
                                 <label style={styles.checkboxLabel}>
                                     <input
                                     type="checkbox"
                                     name="category"
-                                    value="housing"
-                                    checked={formData.categories.includes('housing')}
+                                    value="bathrooms"
+                                    checked={formData.categories.includes('bathrooms')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                     />
-                                    Housing
+                                    Bathrooms
                                 </label>
                                 <label style={styles.checkboxLabel}>
                                     <input
+                                    type="checkbox"
+                                    name="category"
+                                    value="floors"
+                                    checked={formData.categories.includes('floors')}
+                                    onChange={handleCheckboxChange}
+                                    style={styles.checkbox}
+                                    />
+                                    Floors
+                                </label>
+                                <label style={styles.checkboxLabel}>
+                                <input
                                     type="checkbox"
                                     name="category"
                                     value="kitchen"
                                     checked={formData.categories.includes('kitchen')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
-                                    />
+                                />
                                     Kitchen
+                                </label>
+                                <label style={styles.checkboxLabel}>
+                                <input
+                                    type="checkbox"
+                                    name="category"
+                                    value="roofs"
+                                    checked={formData.categories.includes('roofs')}
+                                    onChange={handleCheckboxChange}
+                                    style={styles.checkbox}
+                                />
+                                    Roofs
+                                </label>
+                                <label style={styles.checkboxLabel}>
+                                <input
+                                    type="checkbox"
+                                    name="category"
+                                    value="rooms"
+                                    checked={formData.categories.includes('rooms')}
+                                    onChange={handleCheckboxChange}
+                                    style={styles.checkbox}
+                                />
+                                    Rooms
                                 </label>
                             </div>
                         </div>
@@ -304,11 +336,9 @@ const styles: { [key: string]: CSSProperties } = {
         color: '#000'
     },
     checkboxGroup: {
-        justifyContent: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '10px', 
     },
     checkboxLabel: {
         display: 'flex',

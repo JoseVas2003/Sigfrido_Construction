@@ -16,6 +16,8 @@ export default function Portfolio() {
 
     const [projects, setProjects] = useState<any[]>([]);
     const [editMode, setEditMode] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState("All");
+
   
     // we fetch all the projects
     useEffect(() => {
@@ -43,6 +45,17 @@ export default function Portfolio() {
         }
       };
 
+    // Handle filter change
+    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedFilter(e.target.value);
+    };
+
+    // Filter projects based on selected filter
+    const filteredProjects = projects.filter((proj) => {
+        if (selectedFilter === "All") return true;
+        if (!proj.categories) return false;
+        return proj.categories.some((cat: string) => cat.toLowerCase() === selectedFilter.toLowerCase());
+    });
 
     return (
         <div>
@@ -84,19 +97,27 @@ export default function Portfolio() {
                     {/* Filter Dropdown */}
                     <div style={styles.filterContainer}>
                         <label htmlFor="filter" style={styles.label}>Filter:</label>
-                        <select id="filter" style={styles.dropdown}>
+                        <select
+                            id="filter"
+                            style={styles.dropdown}
+                            value={selectedFilter}
+                            onChange={handleFilterChange}
+                        >
                             <option value="All">All</option>
-                            <option value="Projects">Bath</option>
-                            <option value="Housing">Housing</option>
+                            <option value="ADU">ADU</option>
+                            <option value="Bathrooms">Bathrooms</option>
+                            <option value="Floors">Floors</option>
                             <option value="Kitchen">Kitchen</option>
+                            <option value="Roofs">Roofs</option>
+                            <option value="Rooms">Rooms</option>
                         </select>
                     </div> 
                 </div>
                     {/* Project Card */}
                     <div style={styles.projectCardContainer}>
-                        {projects.map((proj) => (
+                    {filteredProjects.map((proj) => (
                             <ProjectCard
-                                id={proj._id} //i changed key to id//
+                                id={proj._id}
                                 title={proj.name}                               
                                 description={proj.description}
                                 category={proj.categories?.join(', ') || ''}
@@ -128,12 +149,12 @@ const styles: { [key: string]: CSSProperties } = {
     iconSquare: {
         width: '44px',
         height: '44px',
-        backgroundColor: '#1E2D3D', // Dark green color
+        backgroundColor: '#1E2D3D',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: '10px',
-        
+        cursor: 'pointer',        
     },
     plusSign: {
         color: '#EBECE5',
@@ -158,6 +179,7 @@ const styles: { [key: string]: CSSProperties } = {
         fontSize: '1rem',
         fontWeight: 'bold',
         padding: '5px',
+        cursor: 'pointer',
     },
     projectCardContainer: {
         display: 'flex',
