@@ -53,7 +53,7 @@ Owner, Construction Services
     };
     const adminMailOptions = {
         from: process.env.EMAIL,
-        to: 'senior191work@gmail.com',// Admin email (change it)
+        to: process.env.EMAIL,
         subject: "New Appointment Scheduled",
         text: `New appointment booked!
 
