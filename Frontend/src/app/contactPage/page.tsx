@@ -4,12 +4,42 @@ import React, { CSSProperties, useState } from 'react';
 import Navbar from '../navbar/navBar';
 import '../Assets/css/contact.modules.css';
 import Link from 'next/link';
+import axios from 'axios'
 
 export default function ContactPage() {
+
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: '',
+
+    });
+
+    //handle change in form inputs
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const {name, value} = e.target;
+        setFormData({ ...formData, [name]: value});
+    };
     const [isSubmitted, setIsSubmitted] = useState(false);
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        //console.log("Submit"); //debug
         event.preventDefault();
+        console.log("Submitting form with data:", formData); //debugging log
+        try {
+            const response = await axios.post('/api/contactUs', formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log("Response from server:", response.data); //debug log
+        } catch (error) {
+            const err = error as any;
+            console.error("Error response:", err.response?.data || err.message); //debugging log
+        }
         // Set the form as submitted
         setIsSubmitted(true);
     };
@@ -54,36 +84,36 @@ export default function ContactPage() {
                                 <div style={styles.nameGroup}>
                                     <div style={styles.formField}>
                                         <label htmlFor="first-name">First Name:</label>
-                                        <input type="text" id="first-name" name="first-name" required style={styles.inputField} />
+                                        <input type="text" id="first-name" name="firstName" value={formData.firstName} onChange={handleChange} required style={styles.inputField} />
                                     </div>
                                     
                                     <div style={styles.formField}>
                                         <label htmlFor="last-name">Last Name:</label>
-                                        <input type="text" id="last-name" name="last-name" required style={styles.inputField} />
+                                        <input type="text" id="last-name" name="lastName" value={formData.lastName} onChange={handleChange} required style={styles.inputField} />
                                     </div>
                                 </div>
 
                                 <div style={styles.contactGroup}>
                                     <div style={styles.formField}>
                                         <label htmlFor="email">Email:</label>
-                                        <input type="email" id="email" name="email" required style={styles.inputField} />
+                                        <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required style={styles.inputField} />
                                     </div>
 
                                     <div style={styles.formField}>
                                         <label htmlFor="phone">Phone Number:</label>
-                                        <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required placeholder="123-456-7890" style={styles.inputField} />
+                                        <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" value={formData.phone} onChange={handleChange} required placeholder="123-456-7890" style={styles.inputField} />
                                     </div>
                                 </div>
 
                                 {/* Subject Form Group */}
                                 <div style={styles.formGroup}>
                                     <label htmlFor="subject">Subject:</label>
-                                    <input type="text" id="subject" name="subject" required style={styles.inputField} />
+                                    <input type="text" id="subject" name="subject" value={formData.subject} onChange={handleChange} required style={styles.inputField} />
                                 </div>
 
                                 <div style={styles.formGroup}>
                                     <label htmlFor="message">Message:</label>
-                                    <textarea id="message" name="message" required style={styles.textArea}></textarea>
+                                    <textarea id="message" name="message" value={formData.message} onChange={handleChange} required style={styles.textArea}></textarea>
                                 </div>
 
                                 <button type="submit" style={styles.button}>Submit</button>
