@@ -43,32 +43,25 @@ const nextAuthenticationOptions = {
         }),
     ],
     callbacks: {
-        async jwt({token, user})
-        {
-            //Add The Admin Flag To The Users Token
-            if(user)
-                {
-                return{
-                    ...token,
-                    admin: user.admin,
-                };
+        async jwt({ token, user }) {
+            // When the user first signs in, user will be defined.
+            if (user) {
+                token.email = user.email;
+                token.name = user.name;
+                token.admin = user.admin;
             }
-
             return token;
         },
-        async session({session, token})
-        {
-            //Add The Users Admin Status To The Session
-            if(token)
-            {
-                session.user.admin = token.admin;
-            }
-
-            console.log("SESSION: ", {session});
-
+        async session({ session, token }) {
+            // Copy the token properties into session.user so they're available on the client.
+            session.user.email = token.email;
+            session.user.name = token.name;
+            session.user.admin = token.admin;
+            console.log("SESSION: ", session);
             return session;
+            },
         },
-    },
+      
     session: {
         strategy: "jwt",
     },
@@ -81,3 +74,4 @@ const nextAuthenticationOptions = {
 const authenticationHandler = NextAuth(nextAuthenticationOptions);
 
 export {authenticationHandler as GET, authenticationHandler as POST};
+export {nextAuthenticationOptions as authOptions};
