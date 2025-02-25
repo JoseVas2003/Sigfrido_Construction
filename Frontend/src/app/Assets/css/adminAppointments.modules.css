@@ -1,0 +1,43 @@
+.admin-appointments-container {
+    padding: 20px;
+    margin-left: 20%;
+  }
+  
+  .sectionWrapper {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  .sectionHeader {
+    background-color: #444;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+  }
+  
+  .appointment-card {
+    background: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .viewAllAppointmentsButton {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .viewAllAppointmentsButton:hover {
+    background-color: #0056b3;
+  }
