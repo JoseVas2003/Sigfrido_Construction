@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../navbar/navBar";
-import '../Assets/css/adminDashboard.modules.css'; // Import global CSS
+import '../Assets/css/adminDashboard.modules.css'; 
+import Calendar from "../calendar/calendar";
+
 
 
 interface Review {
@@ -83,7 +85,10 @@ export default function AdminDashboard() {
                     {/* Reviews Section */}
                     <div className="sectionWrapper">
                         <section className="reviews">
-                            <h2 className="sectionHeader">Manage Reviews</h2>
+                        <button 
+                        className="sectionHeaderButton"
+                        onClick={() => window.location.href = "/AdminReviews"}>  Manage Reviews
+                           </button>
                             {reviews.length > 0 ? (
                                 reviews.map((review) => (
                                     <div key={review._id} className="review-card">
@@ -139,8 +144,10 @@ export default function AdminDashboard() {
                         <section className="calendar">
                             <h2 className="sectionHeader">Appointments</h2>
                             <div className="calendarWidget">
-                                {/* Replace with actual calendar component */}
-                                <p>Calendar Placeholder</p>
+                               <Calendar onDateChange={function (date: Date): void {
+                                    throw new Error("Function not implemented.");
+                                } }                              // appointments={appointments}
+                            />
                             </div>
                         </section>
                     </div>

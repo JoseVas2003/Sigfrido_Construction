@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../navbar/navBar";
-import "../Assets/css/adminAppointments.modules.css"; // New CSS file
+import "../Assets/css/adminAppointments.modules.css"; 
 
 interface Appointment {
     _id: string;
