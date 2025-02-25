@@ -7,7 +7,6 @@ import Image from 'next/image';
 import {clicksOut} from '../navbar/navBar'
 import axios from "axios"
 
-
 export default function CreateProjectPage() {
     const [formData, setFormData] = useState({
         name: '',
@@ -18,37 +17,47 @@ export default function CreateProjectPage() {
         image: null as File | null,
     });
 
+  // Error states for each field
+  const [projectNameError, setProjectNameError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+  const [timeTakenError, setTimeTakenError] = useState("");
+  const [costError, setCostError] = useState("");
+  const [categoriesError, setCategoriesError] = useState("");
+  const [imageError, setImageError] = useState("");
 
   // Ref for hidden file input
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Handle text changes
+    // Handle text changes and clear errors on input
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prevFormData) => ({
         ...prevFormData,
         [name]: value,
         }));
+        // Clear error when user starts typing
+        if (name === "name") setProjectNameError("");
+        if (name === "description") setDescriptionError("");
+        if (name === "timeTaken") setTimeTakenError("");
+        if (name === "cost") setCostError("");
     };
 
     // Handle multiple checkboxes
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = e.target;
         setFormData((prevFormData) => {
-            // If checked, add category
+            let updatedCategories;
             if (checked) {
-            return {
-                ...prevFormData,
-                categories: [...prevFormData.categories, value],
-            };
-            } 
-            // If unchecked, remove category
-            else {
-            return {
-                ...prevFormData,
-                categories: prevFormData.categories.filter((cat) => cat !== value),
-            };
+                updatedCategories = [...prevFormData.categories, value];
+            } else {
+                updatedCategories = prevFormData.categories.filter((cat) => cat !== value);
             }
+            // Clear error if there is at least one category
+            if (updatedCategories.length > 0) setCategoriesError("");
+            return {
+                ...prevFormData,
+                categories: updatedCategories,
+            };
         });
     };
 
@@ -57,24 +66,76 @@ export default function CreateProjectPage() {
           fileInputRef.current.click();
         }
       };
-
     
-  // Handle file selected
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Check file type or trust 'accept' attribute
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        image: file,
-      }));
+        setImageError("");
+        // Immediately check file type/size on selection
+        const validTypes = ["image/heic", "image/png", "image/jpeg"];
+        if (!validTypes.includes(file.type)) {
+            setImageError("Only HEIC, PNG and JPEG images are allowed.");
+            return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+            setImageError("Image must be less than 10MB.");
+            return;
+        }
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            image: file,
+        }));
     }
-  };
+ };
 
+  // Validate the form fields before submitting
+  const validateForm = (): boolean => {
+    let valid = true;
+    if (!formData.name.trim()) {
+      setProjectNameError("Project Name cannot be empty.");
+      valid = false;
+    }
+    if (!formData.description.trim()) {
+      setDescriptionError("Description cannot be empty.");
+      valid = false;
+    }
+    if (!formData.timeTaken.trim()) {
+      setTimeTakenError("Time Taken cannot be empty.");
+      valid = false;
+    }
+    if (!formData.cost.trim()) {
+      setCostError("Cost cannot be empty.");
+      valid = false;
+    }
+    if (formData.categories.length === 0) {
+      setCategoriesError("Please select at least one project category.");
+      valid = false;
+    }
+    if (!formData.image) {
+      setImageError("Please upload an image.");
+      valid = false;
+    } else {
+      const validTypes = ["image/heic", "image/png", "image/jpeg"];
+      if (!validTypes.includes(formData.image.type)) {
+        setImageError("Only HEIC, PNG and JPEG images are allowed.");
+        valid = false;
+      }
+      if (formData.image.size > 10 * 1024 * 1024) {
+        setImageError("Image must be less than 10MB.");
+        valid = false;
+      }
+    }
+    return valid;
+  };
 
     // Submitting form using Axios
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
     try {
         // necessary since I am sending a reg file and text together
         const data = new FormData();
@@ -89,11 +150,10 @@ export default function CreateProjectPage() {
             data.append("image", formData.image);
         }
 
-        const response = await axios.post(
-            'http://localhost:3001/api/projects', data);
+        const response = await axios.post('http://localhost:3001/api/projects', data);
         console.log('Response from server:', response.data);
         alert('Project created successfully!');
-    }catch (error: any) {
+    } catch (error: any) {
         console.error('Error response:', error.response?.data || error.message);
         alert(`Error: ${error.response?.data?.message || error.message}`);
     }
@@ -116,11 +176,14 @@ export default function CreateProjectPage() {
                                 type="text"
                                 id="name"
                                 name="name"
-                                style={styles.input}
+                                style={{ ...styles.input, border: projectNameError ? '3px solid red' : '2px solid black',}}
                                 value={formData.name}
                                 onChange={handleChange}
-                                required
+                                onInput={() => setProjectNameError("")}
                             />
+                            {projectNameError && (
+                                <p style={styles.errorText}>{projectNameError}</p>
+                            )}
                         </div>
                         {/* Description Section */}
                         <div style={styles.inputGroup}>
@@ -128,10 +191,14 @@ export default function CreateProjectPage() {
                             <textarea
                                 id="description"
                                 name="description"
-                                style={styles.textarea}
+                                style={{...styles.textarea, border: descriptionError ? '3px solid red' : '2px solid black'}}
                                 value={formData.description}
                                 onChange={handleChange}
-                            />                    
+                                onInput={() => setDescriptionError("")}
+                            />
+                            {descriptionError && (
+                                <p style={styles.errorText}>{descriptionError}</p>
+                            )}                    
                         </div>
                         {/* Time Taken & Cost Sections */}
                         {/* Time Taken Section */}
@@ -142,11 +209,15 @@ export default function CreateProjectPage() {
                                     type="text"
                                     id="timeTaken"
                                     name="timeTaken"
-                                    style={styles.input}
+                                    style={{...styles.input,border: timeTakenError ? '3px solid red' : '2px solid black',}}                    
                                     value={formData.timeTaken}
                                     onChange={handleChange}
+                                    onInput={() => setTimeTakenError("")}
                                 />
-                            </div>
+                                {timeTakenError && (
+                                    <p style={styles.errorText}>{timeTakenError}</p>
+                                )}
+                            </div>                            
                             {/* Cost Section */}
                             <div style={styles.halfInputGroup}>
                                 <label htmlFor='cost'>Cost:</label>
@@ -154,10 +225,14 @@ export default function CreateProjectPage() {
                                     type="text"
                                     id="cost"
                                     name="cost"
-                                    style={styles.input}
+                                    style={{...styles.input,border: costError ? '3px solid red' : '2px solid black',}}
                                     value={formData.cost}
                                     onChange={handleChange}
+                                    onInput={() => setCostError("")}
                                 />
+                                {costError && (
+                                    <p style={styles.errorText}>{costError}</p>
+                                )}
                             </div>
                         </div>
                     {/* Project Category & Add an Image Sections */}
@@ -233,6 +308,9 @@ export default function CreateProjectPage() {
                                     Rooms
                                 </label>
                             </div>
+                            {categoriesError && (
+                                <p style={styles.errorText}>{categoriesError}</p>
+                            )}
                         </div>
                         {/* Add an Image Section */}
                         <div style={styles.halfInputGroup}>
@@ -255,7 +333,10 @@ export default function CreateProjectPage() {
                                     accept=".heic,.jpg,.jpeg,.png"
                                     onChange={handleFileChange}
                                 />
-                            </div>                       
+                            </div>
+                            {imageError && (
+                                <p style={styles.errorText}>{imageError}</p>
+                            )}                       
                         </div>
                     </div>
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
@@ -308,7 +389,6 @@ const styles: { [key: string]: CSSProperties } = {
         fontSize: '32px',
     },
     input: {
-        
         width: '100%',
         padding: '10px',
         borderRadius: '15px',
@@ -316,7 +396,6 @@ const styles: { [key: string]: CSSProperties } = {
         fontSize: '36px',
     },
     textarea: {
-        
         width: '100%',
         padding: '10px',
         marginTop: '5px',
@@ -345,7 +424,6 @@ const styles: { [key: string]: CSSProperties } = {
         alignItems: 'center',
         fontWeight: 'normal',
         fontSize: '36px',
-        
     },
     checkbox: {
         marginRight: '10px',
@@ -389,4 +467,10 @@ const styles: { [key: string]: CSSProperties } = {
         justifyContent: 'center',
         alignItems: 'center',
     },
+    errorText: {
+        color: 'red',
+        fontSize: '20px',
+        marginTop: '5px',
+        textAlign: 'center',
+      },
 };
