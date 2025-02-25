@@ -32,7 +32,7 @@ export default function AdminDashboard() {
 
     // Fetch reviews from MongoDB
     useEffect(() => {
-        axios.get("http://localhost:3001/api/reviews")
+        axios.get("http://localhost:3000/api/reviews")
             .then((response) => {
                 setReviews(response.data);
             })
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
 
     // Fetch appointments from MongoDB
     useEffect(() => {
-        axios.get("http://localhost:3001/api/appointments")
+        axios.get("http://localhost:3000/api/appointments")
             .then((response) => {
                 setAppointments(response.data);
                 setLoading(false);
@@ -51,7 +51,7 @@ export default function AdminDashboard() {
 
     // Delete a review
     const handleDeleteReview = (id: string) => {
-        axios.delete(`http://localhost:3001/api/reviews/${id}`)
+        axios.delete(`http://localhost:3000/api/reviews/${id}`)
             .then(() => {
                 setReviews(reviews.filter((review) => review._id !== id));
             })
@@ -106,8 +106,13 @@ export default function AdminDashboard() {
     
                     {/* Appointments Section */}
                     <div className="sectionWrapper">
-                        <section className="appointments">
-                            <h2 className="sectionHeader">Upcoming & Past Appointments</h2>
+                    <section className="appointments">
+                    <button 
+                   className="sectionHeaderButton"
+                           onClick={() => window.location.href = "/AdminAppointments"}>
+                                  Upcoming & Past Appointments
+                          </button>
+        
                             {loading ? (
                                 <p>Loading appointments...</p>
                             ) : appointments.length > 0 ? (
@@ -124,6 +129,8 @@ export default function AdminDashboard() {
                             ) : (
                                 <p>No appointments available.</p>
                             )}
+                             <button className="viewAllAppointmentsButton" onClick={() => window.location.href = "/admin/appointments"}>View All Appointments
+                           </button>
                         </section>
                     </div>
     
