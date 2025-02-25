@@ -1,11 +1,14 @@
 'use client'
-import React, { useState, useEffect } from "react";
-import Navbar from "../navbar/navBar";
-import '../Assets/css/Reviews.modules.css';
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import '../Assets/css/Reviews.modules.css';
+import Navbar from "../navbar/navBar";
 
 interface Review {
     _id?: string; // Made _id optional for new reviews
+    email: string; // Email of the user who left the review
     name: string;
     stars: number;
     title: string;
@@ -29,14 +32,17 @@ const calculateStarPercentages = (reviews: Review[]) => {
 };
 
 export default function Reviews() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    console.log('Session:', session);
     // State
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('');
     const [starPercentages, setStarPercentages] = useState<number[]>([]);
     const [showModal, setShowModal] = useState(false);
-    const [newReview, setNewReview] = useState<Review>({
-        name: "",
+    const [newReview, setNewReview] = useState<Omit<Review, "name" | "email">>({
         title: "",
         content: "",
         image: null,
@@ -47,7 +53,7 @@ export default function Reviews() {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await axios.get("http://localhost:3001/api/reviews");
+                const response = await axios.get("/api/reviews");
                 setReviews(response.data);
             } catch (error) {
                 console.error('Error fetching reviews:', error);
@@ -99,29 +105,57 @@ export default function Reviews() {
         }
     };
 
+    // Convert image file to Base64
+    const convertToBase64 = (file: File) => {
+        return new Promise<string | null>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        });
+    };
+
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
     
+        let base64Image = null;
+    
+        if (newReview.image && newReview.image instanceof File) {
+            base64Image = await convertToBase64(newReview.image);
+        }
+    
+        // Use session.user.name and session.user.email for the review data
+        const reviewData = {
+            name: session?.user?.name,
+            email: session?.user?.email,
+            title: newReview.title,
+            content: newReview.content,
+            stars: newReview.stars,
+            image: base64Image,
+        };
+    
         try {
-            const response = await axios.post("http://localhost:3001/api/reviews", newReview, {
+            const response = await axios.post("/api/reviews", reviewData, {
                 headers: { "Content-Type": "application/json" },
             });
     
-            setReviews([...reviews, response.data]); 
-            setNewReview({ name: "", title: "", content: "", image: null, stars: 1 });
-            setShowModal(false);
+            setReviews([...reviews, response.data]);
+    
+            // Clear the form after submission (no name field needed)
+            setNewReview({ title: "", content: "", image: null, stars: 1 });
+    
+            setShowModal(false); // Close the modal
         } catch (error) {
             console.error("❌ Error submitting review:", error);
             alert("Error submitting review.");
         }
     };
-    
 
     // Handle deleting a review
     const handleDeleteReview = async (id: string) => {
         try {
-            await axios.delete(`http://localhost:3001/api/reviews/${id}`); 
+            await axios.delete(`/api/reviews/${id}`); 
             setReviews(reviews.filter((review) => review._id !== id)); 
         } catch (error) {
             console.error("❌ Error deleting review:", error);
@@ -129,11 +163,10 @@ export default function Reviews() {
         }
     };
 
-
     // Handle updating review
     const handleUpdateReview = async (id: string, updatedReview: Review) => {
         try {
-            const response = await axios.put(`http://localhost:3001/api/reviews/${id}`, updatedReview, {
+            const response = await axios.put(`/api/reviews/${id}`, updatedReview, {
                 headers: { "Content-Type": "application/json" },
             });
     
@@ -143,9 +176,18 @@ export default function Reviews() {
             alert("Error updating review.");
         }
     };
-    
-    
 
+    // Leave Review button click handler
+    const handleLeaveReviewClick = () => {
+        if (!session) {
+            // Redirect user to login if not logged in
+            router.push("/login");
+        } else {
+            // Show review modal if logged in
+            setShowModal(true);
+        }
+    };
+    
     if (loading) return <div>Loading...</div>;
 
     return (
@@ -186,122 +228,124 @@ export default function Reviews() {
                         Please leave us a review to let us know how we are doing and how we
                         can make your experience even better.
                     </p>
-                    <button className="leave_review" onClick={() => setShowModal(true)}>Leave Review</button>
+                    <button className="leave_review" onClick={handleLeaveReviewClick}>Leave Review</button>
                     {/* Review Form Modal */}
                     {showModal && (
-    <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full relative">
-            {/* Close Button */}
-            <button
-                onClick={() => setShowModal(false)}
-                className="absolute top-4 right-4 text-3xl font-semibold"
-            >
-                &times;
-            </button>
+                        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
+                            <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full relative">
+                                {/* Close Button */}
+                                <button
+                                    onClick={() => setShowModal(false)}
+                                    className="absolute top-4 right-4 text-3xl font-semibold"
+                                >
+                                    &times;
+                                </button>
 
-            <h2 className="text-xl font-bold mb-4">Leave a Review</h2>
+                                <h2 className="text-xl font-bold mb-4">Leave a Review</h2>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Name */}
-                <label className="block">
-                    <span className="font-medium">Name:</span>
-                    <input
-                        type="text"
-                        name="name"
-                        required
-                        value={newReview.name}
-                        onChange={handleInputChange}
-                        className="mt-1 p-2 w-full border rounded-md"
-                    />
-                </label>
+                                {/* Form */}
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    {/* Notice: The Name field is removed since we use session.user.name */}
+                                    
+                                    {/* Image Upload */}
+                                    <label className="block">
+                                        <span className="font-medium">Image:</span>
+                                        <input
+                                            type="file"
+                                            name="image"
+                                            onChange={handleFileChange}
+                                            className="mt-1 p-2 w-full border rounded-md"
+                                        />
+                                    </label>
 
-                {/* Image Upload */}
-                <label className="block">
-                    <span className="font-medium">Image:</span>
-                    <input
-                        type="file"
-                        name="image"
-                        onChange={handleFileChange}
-                        className="mt-1 p-2 w-full border rounded-md"
-                    />
-                </label>
+                                    {/* Title */}
+                                    <label className="block">
+                                        <span className="font-medium">Title:</span>
+                                        <input
+                                            type="text"
+                                            name="title"
+                                            required
+                                            value={newReview.title}
+                                            onChange={handleInputChange}
+                                            className="mt-1 p-2 w-full border rounded-md"
+                                        />
+                                    </label>
 
-                {/* Title */}
-                <label className="block">
-                    <span className="font-medium">Title:</span>
-                    <input
-                        type="text"
-                        name="title"
-                        required
-                        value={newReview.title}
-                        onChange={handleInputChange}
-                        className="mt-1 p-2 w-full border rounded-md"
-                    />
-                </label>
+                                    {/* Star Rating */}
+                                    <label className="block">
+                                        <span className="font-medium">Stars:</span>
+                                        <select
+                                            name="stars"
+                                            value={newReview.stars}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="mt-1 p-2 w-full border rounded-md"
+                                        >
+                                            <option value="" disabled>Select rating</option>
+                                            <option value="1">1 Star</option>
+                                            <option value="2">2 Stars</option>
+                                            <option value="3">3 Stars</option>
+                                            <option value="4">4 Stars</option>
+                                            <option value="5">5 Stars</option>
+                                        </select>
+                                    </label>
 
-                {/* Star Rating */}
-                <label className="block">
-                    <span className="font-medium">Stars:</span>
-                    <select
-                        name="stars"
-                        value={newReview.stars}
-                        onChange={handleInputChange}
-                        required
-                        className="mt-1 p-2 w-full border rounded-md"
-                    >
-                        <option value="" disabled>Select rating</option>
-                        <option value="1">1 Star</option>
-                        <option value="2">2 Stars</option>
-                        <option value="3">3 Stars</option>
-                        <option value="4">4 Stars</option>
-                        <option value="5">5 Stars</option>
-                    </select>
-                </label>
+                                    {/* Review Content */}
+                                    <label className="block">
+                                        <span className="font-medium">Review:</span>
+                                        <textarea
+                                            name="content"
+                                            required
+                                            value={newReview.content}
+                                            onChange={handleInputChange}
+                                            className="mt-1 p-2 w-full border rounded-md"
+                                        ></textarea>
+                                    </label>
 
-                {/* Review Content */}
-                <label className="block">
-                    <span className="font-medium">Review:</span>
-                    <textarea
-                        name="content"
-                        required
-                        value={newReview.content}
-                        onChange={handleInputChange}
-                        className="mt-1 p-2 w-full border rounded-md"
-                    ></textarea>
-                </label>
-
-                {/* Submit Button */}
-                <button
-                    type="submit"
-                    className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
-                >
-                    Submit Review
-                </button>
-            </form>
-        </div>
-    </div>
-)}
-
+                                    {/* Submit Button */}
+                                    <button
+                                        type="submit"
+                                        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+                                    >
+                                        Submit Review
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
-
-
-
 
             {/* Display Reviews */}
             <div className="reviews">
                 {reviews.length === 0 && <div>No reviews available.</div>}
                 {reviews.map((review) => (
                     <div key={review._id} className="review-card">
-                        <h3>{review.name}</h3>
-                        <p>{review.title}</p>
-                        <p>{review.content}</p>
-                        <button onClick={() => handleDeleteReview(review._id!)}>Delete</button>
+                        <h3 className="review-name">{review.name}</h3>
+                        <h3 className="review-rating"> 
+                            {Array.from({ length: review.stars }).map((_, i) => (
+                                <span key={i}>⭐</span>
+                            ))}
+                        </h3>
+                        <hr />
+                        <p className="review-title">{review.title}</p>
+                        <p className="review-content">{review.content}</p>
+
+                        {typeof review.image === "string" && review.image.startsWith("data:image/") && (
+                            <img src={review.image} alt="Review" style={{ width: "150px", height: "auto" }} />
+                        )}
+                        {/* 
+                            Conditionally render the delete button only if the review belongs to the logged in user (by email) 
+                            or if the user is an admin.  
+                        */}
+                        {(session?.user?.email === review.email || session?.user?.admin) && (
+                            <button className="delete-button" onClick={() => handleDeleteReview(review._id!)}>
+                                Delete
+                            </button>
+                        )}
                     </div>
                 ))}
             </div>
         </div>
     );
 }
-

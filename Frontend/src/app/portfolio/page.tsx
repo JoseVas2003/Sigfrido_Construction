@@ -1,13 +1,20 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import Link from 'next/link';
 import React, { CSSProperties } from 'react';
 import Navbar, { clicksOut } from '../navbar/navBar';
 import ProjectCard from './projectCard';
 
 export default function Portfolio() {
+
+    // session info
+    const { data: session, status } = useSession();
+
     const [projects, setProjects] = useState<any[]>([]);
     const [editMode, setEditMode] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState("All");
+    const [deleteNotification, setDeleteNotification] = useState("");
   
     // we fetch all the projects
     useEffect(() => {
@@ -30,11 +37,28 @@ export default function Portfolio() {
         try {
           await axios.delete(`http://localhost:3001/api/projects/${id}`);
           setProjects(prev => prev.filter(proj => proj._id !== id));
+          
+          // Deletion Message
+          setDeleteNotification("Project has been deleted!");
+          setTimeout(() => {
+            setDeleteNotification("");
+          }, 5000);          
         } catch (error) {
           console.error('Failed to delete project:', error);
         }
       };
 
+    // Handle filter change
+    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedFilter(e.target.value);
+    };
+
+    // Filter projects based on selected filter
+    const filteredProjects = projects.filter((proj) => {
+        if (selectedFilter === "All") return true;
+        if (!proj.categories) return false;
+        return proj.categories.some((cat: string) => cat.toLowerCase() === selectedFilter.toLowerCase());
+    });
 
     return (
         <div>
@@ -45,43 +69,65 @@ export default function Portfolio() {
             <div onClick= {() => {clicksOut()}}>
                 {/* Header Container */}
                 <div style={styles.headerContainer}>
+                    {/* Only show add / edit buttons to admin */}
                     {/* Pencil Icon Button */}
-                    <div style={styles.iconSquare} onClick={toggleEditMode}>                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="32"
-                            height="32"
-                            viewBox="0 0 24 24"
-                            stroke="#EBECE5"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                        >
-                            <path d="M12 20h9" />
-                            <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                        </svg>                
-                    </div>
-                    {/* Plus Icon Button with Link to createProject*/}
-                    <Link href="/createProject">
-                        <div style={styles.iconSquare} role="button">
-                            <span style={styles.plusSign}>+</span>
+                    {(session?.user?.admin) && (
+                        <div style={styles.iconSquare} onClick={toggleEditMode}>                        
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="32"
+                                height="32"
+                                viewBox="0 0 24 24"
+                                stroke="#EBECE5"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                            >
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                            </svg>    
                         </div>
-                    </Link>
+                    )}
+                    {/* Plus Icon Button with Link to createProject*/}
+                    {(session?.user?.admin) && (
+                        <Link href="/createProject">
+                            <div style={styles.iconSquare} role="button">
+                                <span style={styles.plusSign}>+</span>
+                            </div>
+                        </Link>
+                    )}
+
 
                     {/* Filter Dropdown */}
                     <div style={styles.filterContainer}>
                         <label htmlFor="filter" style={styles.label}>Filter:</label>
-                        <select id="filter" style={styles.dropdown}>
+                        <select
+                            id="filter"
+                            style={styles.dropdown}
+                            value={selectedFilter}
+                            onChange={handleFilterChange}
+                        >
                             <option value="All">All</option>
-                            <option value="Projects">Bath</option>
-                            <option value="Articles">Housing</option>
-                            <option value="Tutorials">Kitchen</option>
+                            <option value="ADU">ADU</option>
+                            <option value="Bathrooms">Bathrooms</option>
+                            <option value="Floors">Floors</option>
+                            <option value="Kitchen">Kitchen</option>
+                            <option value="Roofs">Roofs</option>
+                            <option value="Rooms">Rooms</option>
                         </select>
                     </div> 
                 </div>
+
+                {/* Notification Rectangle */}
+                {deleteNotification && (
+                <div style={styles.deleteNotification}>
+                    {deleteNotification}
+                </div>
+                )}
                     {/* Project Card */}
                     <div style={styles.projectCardContainer}>
-                        {projects.map((proj) => (
+                    {filteredProjects.map((proj) => (
                             <ProjectCard
-                                id={proj._id} //i changed key to id//
+                                id={proj._id}
                                 title={proj.name}                               
                                 description={proj.description}
                                 category={proj.categories?.join(', ') || ''}
@@ -113,12 +159,12 @@ const styles: { [key: string]: CSSProperties } = {
     iconSquare: {
         width: '44px',
         height: '44px',
-        backgroundColor: '#1E2D3D', // Dark green color
+        backgroundColor: '#1E2D3D',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: '10px',
-        
+        cursor: 'pointer',        
     },
     plusSign: {
         color: '#EBECE5',
@@ -137,12 +183,26 @@ const styles: { [key: string]: CSSProperties } = {
         color: '#EBECE5', 
         marginRight: '10px',
     },
+    deleteNotification: {
+        position: 'fixed',
+        bottom: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        backgroundColor: '#4FB6CE',
+        padding: '10px 20px',
+        borderRadius: '8px',
+        color: '#000',
+        fontSize: '18px',
+        zIndex: 1500,
+        fontWeight: 'bold',
+      },
     dropdown: {
         backgroundColor: '#1E2D3D',
         color: '#EBECE5',  
         fontSize: '1rem',
         fontWeight: 'bold',
         padding: '5px',
+        cursor: 'pointer',
     },
     projectCardContainer: {
         display: 'flex',

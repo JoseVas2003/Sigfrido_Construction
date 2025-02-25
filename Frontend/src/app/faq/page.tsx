@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, CSSProperties, useRef } from 'react';
+import { useSession } from 'next-auth/react';
+import { ChangeEvent, CSSProperties, useRef, useState } from 'react';
 import Navbar from '../navbar/navBar';
 
 export default function ContactPage() {
@@ -12,6 +13,7 @@ export default function ContactPage() {
         { question: 'How many months?', answer: '100 months.' },
         { question: 'How many years?', answer: '1000 years.' },
     ]);
+    const [imageSrc, setImageSrc] = useState<string>("https://www.souderbrothersconstruction.com/blog/wp-content/uploads/2019/03/iStock-1316374976-825x510.jpg");
 
     const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -19,28 +21,8 @@ export default function ContactPage() {
         setActiveIndex(prev => (prev === index ? null : index));
     };
 
-    const updatePanelHeight = (index: number) => {
-        if (panelRefs.current[index]) {
-            setPanelHeights(prevHeights => {
-                const newHeights = [...prevHeights];
-                newHeights[index] = panelRefs.current[index]!.scrollHeight;
-                return newHeights;
-            });
-        }
-    };
-
-    React.useEffect(() => {
-        if (activeIndex !== null) {
-            updatePanelHeight(activeIndex);
-        }
-    }, [activeIndex]);
-
     const handleEditToggle = () => {
         setIsEditing(prev => !prev);
-    };
-
-    const handleSave = () => {
-        setIsEditing(false);
     };
 
     const handleChange = (index: number, field: 'question' | 'answer', value: string) => {
@@ -51,9 +33,18 @@ export default function ContactPage() {
         });
     };
 
+    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const imageURL = URL.createObjectURL(file);
+            setImageSrc(imageURL);
+        }
+    };
+
+    const {data: session, status} = useSession();
+
     return (
         <div style={styles.container}>
-            {/* Navbar */}
             <div style={styles.headerContainer}>
                 <Navbar />
             </div>
@@ -61,12 +52,13 @@ export default function ContactPage() {
             {/* Title Section */}
             <div style={styles.titleContainer}>
                 <h1 style={styles.title}>Frequently Asked Questions</h1>
+                
+                {/* Image Section with Editable Option */}
                 <div style={styles.imageContainer}>
-                    <img 
-                        src="https://www.souderbrothersconstruction.com/blog/wp-content/uploads/2019/03/iStock-1316374976-825x510.jpg" 
-                        alt="Construction"
-                        style={styles.image}
-                    />
+                    <img src={imageSrc} alt="FAQ Illustration" style={styles.image} />
+                    {isEditing && (
+                        <input type="file" accept="image/*" onChange={handleImageChange} style={styles.fileInput} />
+                    )}
                 </div>
             </div>
             
@@ -75,11 +67,7 @@ export default function ContactPage() {
                 <div style={styles.accordionContainer}>
                     {questionsAndAnswers.map((qa, index) => (
                         <div key={index}>
-                            <button
-                                className="accordion"
-                                onClick={() => handleAccordionClick(index)}
-                                style={styles.accordion}
-                            >
+                            <button className="accordion" onClick={() => handleAccordionClick(index)} style={styles.accordion}>
                                 {isEditing ? (
                                     <input 
                                         type="text" 
@@ -91,14 +79,7 @@ export default function ContactPage() {
                                     qa.question
                                 )}
                             </button>
-                            <div
-                                ref={(el) => (panelRefs.current[index] = el)}
-                                className="panel"
-                                style={{
-                                    ...styles.panel,
-                                    maxHeight: activeIndex === index ? `${panelHeights[index]}px` : '0',
-                                }}
-                            >
+                            <div className="panel" style={{ ...styles.panel, maxHeight: activeIndex === index ? '100px' : '0' }}>
                                 {isEditing ? (
                                     <textarea 
                                         value={qa.answer} 
@@ -109,16 +90,24 @@ export default function ContactPage() {
                                     <p>{qa.answer}</p>
                                 )}
                             </div>
+
+                            {isEditing && (
+                                <button onClick={() => removeQuestion(index)} style={styles.removeButton}>
+                                    Remove
+                                </button>
+                            )}
                         </div>
                     ))}
 
-                    {/* Toggle Edit/Save Button */}
-                    <button 
-                        onClick={handleEditToggle} 
-                        style={styles.editButton}
-                    >
+                    {isEditing && (
+                        <button onClick={addQuestion} style={styles.addButton}>
+                            Add Question
+                        </button>
+                    )}
+                    {session?.user?.admin? ( <button onClick={handleEditToggle} style={styles.editButton}>
                         {isEditing ? 'Save' : 'Edit'}
-                    </button>
+                    </button> ):(<div> </div>)}
+                    
                 </div>
             </div>
         </div>
@@ -157,14 +146,19 @@ const styles: { [key: string]: CSSProperties } = {
         flex: '1',
     },
     imageContainer: {
-        width: '250px', // Adjust the width as needed
-        marginLeft: '20px', // Adds some space between the title and the image
+        width: '250px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
     },
     image: {
         width: '100%',
         height: 'auto',
         borderRadius: '8px',
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    },
+    fileInput: {
+        marginTop: '10px',
     },
     contentWrapper: {
         display: 'flex',
@@ -189,10 +183,8 @@ const styles: { [key: string]: CSSProperties } = {
         width: '100%',
         border: 'none',
         textAlign: 'left',
-        outline: 'none',
         fontSize: '15px',
         margin: '5px 0',
-        transition: '0.4s',
     },
     panel: {
         padding: '0 18px',
@@ -200,28 +192,13 @@ const styles: { [key: string]: CSSProperties } = {
         overflow: 'hidden',
         transition: 'max-height 0.3s ease-out',
     },
-    input: {
-        width: '100%',
-        padding: '8px',
-        fontSize: '14px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-    },
-    textarea: {
-        width: '100%',
-        padding: '8px',
-        fontSize: '14px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-        minHeight: '50px',
-    },
     editButton: {
         backgroundColor: '#57bcd3',
         color: '#fff',
         padding: '10px 20px',
-        border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',
         marginTop: '10px',
     },
 };
+

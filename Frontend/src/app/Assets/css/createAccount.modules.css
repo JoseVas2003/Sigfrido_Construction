@@ -69,6 +69,15 @@
   color: red;
 }
 
+.firstNameError{
+  height: 0px;
+  padding-top: 3px;
+  text-align: left;
+  font-size: 10pt;
+  color: red;
+  float:left;
+}
+
 /************************************************************/
 /* Contains Everything Related To The Last Name Input */
 
@@ -102,6 +111,16 @@
   color: red;
 }
 
+.lastNameError{
+  height: 0px;
+  padding-top: 3px;
+  text-align: left;
+  font-size: 10pt;
+  color: red;
+  float: right;
+  position: relative;
+}
+
 /************************************************************/
 /* Contains Everything Related To The Phone Number Input */
 
@@ -133,6 +152,15 @@
   color: red;
 }
 
+.phoneNumberError{
+  height: 0px;
+  padding-top: 3px;
+  text-align: left;
+  font-size: 10pt;
+  color: red;
+  position: relative;
+}
+
 /************************************************************/
 /* Contains Everything Related To The Email Input */
 
@@ -161,6 +189,14 @@
 }
 
 .createAccountEmailAsterisk{
+  color: red;
+}
+
+.emailError{
+  height: 0px;
+  padding-top: 3px;
+  text-align: left;
+  font-size: 10pt;
   color: red;
 }
 
@@ -195,6 +231,14 @@
   color: red;
 }
 
+.passwordError{
+  height: 0px;
+  padding-top: 3px;
+  text-align: left;
+  font-size: 10pt;
+  color: red;
+}
+
 /************************************************************/
 /* Contains Everything Related To The Confirm Password Input 
 */
@@ -224,6 +268,14 @@
 }
   
 .confirmPasswordAsterisk{
+  color: red;
+}
+
+.confirmPasswordError{
+  height: 0px;
+  padding-top: 3px;
+  text-align: left;
+  font-size: 10pt;
   color: red;
 }
 
