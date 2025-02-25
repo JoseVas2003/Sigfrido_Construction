@@ -1,4 +1,5 @@
 const Appointment = require("../models/appointments.model");
+const { sendAppointmentConfirmation } = require("../controllers/email.controllers");
 
 const getAppointments = async (req, res) => {
   try {
@@ -25,9 +26,12 @@ const getAppointment = async (req, res) => {
 };
 
 const createAppointment = async (req, res) => {
-    const placeholderUserId = "672c51b59ccd804fc4195ed0";
   try {
     const appointment = await Appointment.create(req.body);
+
+    // sends an email notification for the new appointment request
+    await sendAppointmentConfirmation(appointment);
+
     res.status(200).json(appointment);
   } catch (error) {
     res.status(500).json({ message: error.message });
