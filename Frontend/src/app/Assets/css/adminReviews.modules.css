@@ -1,17 +1,81 @@
-/* CustomReviews.module.css */
-
-.reviewsOverride {
-    max-width: 300px; /* Make it smaller */
-    margin-left: auto; /* Push it to the right side */
-    margin-right: 20px; /* Add some space on the right */
+.admin-reviews-container {
+    margin-left: 20%;
+    padding: 20px;
+  }
+  
+  /* Section Styling */
+  .sectionWrapper {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow-y: auto;
+    max-height: 500px;
+  }
+  
+  /* Section Header */
+  .sectionHeader {
+    background-color: #444;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  /* Review Card Styling */
+  .review-card {
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-}
-
-.reviewCardOverride {
-    width: 100%;
-    padding: 15px;
-    margin: 10px 0;
-}
-
-
+    gap: 8px;
+  }
+  
+  /* Review Name & Stars */
+  .review-card p strong {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .review-card p em {
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  /* Review Title */
+  .review-card p:first-of-type {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #222;
+  }
+  
+  /* Buttons */
+  .review-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  

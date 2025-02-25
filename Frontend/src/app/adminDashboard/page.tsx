@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../navbar/navBar";
-import '../Assets/css/adminDashboard.modules.css'; // Import global CSS
+import '../Assets/css/adminDashboard.modules.css'; 
+import Calendar from "../calendar/calendar";
+
 
 
 interface Review {
@@ -32,7 +34,7 @@ export default function AdminDashboard() {
 
     // Fetch reviews from MongoDB
     useEffect(() => {
-        axios.get("http://localhost:3001/api/reviews")
+        axios.get("http://localhost:3000/api/reviews")
             .then((response) => {
                 setReviews(response.data);
             })
@@ -41,7 +43,7 @@ export default function AdminDashboard() {
 
     // Fetch appointments from MongoDB
     useEffect(() => {
-        axios.get("http://localhost:3001/api/appointments")
+        axios.get("http://localhost:3000/api/appointments")
             .then((response) => {
                 setAppointments(response.data);
                 setLoading(false);
@@ -51,7 +53,7 @@ export default function AdminDashboard() {
 
     // Delete a review
     const handleDeleteReview = (id: string) => {
-        axios.delete(`http://localhost:3001/api/reviews/${id}`)
+        axios.delete(`http://localhost:3000/api/reviews/${id}`)
             .then(() => {
                 setReviews(reviews.filter((review) => review._id !== id));
             })
@@ -83,7 +85,10 @@ export default function AdminDashboard() {
                     {/* Reviews Section */}
                     <div className="sectionWrapper">
                         <section className="reviews">
-                            <h2 className="sectionHeader">Manage Reviews</h2>
+                        <button 
+                        className="sectionHeaderButton"
+                        onClick={() => window.location.href = "/AdminReviews"}>  Manage Reviews
+                           </button>
                             {reviews.length > 0 ? (
                                 reviews.map((review) => (
                                     <div key={review._id} className="review-card">
@@ -106,8 +111,13 @@ export default function AdminDashboard() {
     
                     {/* Appointments Section */}
                     <div className="sectionWrapper">
-                        <section className="appointments">
-                            <h2 className="sectionHeader">Upcoming & Past Appointments</h2>
+                    <section className="appointments">
+                    <button 
+                   className="sectionHeaderButton"
+                           onClick={() => window.location.href = "/AdminAppointments"}>
+                                  Upcoming & Past Appointments
+                          </button>
+        
                             {loading ? (
                                 <p>Loading appointments...</p>
                             ) : appointments.length > 0 ? (
@@ -124,6 +134,8 @@ export default function AdminDashboard() {
                             ) : (
                                 <p>No appointments available.</p>
                             )}
+                             <button className="viewAllAppointmentsButton" onClick={() => window.location.href = "/admin/appointments"}>View All Appointments
+                           </button>
                         </section>
                     </div>
     
@@ -132,8 +144,10 @@ export default function AdminDashboard() {
                         <section className="calendar">
                             <h2 className="sectionHeader">Appointments</h2>
                             <div className="calendarWidget">
-                                {/* Replace with actual calendar component */}
-                                <p>Calendar Placeholder</p>
+                               <Calendar onDateChange={function (date: Date): void {
+                                    throw new Error("Function not implemented.");
+                                } }                              // appointments={appointments}
+                            />
                             </div>
                         </section>
                     </div>
