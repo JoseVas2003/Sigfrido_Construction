@@ -20,6 +20,61 @@ const verifyTransporter = async () => {
 };
 verifyTransporter();
 
+//sends appointment confirmation email to the client
+const sendAppointmentConfirmation = async (appointment) => {
+    const formattedDate = new Date(appointment.date).toLocaleDateString();
+  
+    const clientMailOptions = {
+      from: process.env.EMAIL,
+      to: appointment.email, // client's email address
+      subject: "Your Appointment Request Received",
+      text: `Hello ${appointment.name},
+  
+  Thank you for scheduling an appointment. Your request is currently marked as "Pending".
+  
+  Here are the details:
+  Date: ${formattedDate}
+  Time: ${appointment.time}
+  
+  You can view your appointment details on your dashboard.
+  
+  Best regards,
+  Sigfrido Vasquez
+  Owner, Construction Services`,
+    };
+  
+    try {
+      await transporter.sendMail(clientMailOptions);
+      console.log("Appointment confirmation email sent to client.");
+    } catch (error) {
+      console.error("Error sending appointment confirmation email:", error);
+    }
+  };
+  
+  //sends reminder emails for upcoming appointments to admin
+  const sendReminderEmail = async (appointment, hoursBefore) => {
+    const formattedDate = new Date(appointment.date).toLocaleDateString();
+  
+    const adminMailOptions = {
+      from: process.env.EMAIL,
+      to: process.env.ADMIN_EMAIL,
+      subject: `Upcoming Appointment Reminder: ${hoursBefore} Hour(s) Notice`,
+      text: `Reminder: You have an upcoming appointment request from a client.
+  Client: ${appointment.name}
+  Email: ${appointment.email}
+  Date: ${formattedDate}
+  Time: ${appointment.time}
+  This appointment is in approximately ${hoursBefore} hour(s).`,
+    };
+  
+    try {
+      await transporter.sendMail(adminMailOptions);
+      console.log(`Reminder email sent for appointment ${appointment._id}`);
+    } catch (error) {
+      console.error("Error sending reminder email:", error);
+    }
+  };  
+
 const sendEmail = async (req, res) => {
     const { name, email, phone, message, date, time } = req.body;
 
@@ -82,4 +137,4 @@ Please review and confirm with the client.
     }
 };
 
-module.exports = { sendEmail };
+module.exports = { sendEmail, sendAppointmentConfirmation, sendReminderEmail };
