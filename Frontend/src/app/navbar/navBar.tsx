@@ -120,24 +120,4 @@ export function clicksOut()
   } 
 };
 
-const userStatus = async (email) =>{
-    const connection = 'http://localhost:3000/api/users/';
-
-    const authenticationURL = connection + (email);
-
-    try{
-        const user = await axios.get(authenticationURL, {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-        return user.data.admin;
-
-       }catch(error){
-        const err = error;
-        console.error("Error response:", err.response?.data || err.message);
-       }
-};
-
 export default Navbar;
