@@ -29,7 +29,7 @@ export default function page(){
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        //console.log("handleSubmit activated");
         try{
             await axios.post("http://localhost:3001/api/forgotPasswordEmail/sendLink", formData, {
                 headers: { "Content-Type": "application/json" },
@@ -59,7 +59,7 @@ export default function page(){
                         <br></br>
     
                         <div className="sendButtonContainer"> 
-                            <button className="sendButton" id="openPopup" type="button" onClick={() => {openPopup()}}>SEND</button>
+                            <button className="sendButton" id="openPopup" type="submit" onClick={() => {openPopup()}}>SEND</button>
                         </div>
                     </form>
                 </div>
