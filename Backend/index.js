@@ -11,7 +11,7 @@ const forgotPasswordEmailRoutes = require("./routes/forgotPassword.routes.js");
 const app = express();
 const PORT = process.env.PORT || 3001;
 const cors = require("cors");
-require("./scheduler");
+require("./scheduler.js");
 
 app.use(cors());
 app.use(express.json());
