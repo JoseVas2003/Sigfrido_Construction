@@ -5,6 +5,8 @@
     import '../Assets/css/adminDashboard.modules.css'; 
     import Calendar from "../calendar/calendar";
     import AddProjectForm from "./addProjectForm";
+    import AppointmentSelector, { Appointment as AppointmentType } from "./appointmentSelector";
+
 
 
 
@@ -19,7 +21,7 @@
 
     interface Appointment {
         _id: string;
-        clientName: string;
+        name: string;
         date: string;
         time: string;
         location: string;
@@ -33,6 +35,11 @@
         const [appointments, setAppointments] = useState<Appointment[]>([]);
         const [loading, setLoading] = useState(true);
         const [showAddProjectForm, setShowAddProjectForm] = useState(false);
+        const [showAppointmentSelector, setShowAppointmentSelector] = useState(false);
+        const [autofillData, setAutofillData] = useState({
+            name: "",
+            email: "",
+        });
 
         // Fetch reviews from MongoDB
         useEffect(() => {
@@ -64,33 +71,67 @@
 
         const handleProjectAdded = (project: any) => {
             setShowAddProjectForm(false);
-          };
+        };
+
+          // When an appointment is selected, update autofillData
+        const handleAppointmentSelect = (data: { name: string; email: string }) => {
+            setAutofillData(data);
+            setShowAppointmentSelector(false);
+        };
         return (
             <div>
                 <Navbar />
                 {/* Add Project Button */}
-            <div className="addProjectButtonContainer">
-                <button 
-                    className="addProjectButton"  
-                    onClick={() => setShowAddProjectForm(true)}
-                >
-                    Add Project
-                </button>
+                <div className="addProjectButtonContainer">
+                    <button 
+                        className="addProjectButton"  
+                        onClick={() => setShowAddProjectForm(true)}
+                    >
+                        Add Project
+                    </button>
 
-                {showAddProjectForm && (
-                    <div className="modalOverlay">
-                    <div className="modalContent">
-                        <button
-                        className="closeButton"
-                        onClick={() => setShowAddProjectForm(false)}
-                        >
-                        X
-                        </button>
-                        <AddProjectForm onProjectAdded={handleProjectAdded} />
-                    </div>
-                    </div>
-                )}
+                    {showAddProjectForm && (
+          <div className="modalOverlay">
+            <div className="modalContent">
+              <button
+                className="closeButton"
+                onClick={() => setShowAddProjectForm(false)}
+              >
+                ❌
+              </button>
+              {/* Button to open appointment selector */}
+              <button
+                onClick={() => setShowAppointmentSelector(true)}
+                style={{ marginBottom: "1rem" }}
+              >
+                Autofill from Appointment
+              </button>
+              <AddProjectForm
+                onProjectAdded={handleProjectAdded}
+                initialCustomerName={autofillData.name}
+                initialEmail={autofillData.email}
+              />
             </div>
+          </div>
+        )}
+
+        {showAppointmentSelector && (
+          <div className="modalOverlay">
+            <div className="modalContent">
+              <button
+                className="closeButton"
+                onClick={() => setShowAppointmentSelector(false)}
+              >
+                X
+              </button>
+              <AppointmentSelector
+                onSelect={handleAppointmentSelect}
+                onClose={() => setShowAppointmentSelector(false)}
+              />
+            </div>
+          </div>
+        )}
+                </div>
                 <div className="admin-dashboard">
                     {/* Sidebar */}
                     <div className="sidebar">
@@ -148,7 +189,7 @@
                                 ) : appointments.length > 0 ? (
                                     appointments.map((appointment) => (
                                         <div key={appointment._id} className="appointment-card">
-                                            <p><strong>{appointment.clientName}</strong></p>
+                                            <p><strong>{appointment.name}</strong></p>
                                             <p>{appointment.date} - {appointment.time}</p>
                                             <p><strong>Location:</strong> {appointment.location}</p>
                                             {appointment.notes && <p><strong>Notes:</strong> {appointment.notes}</p>}
