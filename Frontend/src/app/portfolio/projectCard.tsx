@@ -1,4 +1,5 @@
 import React, { CSSProperties } from 'react';
+import Link from 'next/link';
 
 interface ProjectCardProps {
   id: string;
@@ -53,26 +54,32 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
       </div>
 
-      {/* Conditionally render delete (garbage) icon when edit mode is on */}
+      {/* Actiosn rendered when when edit mode is on */}
       {editMode && (
-        <div style={styles.deleteIcon} onClick={() => onDelete(id)}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="#1E2D3D"
-          >
-            <path d="M3 6h18" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-            <path d="M8 6v12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V6" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-            <path d="M10 11v6" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-            <path d="M14 11v6" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-            <path d="M5 6h14l-1-3H6L5 6z" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-    </div>
-      )}
+        <div style={styles.actionsContainer}>
+          {/* Delete Button */}
+          <div style={styles.deleteIcon} onClick={() => onDelete(id)}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="#1E2D3D"
+              >
+              <path d="M3 6h18" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
+              <path d="M8 6v12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V6" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
+              <path d="M10 11v6" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
+              <path d="M14 11v6" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
+              <path d="M5 6h14l-1-3H6L5 6z" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
+            </svg>
           </div>
-
+          {/* Edit Button */}
+            <Link href={`/editProject/${id}`}>
+              <button style={styles.editButton}>Edit Project</button>
+            </Link>
+          </div>
+      )}
+    </div>
   );
 };
 
@@ -120,16 +127,33 @@ const styles: { [key: string]: CSSProperties } = {
     fontSize: '16px',
     color: 'black',
   },
-
-  deleteIcon: {
+  actionsContainer: {
     position: 'absolute',
     bottom: '10px',
     right: '10px',
+    display: 'flex',
+  },
+  deleteIcon: {
+    position: 'absolute',
+    bottom: '5px',
+    right: '10px',
     cursor: 'pointer',
-    padding: '5px',
-    borderRadius: '50%',
+    padding: '4px',
+    borderRadius: '5%',
     boxShadow: '0 0 5px rgba(0,0,0,0.3)',
   },
+  editButton: {
+    position: 'absolute',
+    padding: '5px 10px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    backgroundColor: '#4FB6CE',
+    borderRadius: '5%',
+    right: '50px',
+    bottom: '6px',
+    boxShadow: '0 0 5px rgba(0,0,0,0.3)',
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+  },
 };
-
 export default ProjectCard;

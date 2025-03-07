@@ -73,6 +73,22 @@ const getProjects = async (req, res) => {
   const updateProject = async (req, res) => {
     try {
       const { id } = req.params;
+
+      let updates = {
+        name: req.body.name,
+        description: req.body.description,
+        timeTaken: req.body.timeTaken,
+        cost: req.body.cost,
+        categories: req.body.categories || [],
+      };
+      
+      if (req.file) {
+        updates.image = {
+          data: req.file.buffer,
+          contentType: req.file.mimetype
+        };
+      }
+
       const project = await Project.findByIdAndUpdate(id, req.body, { new: true });
   
       if (!project) {
