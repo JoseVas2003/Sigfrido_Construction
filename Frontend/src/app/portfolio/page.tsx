@@ -7,12 +7,11 @@ import Link from 'next/link';
 import {clicksOut} from '../navbar/navBar'
 import axios from 'axios';
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function Portfolio() {
 
     // session info
-    const { data: session, status } = useSession();
+    const {data: session, status} = useSession();
 
     const [projects, setProjects] = useState<any[]>([]);
     const [editMode, setEditMode] = useState(false);
