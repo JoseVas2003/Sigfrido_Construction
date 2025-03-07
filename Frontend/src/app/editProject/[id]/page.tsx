@@ -198,11 +198,8 @@ export default function EditProjectPage() {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log('Update response:', response.data);
-      alert('Project updated successfully!');
+      router.push("/portfolio?message=" + encodeURIComponent("Project updated successfully!"));
 
-      // redirect back to portfolio
-      router.push('/portfolio');
     } catch (error: any) {
       console.error('Error updating project:', error?.response?.data || error.message);
       alert(`Error: ${error.response?.data?.message || error.message}`);

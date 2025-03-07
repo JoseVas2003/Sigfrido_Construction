@@ -182,9 +182,8 @@ export default function CreateProjectPage() {
             }
 
             const response = await axios.post('http://localhost:3001/api/projects', data);
-            console.log('Response from server:', response.data);
-            alert('Project created successfully!');
-            router.push('/portfolio');
+            router.push("/portfolio?message=" + encodeURIComponent("Project created successfully!"));
+            //router.push('/portfolio');
         } catch (error: any) {
             console.error('Error response:', error.response?.data || error.message);
             alert(`Error: ${error.response?.data?.message || error.message}`);
