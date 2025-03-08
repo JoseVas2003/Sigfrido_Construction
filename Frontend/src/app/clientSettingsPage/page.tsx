@@ -39,6 +39,7 @@ export default function page(){
   const [showPhoneSuccess, setShowPhoneSuccess] = useState(false);
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
 
   // Ref for button popup
   const passwordPopupRef = useRef<HTMLDivElement | null>(null);
@@ -66,6 +67,7 @@ export default function page(){
   const router = useRouter();
   const handleConfirmDelete = () => {
     setShowDeletePopup(false);
+    setShowDeleteSuccess(true);
 
     setTimeout(() => {
       router.push('/');
@@ -260,6 +262,16 @@ export default function page(){
         </div>
       )}
 
+      {/* Success message for account delete */}
+      {showDeleteSuccess && (
+        <div className="SuccessPopupOverlay">
+          <div className="SuccessPopupBox">
+            <h2 className="SuccessMessage" style={{ fontWeight: 'bold' }}>
+              Account Deleted Successfully!
+            </h2>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
