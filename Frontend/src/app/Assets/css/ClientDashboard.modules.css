@@ -112,3 +112,35 @@
   font-weight: bold;
   text-decoration: underline;
 }
+
+/* Image container */
+.ProjectItem {
+  position: relative;
+  display: inline-block;
+}
+
+/* Image hover effect */
+.ProjectItem:hover .ProjectImage {
+  opacity: 0.4; /* Makes image slightly transparent */
+}
+
+/* Overlay text */
+.ProjectOverlay {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: black;
+  font-size: 28px;
+  padding: 10px;
+  border-radius: 5px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  text-align: center;
+  min-width: 220px;
+}
+
+/* Show overlay text on hover */
+.ProjectItem:hover .ProjectOverlay {
+  opacity: 1;
+}

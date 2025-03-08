@@ -66,18 +66,20 @@ export default function page(){
         <div className="Body">
           <h1 className="UpcomingText">Upcoming Contracts</h1>
           <div className="ImageRow">
-            <div className="ProjectItem">
-            <Image src={Bathroom} alt="Project 1" className="ProjectImage" />
-            <p className="ProjectName">Bathroom</p>
-            </div>
-            <div className="ProjectItem">
-            <Image src={House} alt="Project 2" className="ProjectImage" />
-            <p className="ProjectName">House</p>
-            </div>
-            <div className="ProjectItem">
-            <Image src={Kitchen} alt="Project 3" className="ProjectImage" />
-            <p className="ProjectName">Kitchen</p>
-            </div>
+            {projects.map((project, index) => {
+              const projectImages = [Bathroom, House, Kitchen]; // Store images in an array
+              return (
+                <div className="ProjectItem" key={index}>
+                  <Image src={projectImages[index]} 
+                    alt={project.type} 
+                    className="ProjectImage" />
+                  <div className="ProjectOverlay">
+                    <p className="OverlayText">Expected Date: {new Date(project.expectedCompletion).toLocaleDateString()}</p>
+                </div>
+                <p className="ProjectName">{project.type}</p>
+                </div>
+              );
+            })}
           </div>
 
           {/* Project list */}
