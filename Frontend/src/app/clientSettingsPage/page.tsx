@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {useSession} from 'next-auth/react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 import Image from 'next/image';
 import Navbar from "../navbar/navBar";
@@ -37,12 +38,16 @@ export default function page(){
   const [showPhonePopup, setShowPhonePopup] = useState(false);
   const [showPhoneSuccess, setShowPhoneSuccess] = useState(false);
 
-  // Ref for password popup
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+
+  // Ref for button popup
   const passwordPopupRef = useRef<HTMLDivElement | null>(null);
   const phonePopupRef = useRef<HTMLDivElement | null>(null);
+  const deletePopupRef = useRef<HTMLDivElement | null>(null);
 
   const handleChangePassword = () => setShowPasswordPopup(true);
   const handleChangePhone = () => setShowPhonePopup(true);
+  const handleDeleteAccount = () => setShowDeletePopup(true);
 
   const handleConfirmPasswordChange = () => {
     setShowPasswordPopup(false); // Hide the password popup
@@ -56,6 +61,15 @@ export default function page(){
     setShowPhonePopup(false);
     setShowPhoneSuccess(true);
     setTimeout(() => setShowPhoneSuccess(false), 3000);
+  };
+
+  const router = useRouter();
+  const handleConfirmDelete = () => {
+    setShowDeletePopup(false);
+
+    setTimeout(() => {
+      router.push('/');
+    }, 3000);
   };
 
   // Fetching user info from backend when email is available
@@ -108,15 +122,18 @@ export default function page(){
       if (phonePopupRef.current && !phonePopupRef.current.contains(event.target as Node)) {
         setShowPhonePopup(false);
       }
+      if (deletePopupRef.current && !deletePopupRef.current.contains(event.target as Node)) {
+        setShowDeletePopup(false);
+      }
     };
 
-    if (showPasswordPopup || showPhonePopup) {
+    if (showPasswordPopup || showPhonePopup || showDeletePopup) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showPasswordPopup, showPhonePopup]);
+  }, [showPasswordPopup, showPhonePopup, showDeletePopup]);
    
   return (
     <div>
@@ -166,7 +183,7 @@ export default function page(){
               <strong>Change Password</strong>
               </div>
               <div className="SettingsBox" onClick={handleChangePhone}> <strong>Change Phone Number</strong> </div>
-              <div className="SettingsBox"> <strong>Delete Account</strong> </div>
+              <div className="SettingsBox" onClick={handleDeleteAccount}> <strong>Delete Account</strong> </div>
             </div>
           </div>
 
@@ -203,6 +220,20 @@ export default function page(){
             <input type="text" placeholder="Confirm new phone number" />
 
             <button className="PopupButton" onClick={handleConfirmPhoneChange}>Confirm</button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete account popup */}
+      {showDeletePopup && (
+        <div className="PopupOverlay">
+          <div ref={deletePopupRef} className="PopupBox">
+            <h2 className="PopupTitle">Delete Account</h2>
+            <input type="password" placeholder="Enter Current Password" />
+
+            <button className="PopupButton" onClick={handleConfirmDelete} style={{ backgroundColor: 'red', color: 'white' }}>
+              Delete Account
+            </button>
           </div>
         </div>
       )}
