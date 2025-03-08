@@ -7,18 +7,19 @@ import Link from 'next/link';
 import {clicksOut} from '../navbar/navBar'
 import axios from 'axios';
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function Portfolio() {
 
     // session info
-    const { data: session, status } = useSession();
-
+    const {data: session, status} = useSession();
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [projects, setProjects] = useState<any[]>([]);
     const [editMode, setEditMode] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState("All");
-    const [deleteNotification, setDeleteNotification] = useState("");
-  
+    const [notification, setNotification] = useState("");
+
     // we fetch all the projects
     useEffect(() => {
         axios.get('http://localhost:3001/api/projects')
@@ -29,7 +30,19 @@ export default function Portfolio() {
             console.error('Error fetching projects:', error);
           });
       }, []);    
-          
+
+      useEffect(() => {
+        const message = searchParams.get("message");
+        if (message) {
+          setNotification(message);
+          const timer = setTimeout(() => {
+            setNotification("");
+            router.replace("/portfolio"); 
+          }, 5000);
+          return () => clearTimeout(timer);
+        }
+      }, [searchParams, router]);    
+
       // For when pencil is clicked
       const toggleEditMode = () => {
         setEditMode((prev) => !prev);
@@ -42,9 +55,9 @@ export default function Portfolio() {
           setProjects(prev => prev.filter(proj => proj._id !== id));
           
           // Deletion Message
-          setDeleteNotification("Project has been deleted!");
+          setNotification("Project has been deleted!");
           setTimeout(() => {
-            setDeleteNotification("");
+            setNotification("");
           }, 5000);          
         } catch (error) {
           console.error('Failed to delete project:', error);
@@ -121,9 +134,9 @@ export default function Portfolio() {
                 </div>
 
                 {/* Notification Rectangle */}
-                {deleteNotification && (
+                {notification && (
                 <div style={styles.deleteNotification}>
-                    {deleteNotification}
+                    {notification}
                 </div>
                 )}
                     {/* Project Card */}
