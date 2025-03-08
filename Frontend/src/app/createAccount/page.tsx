@@ -25,6 +25,7 @@ export default function createUser(){
     email: '',
     password: '',
     admin: false,
+    token: '',
   });
 
   const[confirmPasswordValue, setConfirmPasswordValue] = useState('');
@@ -343,6 +344,7 @@ export default function createUser(){
     && createAccountFormClientSideValidationFirstName() && createAccountFormClientSideValidationLastName()
     && await checkForExistingUser())
     {
+      formData.token = "";
       console.log("Submitting form with data:", formData); // Debugging log
   
       try {
@@ -413,8 +415,8 @@ export default function createUser(){
               />
             </div>
 
-            <p className="firstNameError">{firstNameError}</p>
-            <p className="lastNameError">{lastNameError}</p>
+            <p className="firstNameError" id='firstNameError'>{firstNameError}</p>
+            <p className="lastNameError" id='lastNameError'>{lastNameError}</p>
 
             <br />
 
@@ -437,7 +439,7 @@ export default function createUser(){
               />
             </div>
 
-            <p className="phoneNumberError">{phoneNumberError}</p>
+            <p className="phoneNumberError" id='phoneNumberError'>{phoneNumberError}</p>
 
             <br />
 
@@ -459,7 +461,7 @@ export default function createUser(){
               />
             </div>
 
-            <p className="emailError">{emailError}</p>
+            <p className="emailError" id='emailError'>{emailError}</p>
 
             <br />
 
@@ -482,7 +484,7 @@ export default function createUser(){
               />
             </div>
 
-            <p className="passwordError">{passwordError}</p>
+            <p className="passwordError" id='passwordError'>{passwordError}</p>
 
             <br />
 
@@ -504,12 +506,12 @@ export default function createUser(){
                 />
             </div>
 
-            <p className="confirmPasswordError">{confirmPasswordError}</p>
+            <p className="confirmPasswordError" id='confirmPasswordError'>{confirmPasswordError}</p>
 
             <br />
 
             <div className="CreateAccountButtonContainer">
-              <button className="CreateAccountButton" type="submit">Create Account</button>
+              <button className="CreateAccountButton" type="submit" id='createAccountButton'>Create Account</button>
             </div>
 
             <br />
