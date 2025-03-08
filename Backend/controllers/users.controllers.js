@@ -72,6 +72,24 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const updateUserByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const user = await User.findOneAndUpdate({email}, req.body);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found by email" });
+    }
+
+    const updatedUser = await User.findOne({email});
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 module.exports = {
   getUsers,
   getUser,
@@ -79,4 +97,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getUserByEmail,
+  updateUserByEmail,
 };

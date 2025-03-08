@@ -10,7 +10,7 @@ import {signIn} from 'next-auth/react';
 import {useSession} from 'next-auth/react';
 
 /* popup functions */
-const openPopup = () =>{
+export const openPopup = () =>{
     let popup = document.getElementById('popup')!;
 
     popup.style.display="flex";
@@ -89,7 +89,7 @@ export default function page(){
         }
         else if(!formData.email.includes("@"))
         {
-            emailErrorSetter("Your Email Must Contain '@'");
+            emailErrorSetter('Your Email Must Contain "@"');
             emailErrorInputBorder!.style.border = "3px solid red";
 
             return false;
@@ -161,14 +161,14 @@ export default function page(){
                 <div className="Container" onClick= {() => {clicksOut()}}>
                     <form className="loginForm" id="loginForm" onSubmit={handleSubmit}>
 
-                        <p className="accountError">{accountError}</p>
+                        <p className="accountError" id='accountError'>{accountError}</p>
             
                         <label className="emailLabel">Email </label> <label className="emailAsterisk"> *</label>
                         <div className="emailInputContainer">
                              <input className="emailInput" name="email" id="emailInput" value={formData.email} type="text" onChange={handleChange} onInput={emailErrorMessageClear} style={{border: emailBorder ? '3px solid #2B96B7' : '2px solid #B4B4B4'}} onFocus={setEmailBorderIsFocused} onBlur={setEmailBorderNotFocused}/>
                         </div>
 
-                        <p className="emailError">{emailError}</p>
+                        <p className="emailError" id='emailError'>{emailError}</p>
     
                         <br></br>
     
@@ -177,23 +177,24 @@ export default function page(){
                             <input className="passwordInput" name="password" id="passwordInput" value={formData.password} type="password" onChange={handleChange} onInput={passwordErrorMessageClear} style={{border: passwordBorder ? '3px solid #2B96B7' : '2px solid #B4B4B4'}} onFocus={setPasswordBorderIsFocused} onBlur={setPasswordBorderNotFocused}/>
                         </div>
 
-                        <p className="passwordError">{passwordError}</p>
+                        <p className="passwordError" id='passwordError'>{passwordError}</p>
 
                         <br></br>
             
                         <div className="forgotPasswordButtonContainer">
-                            <Link href="../forgotPassword"><button className="forgotPasswordButton" >Forgot Password</button></Link>
+                            <Link href="../forgotPassword"><button className="forgotPasswordButton" id='forgotPasswordButton' >Forgot Password</button></Link>
                         </div>
 
                         <br></br>
 
-                        <div className="loginButtonContainer"> <button className="loginButton">LOGIN</button>
+                        <div className="loginButtonContainer" > 
+                            <button className="loginButton" id="LoginButton">LOGIN</button>
                         </div>
 
                         <br></br>
 
                         <div className="createAccountButtonContainer">
-                            <Link href="../createAccount"> <button className="createAccountButton">Create Account</button></Link>
+                            <Link href="../createAccount"> <button className="createAccountButton" id='createAccountMenuButton'>Create Account</button></Link>
                         </div>
 
                     </form>
