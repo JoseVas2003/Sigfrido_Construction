@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import {useSession} from 'next-auth/react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import {signOut} from 'next-auth/react';
 
 import Image from 'next/image';
 import Navbar from "../navbar/navBar";
@@ -40,6 +41,10 @@ export default function page(){
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+  
+  const [oldPasswordDelete, setoldPasswordDelete] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordBorder, setPasswordBorder] = useState(false);
 
   // Ref for button popup
   const passwordPopupRef = useRef<HTMLDivElement | null>(null);
@@ -48,7 +53,12 @@ export default function page(){
 
   const handleChangePassword = () => setShowPasswordPopup(true);
   const handleChangePhone = () => setShowPhonePopup(true);
-  const handleDeleteAccount = () => setShowDeletePopup(true);
+  const handleDeleteAccount = () => {
+    setShowDeletePopup(true);
+    setoldPasswordDelete(''); // Reset input field
+    setPasswordError(''); // Reset error message
+    setPasswordBorder(false); // Reset border color
+  };  
 
   const handleConfirmPasswordChange = () => {
     setShowPasswordPopup(false); // Hide the password popup
@@ -65,11 +75,49 @@ export default function page(){
   };
 
   const router = useRouter();
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async() => {
+
+    const connection = 'http://localhost:3001/api/users/';
+    const userURL = connection + (email);
+    let userID = '';
+
+    try {
+        // Verify current password with the backend
+        const user = await axios.get(userURL, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        let userCurrent = user.data.password;
+        userID = user.data._id;
+
+        if (userCurrent != oldPasswordDelete) {
+            setPasswordError("Current password is incorrect.");
+            setPasswordBorder(true);
+            return false;
+        }
     setShowDeletePopup(false);
     setShowDeleteSuccess(true);
+    } catch (error) {
+        setPasswordError("Error verifying password.");
+        setPasswordBorder(true);
+        return false;
+    }
 
+    const connections = 'http://localhost:3001/api/users/';
+    const usersURL = connections + (userID);
+    try {
+        await axios.delete(usersURL, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch(error){
+        console.log(error);
+    }
     setTimeout(() => {
+      signOut();
       router.push('/');
     }, 3000);
   };
@@ -206,6 +254,9 @@ export default function page(){
             <h2 className="PopupTitle">New Password</h2>
             <input type="password" placeholder="Enter new password" />
 
+            <h2 className="PopupTitle">Confirm New Password</h2>
+            <input type="password" placeholder="Confirm new password" />
+
             <button className="PopupButton" onClick={handleConfirmPasswordChange}>Confirm</button>
           </div>
         </div>
@@ -215,6 +266,9 @@ export default function page(){
       {showPhonePopup && (
         <div className="PopupOverlay">
           <div ref={phonePopupRef} className="PopupBox">
+            <h2 className="PopupTitle">Enter Old Phone Number</h2>
+            <input type="text" placeholder="Enter old phone number" />
+
             <h2 className="PopupTitle">Enter New Phone Number</h2>
             <input type="text" placeholder="Enter new phone number" />
 
@@ -231,7 +285,14 @@ export default function page(){
         <div className="PopupOverlay">
           <div ref={deletePopupRef} className="PopupBox">
             <h2 className="PopupTitle">Delete Account</h2>
-            <input type="password" placeholder="Enter Current Password" />
+            <input 
+              onChange={(e) => setoldPasswordDelete(e.target.value)}
+              value={oldPasswordDelete}
+              type="password"
+              placeholder="Enter Current Password"
+              style={{ borderColor: passwordBorder ? 'red' : 'initial' }}
+            />
+            {passwordError && <p style={{ color: 'red', fontSize: '14px' }}>{passwordError}</p>}
 
             <button className="PopupButton" onClick={handleConfirmDelete} style={{ backgroundColor: 'red', color: 'white' }}>
               Delete Account
