@@ -8,28 +8,13 @@ import { useRouter } from "next/navigation";
 
 interface Review {
     _id?: string;
-    email: string; // Email of the user who left the review
+    email: string;
     name: string;
     stars: number;
     title: string;
     content: string;
-    image?: string | File | null; // Allow both string (Base64) and File
+    image?: string | File | null;
 }
-
-// Function to calculate star percentages
-const calculateStarPercentages = (reviews: Review[]) => {
-    const total = reviews.length;
-    const starCount = [0, 0, 0, 0, 0];
-
-    reviews.forEach((review) => {
-        const stars = Number(review.stars);
-        if (stars >= 1 && stars <= 5) {
-            starCount[stars - 1] += 1;
-        }
-    });
-
-    return starCount.map(count => (total > 0 ? (count / total) * 100 : 0));
-};
 
 export default function Reviews() {
     const { data: session, status } = useSession();
@@ -63,6 +48,21 @@ export default function Reviews() {
         };
         fetchReviews();
     }, []);
+
+    // Function to calculate star percentages
+    const calculateStarPercentages = (reviews: Review[]) => {
+        const total = reviews.length;
+        const starCount = [0, 0, 0, 0, 0];
+
+        reviews.forEach((review) => {
+            const stars = Number(review.stars);
+            if (stars >= 1 && stars <= 5) {
+                starCount[stars - 1] += 1;
+            }
+        });
+
+        return starCount.map(count => (total > 0 ? (count / total) * 100 : 0));
+    };
 
     // Update star percentages
     useEffect(() => {
@@ -99,59 +99,72 @@ export default function Reviews() {
     // Handle file upload
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            setNewReview({ ...newReview, image: e.target.files[0] });
+            setNewReview(prev => ({ ...prev, image: e.target.files![0] }));
         } else {
-            setNewReview({ ...newReview, image: null });
+            setNewReview(prev => ({ ...prev, image: null }));
         }
     };
 
-    // Convert image file to Base64
-    const convertToBase64 = (file: File) => {
-        return new Promise<string | null>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = (error) => reject(error);
-        });
-    };
 
     // Handle form submission
+    // Handle form submission using FormData instead of Base64 conversion
+    // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+    
+    //     // Create a FormData object
+    //     const formDataToSend = new FormData();
+    //     formDataToSend.append("title", newReview.title);
+    //     formDataToSend.append("content", newReview.content);
+    //     formDataToSend.append("stars", newReview.stars.toString());
+    //     // Append session values for name and email
+    //     formDataToSend.append("name", session?.user?.name || "");
+    //     formDataToSend.append("email", session?.user?.email || "");
+    
+    //     // Append the image file if present
+    //     if (newReview.image && newReview.image instanceof File) {
+    //         formDataToSend.append("image", newReview.image);
+    //     }
+    
+    //     try {
+    //         const response = await axios.post("/api/reviews", formDataToSend, {
+    //             headers: { "Content-Type": "multipart/form-data" },
+    //         });
+        
+    //         setReviews([...reviews, response.data]);
+    //         // Clear the form after submission
+    //         setNewReview({ title: "", content: "", image: null, stars: 1 });
+    //         setShowModal(false); // Close the modal
+    //     } catch (error) {
+    //         console.error("❌ Error submitting review:", error);
+    //         alert("Error submitting review.");
+    //     }
+    // };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
-        let base64Image = null;
-    
+      
+        const formDataToSend = new FormData();
+        formDataToSend.append("title", newReview.title);
+        formDataToSend.append("content", newReview.content);
+        formDataToSend.append("stars", newReview.stars.toString());
+        formDataToSend.append("name", session?.user?.name || "");
+        formDataToSend.append("email", session?.user?.email || "");
+      
         if (newReview.image && newReview.image instanceof File) {
-            base64Image = await convertToBase64(newReview.image);
+          formDataToSend.append("image", newReview.image);
         }
-    
-        // Use session.user.name and session.user.email for the review data
-        const reviewData = {
-            name: session?.user?.name,
-            email: session?.user?.email,
-            title: newReview.title,
-            content: newReview.content,
-            stars: newReview.stars,
-            image: base64Image,
-        };
-    
+      
         try {
-            const response = await axios.post("/api/reviews", reviewData, {
-                headers: { "Content-Type": "application/json" },
-            });
-    
-            setReviews([...reviews, response.data]);
-    
-            // Clear the form after submission (no name field needed)
-            setNewReview({ title: "", content: "", image: null, stars: 1 });
-    
-            setShowModal(false); // Close the modal
+          const response = await axios.post("/api/reviews", formDataToSend);
+          setReviews([...reviews, response.data]);
+          setNewReview({ title: "", content: "", image: null, stars: 1 });
+          setShowModal(false);
         } catch (error) {
-            console.error("❌ Error submitting review:", error);
-            alert("Error submitting review.");
+          console.error("❌ Error submitting review:", error);
+          alert("Error submitting review.");
         }
-    };
-
+      };
+      
     // Handle deleting a review
     const handleDeleteReview = async (id: string) => {
         try {
@@ -331,9 +344,13 @@ export default function Reviews() {
                         <p className="review-title">{review.title}</p>
                         <p className="review-content">{review.content}</p>
 
-                        {typeof review.image === "string" && review.image.startsWith("data:image/") && (
-                            <img src={review.image} alt="Review" style={{ width: "150px", height: "auto" }} />
-                        )}
+                        {review.image ? (
+                            <img
+                                src={`http://localhost:3001/api/reviews/${review._id}/image`}
+                                alt={review.title}
+                                style={{ width: "150px", height: "auto" }}
+                            />
+                        ) : null}
                         {/* 
                             Conditionally render the delete button only if the review belongs to the logged in user (by email) 
                             or if the user is an admin.  
