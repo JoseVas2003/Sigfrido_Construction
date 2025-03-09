@@ -41,17 +41,31 @@ export default function page(){
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
-  
-  const [oldPasswordDelete, setoldPasswordDelete] = useState('');
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordBorder, setPasswordBorder] = useState(false);
+  const [oldPasswordDelete, setoldPasswordDelete] = useState('');
+
+  const [updatedPassword, setUpdatedPassword] = useState({
+    password: ''
+  });
 
   // Ref for button popup
   const passwordPopupRef = useRef<HTMLDivElement | null>(null);
   const phonePopupRef = useRef<HTMLDivElement | null>(null);
   const deletePopupRef = useRef<HTMLDivElement | null>(null);
 
-  const handleChangePassword = () => setShowPasswordPopup(true);
+  const handleChangePassword = () => {
+    setShowPasswordPopup(true)
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setPasswordError('');
+    setPasswordBorder(false);
+  };
   const handleChangePhone = () => setShowPhonePopup(true);
   const handleDeleteAccount = () => {
     setShowDeletePopup(true);
@@ -60,12 +74,96 @@ export default function page(){
     setPasswordBorder(false); // Reset border color
   };  
 
-  const handleConfirmPasswordChange = () => {
-    setShowPasswordPopup(false); // Hide the password popup
-    setShowPasswordSuccess(true); // Show the success message
+  const validatePasswordChange = async () => {
+    let isValid = true;
+    setPasswordError('');
+    setPasswordBorder(false);
 
-    // Hide the success message after 3 seconds
-    setTimeout(() => setShowPasswordSuccess(false), 3000);
+    let specialCharacters = /[!#$%^&*]/;
+    let capitalLetter = /[A-Z]/;
+
+    // Check if all fields are filled
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+        setPasswordError("All fields are required.");
+        setPasswordBorder(true);
+        return false;
+    }
+
+    // Validate new password constraints
+    if (newPassword.length < 8) {
+        setPasswordError("Your Password Must Be At Least 8 Characters");
+        setPasswordBorder(true);
+        return false;
+    } 
+    if (newPassword.length > 20) {
+        setPasswordError("Your Password Must Be Less Than 20 Characters");
+        setPasswordBorder(true);
+        return false;
+    }
+    if (!specialCharacters.test(newPassword)) {
+        setPasswordError("Your Password Must Contain At Least 1 Special Character (!#$%^&*)");
+        setPasswordBorder(true);
+        return false;
+    }
+    if (!capitalLetter.test(newPassword)) {
+        setPasswordError("Your Password Must Contain At Least 1 Capital Letter");
+        setPasswordBorder(true);
+        return false;
+    }
+
+    // Check if new passwords match
+    if (newPassword !== confirmNewPassword) {
+        setPasswordError("New passwords do not match.");
+        setPasswordBorder(true);
+        return false;
+    }
+
+    const connection = 'http://localhost:3001/api/users/';
+    const userURL = connection + (email);
+
+    try {
+        // Verify current password with the backend
+        const user = await axios.get(userURL, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        let userCurrent = user.data.password;
+
+        if (userCurrent != currentPassword) {
+            setPasswordError("Current password is incorrect.");
+            setPasswordBorder(true);
+            return false;
+        } 
+    } catch (error) {
+        setPasswordError("Error verifying password.");
+        setPasswordBorder(true);
+        return false;
+    }
+
+    return true;
+  };
+
+  const handleConfirmPasswordChange = async () => {
+    if (await validatePasswordChange()) {
+      const connection = 'http://localhost:3001/api/users/';
+      const resetPassordURL = connection + (email);
+      updatedPassword.password = newPassword;
+
+      try {
+        await axios.put(resetPassordURL, updatedPassword, {
+          headers: { "Content-Type": "application/json" },
+        });
+        setShowPasswordPopup(false); // Hide the password popup
+        setShowPasswordSuccess(true); // Show the success message
+      }catch(error){
+        console.log(error);
+      }
+
+      // Hide the success message after 3 seconds
+      setTimeout(() => setShowPasswordSuccess(false), 3000);
+    }
   };
 
   const handleConfirmPhoneChange = () => {
@@ -210,7 +308,7 @@ export default function page(){
               <Image src={Settings} alt="Settings Icon" height={25} width={25} />
               Settings
             </Link>
-            <Link href="../home">
+            <Link href="../">
               <Image src={Signout} alt="Logout Icon" height={25} width={25} />
               Logout
             </Link>
@@ -249,18 +347,41 @@ export default function page(){
         <div className="PopupOverlay">
           <div ref={passwordPopupRef} className="PopupBox">
             <h2 className="PopupTitle">Old Password</h2>
-            <input type="password" placeholder="Enter old password" />
+          <input
+            type="password"
+            placeholder="Enter old password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            style={{ border: passwordBorder ? "1px solid red" : "" }}
+          />
 
             <h2 className="PopupTitle">New Password</h2>
-            <input type="password" placeholder="Enter new password" />
+          <input
+            type="password"
+            placeholder="Enter new password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            style={{ border: passwordBorder ? "1px solid red" : "" }}
+          />
 
             <h2 className="PopupTitle">Confirm New Password</h2>
-            <input type="password" placeholder="Confirm new password" />
+          <input
+            type="password"
+            placeholder="Confirm new password"
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+            style={{ border: passwordBorder ? "1px solid red" : "" }}
+          />
 
-            <button className="PopupButton" onClick={handleConfirmPasswordChange}>Confirm</button>
+          {passwordError && <p className="error-text">{passwordError}</p>}
+
+          <button className="PopupButton" onClick={handleConfirmPasswordChange}>
+            Confirm
+          </button>
           </div>
         </div>
       )}
+
 
       {/* Phone number popup */}
       {showPhonePopup && (
