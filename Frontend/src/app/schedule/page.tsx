@@ -34,7 +34,9 @@ export default function Page() {
     const isAdmin = session?.user?.admin;
     const [blockedDates, setBlockedDates] = useState<string[]>([]);  // Track blocked dates
     const [emailStatus, setEmailStatus] = useState<string | null>(null);
-    
+    const connection = 'http://localhost:3001/api/appointments/';
+    const authenticationURL = connection + (email);
+
     useEffect(() => {
         if (!email) return;
         fetchAppointments();
@@ -42,9 +44,18 @@ export default function Page() {
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get("http://localhost:3001/api/appointments", {
-                params: { email, isAdmin },
-            });
+            let response;
+    
+            if (isAdmin) {
+                // Admin gets all appointments
+                response = await axios.get(connection);
+            } else {
+                // Regular user fetches appointments based on their email
+                response = await axios.get(authenticationURL, { 
+                    params: { email }  
+                });
+            }
+
             setAppointments(response.data);
             setLoading(false);
         } catch (error) {

@@ -12,8 +12,8 @@ const getAppointments = async (req, res) => {
 
 const getAppointment = async (req, res) => {
   try {
-    const { id } = req.params;
-    const appointment = await Appointment.findById(id);
+    const { email } = req.params;
+    const appointment = await Appointment.find({email});
 
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
