@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
-import type { Review } from "./page"; // or wherever your Review interface is defined
+import type { Review } from "./page"; 
 
 interface ReviewCardProps {
-  review: Review;
-  userEmail?: string;
-  userIsAdmin?: boolean;
-  onDelete: (id: string) => void;
+    review: Review;
+    userEmail?: string;
+    userIsAdmin?: boolean;
+    onDelete: (id: string) => void;
 }
 
 /**
@@ -38,7 +38,7 @@ export default function ReviewCard({
             <p className="review-title">{review.title}</p>
             <p className="review-content">{review.content}</p>
 
-            {/* If an image exists, show it from your Express route */}
+            {/* If an image exists, show it from Express route */}
             {review.image && review._id && (
                 <img
                 src={`http://localhost:3001/api/reviews/${review._id}/image`}

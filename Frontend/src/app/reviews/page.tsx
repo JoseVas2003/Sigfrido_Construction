@@ -17,9 +17,8 @@ export interface Review {
     stars: number;
     title: string;
     content: string;
-    // image is stored as Buffer in the database, but on the client side
-    // it may be a File or a placeholder. We'll just define it as possibly null.
     image?: string | File | null;
+    createdAt: string;
 }
 
 // For creating a new review (the user name/email come from session)
@@ -37,7 +36,7 @@ export default function Reviews() {
     // State
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
-    const [sortOption, setSortOption] = useState("");
+    const [sortOption, setSortOption] = useState("Highest First");
     const [starPercentages, setStarPercentages] = useState<number[]>([]);
     const [showModal, setShowModal] = useState(false);
 
@@ -54,7 +53,9 @@ export default function Reviews() {
         const fetchReviews = async () => {
             try {
                 const response = await axios.get("/api/reviews");
-                setReviews(response.data);
+                const sorted = [...response.data].sort((a, b) => b.stars - a.stars);
+                setReviews(sorted);
+
             } catch (error) {
                 console.error("Error fetching reviews:", error);
             } finally {
@@ -95,19 +96,21 @@ export default function Reviews() {
         setSortOption(option);
 
         const sorted = [...reviews].sort((a, b) => {
-        if (option === "Newest First") {
-                return new Date(b._id!).getTime() - new Date(a._id!).getTime();
-        } else if (option === "Oldest First") {
-            return new Date(a._id!).getTime() - new Date(b._id!).getTime();
-        } else if (option === "Highest First") {
-            return b.stars - a.stars;
-        } else if (option === "Lowest First") {
-            return a.stars - b.stars;
-        }
-        return 0;
+            if (option === "Newest First") {
+                // Newest first => b's createdAt minus a's createdAt
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            } else if (option === "Oldest First") {
+                // Oldest first => a's createdAt minus b's createdAt
+                return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+            } else if (option === "Highest First") {
+                return b.stars - a.stars;
+            } else if (option === "Lowest First") {
+                return a.stars - b.stars;
+            }
+            return 0;
         });
-
-        setReviews(sorted);
+        
+            setReviews(sorted);
     };
 
     // ------------------ HANDLERS ------------------ //
@@ -194,10 +197,10 @@ export default function Reviews() {
 
                     <div className="sort_section">
                         <select value={sortOption} onChange={handleSortChange}>
-                        <option>Newest First</option>
-                        <option>Oldest First</option>
-                        <option>Highest First</option>
-                        <option>Lowest First</option>
+                        <option value="Newest First">Newest First</option>
+                        <option value="Oldest First">Oldest First</option>
+                        <option value="Highest First">Highest First</option>
+                        <option value="Lowest First">Lowest First</option>
                         </select>
                     </div>
                 </div>

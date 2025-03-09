@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import type { Review } from "./page";
 
-// Same shape as the newReview in page.tsx
 interface NewReview {
     title: string;
     content: string;
