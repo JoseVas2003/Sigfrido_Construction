@@ -21,6 +21,7 @@ export default function Page() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
     const [showForm, setShowForm] = useState<boolean>(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -210,6 +211,15 @@ export default function Page() {
         }
     };
 
+    const filteredAppointments = appointments.filter((appt) => {
+        const dateStr = new Date(appt.date).toLocaleDateString();
+        return (
+            appt.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            appt.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            dateStr.includes(searchQuery)
+        );
+    });
+
     if (status === 'loading') return <p>Loading session...</p>;
     if (!session) return <p>You need to sign in to book an appointment.</p>;
 
@@ -240,13 +250,24 @@ export default function Page() {
                     {/* Below workers: Appointments */}
                     <div className="appContainer">
                         <h2>Existing Appointments for {names}</h2>
+
+                        {isAdmin && (
+                        <input 
+                            type="text" 
+                            placeholder="Search by name, email, or date" 
+                            value={searchQuery} 
+                            onChange={(e) => setSearchQuery(e.target.value)} 
+                            className="searchBar"
+                        />
+                    )}
+
                         {loading ? (
                             <p>Loading appointments...</p>
                         ) : appointments.length > 0 ? (
                         <ul>
-                        {appointments.map((appt) => (
+                        {filteredAppointments.map((appt) => (
                             <li key={appt._id}>
-                                <strong>{new Date(appt.date).toLocaleDateString()}</strong> at {appt.time}
+                            <strong>{new Date(appt.date).toLocaleDateString()}</strong> at {appt.time} - {appt.name} ({appt.email})
                                 <div className="appointmentActions">
                                     <button
                                         className="rescheduleButton"
