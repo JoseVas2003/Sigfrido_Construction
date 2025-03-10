@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import {useSession} from 'next-auth/react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import {signOut} from 'next-auth/react';
 
 import Image from 'next/image';
 import Navbar from "../navbar/navBar";
@@ -37,25 +39,257 @@ export default function page(){
   const [showPhonePopup, setShowPhonePopup] = useState(false);
   const [showPhoneSuccess, setShowPhoneSuccess] = useState(false);
 
-  // Ref for password popup
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordBorder, setPasswordBorder] = useState(false);
+  const [oldPasswordDelete, setoldPasswordDelete] = useState('');
+
+  const [currentPhone, setCurrentPhone] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [confirmNewPhone, setConfirmNewPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const [phoneBorder, setPhoneBorder] = useState(false);
+
+  const [updatedPassword, setUpdatedPassword] = useState({
+    password: ''
+  });
+  const [updatedPhone, setUpdatedPhone] = useState({
+    phone: ''
+  });
+
+  // Ref for button popup
   const passwordPopupRef = useRef<HTMLDivElement | null>(null);
   const phonePopupRef = useRef<HTMLDivElement | null>(null);
+  const deletePopupRef = useRef<HTMLDivElement | null>(null);
 
-  const handleChangePassword = () => setShowPasswordPopup(true);
-  const handleChangePhone = () => setShowPhonePopup(true);
+  const handleChangePassword = () => {
+    setShowPasswordPopup(true);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setPasswordError('');
+    setPasswordBorder(false);
+  };
+  const handleChangePhone = () => {
+    setShowPhonePopup(true);
+    setCurrentPhone('');
+    setNewPhone('');
+    setConfirmNewPhone('');
+    setPhoneError('');
+    setPhoneBorder(false);
+  };
+  const handleDeleteAccount = () => {
+    setShowDeletePopup(true);
+    setoldPasswordDelete('');
+    setPasswordError('');
+    setPasswordBorder(false);
+  };  
 
-  const handleConfirmPasswordChange = () => {
-    setShowPasswordPopup(false); // Hide the password popup
-    setShowPasswordSuccess(true); // Show the success message
+  const validatePasswordChange = async () => {
+    let isValid = true;
+    setPasswordError('');
+    setPasswordBorder(false);
 
-    // Hide the success message after 3 seconds
-    setTimeout(() => setShowPasswordSuccess(false), 3000);
+    let specialCharacters = /[!#$%^&*]/;
+    let capitalLetter = /[A-Z]/;
+
+    // Check if all fields are filled
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setPasswordError("All fields are required.");
+      setPasswordBorder(true);
+      return false;
+    }
+
+    // Validate new password constraints
+    if (newPassword.length < 8) {
+      setPasswordError("Your Password Must Be At Least 8 Characters");
+      setPasswordBorder(true);
+      return false;
+    } 
+    if (newPassword.length > 20) {
+      setPasswordError("Your Password Must Be Less Than 20 Characters");
+      setPasswordBorder(true);
+      return false;
+    }
+    if (!specialCharacters.test(newPassword)) {
+      setPasswordError("Your Password Must Contain At Least 1 Special Character (!#$%^&*)");
+      setPasswordBorder(true);
+      return false;
+    }
+    if (!capitalLetter.test(newPassword)) {
+      setPasswordError("Your Password Must Contain At Least 1 Capital Letter");
+      setPasswordBorder(true);
+      return false;
+    }
+
+    // Check if new passwords match
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError("New passwords do not match.");
+      setPasswordBorder(true);
+      return false;
+    }
+
+    const connection = 'http://localhost:3001/api/users/';
+    const userURL = connection + (email);
+
+    try {
+      // Verify current password with the backend
+      const user = await axios.get(userURL, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      let userCurrent = user.data.password;
+
+      if (userCurrent != currentPassword) {
+        setPasswordError("Current password is incorrect.");
+        setPasswordBorder(true);
+        return false;
+      } 
+    } catch (error) {
+      setPasswordError("Error verifying password.");
+      setPasswordBorder(true);
+      return false;
+    }
+
+    return true;
   };
 
-  const handleConfirmPhoneChange = () => {
-    setShowPhonePopup(false);
-    setShowPhoneSuccess(true);
+  const handleConfirmPasswordChange = async () => {
+    if (await validatePasswordChange()) {
+      const connection = 'http://localhost:3001/api/users/';
+      const resetPasswordURL = connection + (email);
+      updatedPassword.password = newPassword;
+
+      try {
+        await axios.put(resetPasswordURL, updatedPassword, {
+          headers: { "Content-Type": "application/json" },
+        });
+        setShowPasswordPopup(false);
+        setShowPasswordSuccess(true);
+      }catch(error){
+        console.log(error);
+      }
+
+      setTimeout(() => setShowPasswordSuccess(false), 3000);
+    }
+  };
+
+  const validatePhoneChange = async () => {
+    setPhoneError('');
+    setPhoneBorder(false);
+
+    if (!currentPhone || !newPhone || !confirmNewPhone) {
+      setPhoneError("All fields are required.");
+      setPhoneBorder(true);
+      return false;
+    }
+
+    if (newPhone !== confirmNewPhone) {
+      setPhoneError("New phone number does not match.");
+      setPhoneBorder(true);
+      return false;
+    }
+
+    const connection = 'http://localhost:3001/api/users/';
+    const userURL = connection + (email);
+
+    try {
+      // Verify current phone with the backend
+      const user = await axios.get(userURL, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      let userCurrent = user.data.phone;
+
+      if (userCurrent != currentPhone) {
+        setPhoneError("Current phone number is incorrect.");
+        setPhoneBorder(true);
+        return false;
+      } 
+    } catch (error) {
+      setPhoneError("Error verifying phone number.");
+      setPhoneBorder(true);
+      return false;
+    }
+
+    return true;
+  }
+
+  const handleConfirmPhoneChange = async () => {
+    if (await validatePhoneChange()){
+      const connection = 'http://localhost:3001/api/users/';
+      const resetPhoneURL = connection + (email);
+      updatedPhone.phone = newPhone;
+
+      try{
+        await axios.put(resetPhoneURL, updatedPhone, {
+          headers: { "Content-Type": "application/json" },
+        });
+        setShowPhonePopup(false);
+        setShowPhoneSuccess(true);
+      }catch(error){
+        console.log(error);
+      }
+    }
+
     setTimeout(() => setShowPhoneSuccess(false), 3000);
+  };
+
+  const handleConfirmDelete = async() => {
+    const router = useRouter();
+    const connection = 'http://localhost:3001/api/users/';
+    const userURL = connection + (email);
+    let userID = '';
+
+    try {
+      // Verify current password with the backend
+      const user = await axios.get(userURL, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      let userCurrent = user.data.password;
+      userID = user.data._id;
+
+      if (userCurrent != oldPasswordDelete) {
+        setPasswordError("Current password is incorrect.");
+        setPasswordBorder(true);
+        return false;
+      }
+      setShowDeletePopup(false);
+      setShowDeleteSuccess(true);
+    } catch (error) {
+      setPasswordError("Error verifying password.");
+      setPasswordBorder(true);
+      return false;
+    }
+
+    const connections = 'http://localhost:3001/api/users/';
+    const usersURL = connections + (userID);
+
+    try {
+      await axios.delete(usersURL, {
+      headers: {
+        'Content-Type': 'application/json',
+        },
+      });
+    } catch(error){
+      console.log(error);
+    }
+    setTimeout(() => {
+      signOut();
+      router.push('/');
+    }, 3000);
   };
 
   // Fetching user info from backend when email is available
@@ -108,15 +342,18 @@ export default function page(){
       if (phonePopupRef.current && !phonePopupRef.current.contains(event.target as Node)) {
         setShowPhonePopup(false);
       }
+      if (deletePopupRef.current && !deletePopupRef.current.contains(event.target as Node)) {
+        setShowDeletePopup(false);
+      }
     };
 
-    if (showPasswordPopup || showPhonePopup) {
+    if (showPasswordPopup || showPhonePopup || showDeletePopup) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showPasswordPopup, showPhonePopup]);
+  }, [showPasswordPopup, showPhonePopup, showDeletePopup]);
    
   return (
     <div>
@@ -143,7 +380,7 @@ export default function page(){
               <Image src={Settings} alt="Settings Icon" height={25} width={25} />
               Settings
             </Link>
-            <Link href="../home">
+            <Link href="../">
               <Image src={Signout} alt="Logout Icon" height={25} width={25} />
               Logout
             </Link>
@@ -166,7 +403,7 @@ export default function page(){
               <strong>Change Password</strong>
               </div>
               <div className="SettingsBox" onClick={handleChangePhone}> <strong>Change Phone Number</strong> </div>
-              <div className="SettingsBox"> <strong>Delete Account</strong> </div>
+              <div className="SettingsBox" onClick={handleDeleteAccount}> <strong>Delete Account</strong> </div>
             </div>
           </div>
 
@@ -182,27 +419,100 @@ export default function page(){
         <div className="PopupOverlay">
           <div ref={passwordPopupRef} className="PopupBox">
             <h2 className="PopupTitle">Old Password</h2>
-            <input type="password" placeholder="Enter old password" />
+          <input
+            type="password"
+            placeholder="Enter old password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            style={{ border: passwordBorder ? "1px solid red" : "" }}
+          />
 
             <h2 className="PopupTitle">New Password</h2>
-            <input type="password" placeholder="Enter new password" />
+          <input
+            type="password"
+            placeholder="Enter new password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            style={{ border: passwordBorder ? "1px solid red" : "" }}
+          />
 
-            <button className="PopupButton" onClick={handleConfirmPasswordChange}>Confirm</button>
+            <h2 className="PopupTitle">Confirm New Password</h2>
+          <input
+            type="password"
+            placeholder="Confirm new password"
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+            style={{ border: passwordBorder ? "1px solid red" : "" }}
+          />
+
+          {passwordError && <p className="error-text">{passwordError}</p>}
+
+          <button className="PopupButton" onClick={handleConfirmPasswordChange}>
+            Confirm
+          </button>
           </div>
         </div>
       )}
+
 
       {/* Phone number popup */}
       {showPhonePopup && (
         <div className="PopupOverlay">
           <div ref={phonePopupRef} className="PopupBox">
+            <h2 className="PopupTitle">Enter Old Phone Number</h2>
+            <input
+              type="phone"
+              placeholder="Enter old phone number"
+              value={currentPhone}
+              onChange={(e) =>
+                setCurrentPhone(e.target.value)}
+              style={{ border: phoneBorder ? "1px solid red" : "" }}
+            />
+
             <h2 className="PopupTitle">Enter New Phone Number</h2>
-            <input type="text" placeholder="Enter new phone number" />
+            <input 
+              type="phone"
+              placeholder="Enter new phone number"
+              value={newPhone}
+              onChange={(e) =>
+                setNewPhone(e.target.value)}
+              style={{ border: phoneBorder ? "1px solid red" : "" }}
+            />
 
             <h2 className="PopupTitle">Confirm New Phone Number</h2>
-            <input type="text" placeholder="Confirm new phone number" />
+            <input 
+              type="phone"
+              placeholder="Confirm new phone number"
+              value={confirmNewPhone}
+              onChange={(e) =>
+                setConfirmNewPhone(e.target.value)}
+              style={{ border: phoneBorder ? "1px solid red" : "" }} 
+            />
+
+            {phoneError && <p className="error-text">{phoneError}</p>}
 
             <button className="PopupButton" onClick={handleConfirmPhoneChange}>Confirm</button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete account popup */}
+      {showDeletePopup && (
+        <div className="PopupOverlay">
+          <div ref={deletePopupRef} className="PopupBox">
+            <h2 className="PopupTitle">Delete Account</h2>
+            <input 
+              onChange={(e) => setoldPasswordDelete(e.target.value)}
+              value={oldPasswordDelete}
+              type="password"
+              placeholder="Enter Current Password"
+              style={{ borderColor: passwordBorder ? 'red' : 'initial' }}
+            />
+            {passwordError && <p style={{ color: 'red', fontSize: '14px' }}>{passwordError}</p>}
+
+            <button className="PopupButton" onClick={handleConfirmDelete} style={{ backgroundColor: 'red', color: 'white' }}>
+              Delete Account
+            </button>
           </div>
         </div>
       )}
@@ -229,6 +539,16 @@ export default function page(){
         </div>
       )}
 
+      {/* Success message for account delete */}
+      {showDeleteSuccess && (
+        <div className="SuccessPopupOverlay">
+          <div className="SuccessPopupBox">
+            <h2 className="SuccessMessage" style={{ fontWeight: 'bold' }}>
+              Account Deleted Successfully!
+            </h2>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

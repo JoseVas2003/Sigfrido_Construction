@@ -75,11 +75,11 @@ const Navbar = () =>{
 
                     {session? (
                         <Link href="../">
-                            <button onClick={() => {signOut()}} type="button" className="menuePageButtons">Logout</button>
+                            <button onClick={() => {signOut()}} type="button" className="menuePageButtons" id='logoutButton'>Logout</button>
                         </Link>
                     ) :(
                         <Link href="../login">
-                        <button type="button" className="menuePageButtons">Login</button>
+                        <button type="button" className="menuePageButtons" id='loginButton'>Login</button>
                     </Link>
                     )}
 
