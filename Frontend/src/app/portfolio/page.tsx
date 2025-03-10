@@ -221,7 +221,9 @@ const styles: { [key: string]: CSSProperties } = {
         cursor: 'pointer',
     },
     projectCardContainer: {
-        display: 'flex',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))',
+        gap: '10px',
         justifyContent: 'center',
         alignItems: 'center',
         paddingTop: '30px',

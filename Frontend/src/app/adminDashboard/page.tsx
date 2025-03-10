@@ -27,10 +27,21 @@ interface Appointment {
     phone?: string;
 }
 
+interface User {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    admin: string;
+    createdAt: string;
+}
+
 export default function AdminDashboard() {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
+    const [users, setUsers] = useState<User[]>([]);
 
     // Fetch reviews from MongoDB
     useEffect(() => {
@@ -51,6 +62,15 @@ export default function AdminDashboard() {
             .catch((error) => console.error("Error fetching appointments:", error));
     }, []);
 
+    // Fetch users from MongoDB
+    useEffect(() => {
+        axios.get("http://localhost:3001/api/users/")
+        .then((response) => {
+            setUsers(response.data);
+        })
+        .catch((error) => console.error("Error fetching users:", error));
+    }, []);
+
     // Delete a review
     const handleDeleteReview = (id: string) => {
         axios.delete(`http://localhost:3000/api/reviews/${id}`)
@@ -58,6 +78,15 @@ export default function AdminDashboard() {
                 setReviews(reviews.filter((review) => review._id !== id));
             })
             .catch((error) => console.error("Error deleting review:", error));
+    };
+
+    // Delete a user
+    const handleDeleteUser = (id: string) => {
+        axios.delete(`http://localhost:3001/api/users/${id}`)
+        .then(() => {
+            setUsers(users.filter((user) => user._id != id));
+        })
+        .catch((error) => console.error("Error deleting user:", error));
     };
     return (
         <div>
@@ -107,8 +136,7 @@ export default function AdminDashboard() {
                             )}
                         </section>
                     </div>
-                    
-    
+   
                     {/* Appointments Section */}
                     <div className="sectionWrapper">
                     <section className="appointments">
@@ -149,6 +177,30 @@ export default function AdminDashboard() {
                                 } }                              // appointments={appointments}
                             />
                             </div>
+                        </section>
+                    </div>
+
+                    {/* Users Section */}
+                    <div className="sectionWrapper">
+                        <section className="users">
+                            <h2 className="sectionHeader">Users</h2>
+                            {users.length > 0 ? (
+                                users.map((user) => (
+                                    <div key={user._id} className="user-card">
+                                        <p>
+                                            <strong>{user.firstName}</strong>{" "}
+                                            <strong>{user.lastName}</strong>
+                                        </p>
+                                        <p>{user.email}</p>
+                                        <p>{user.phone}</p>
+                                        <p>{"Admin: "} <em>{new Boolean(user.admin).toLocaleString()}</em></p>
+                                        <p>{"Created at: "}<em>{new Date(user.createdAt).toLocaleString()}</em></p>
+                                        <button onClick={() => handleDeleteUser(user._id)}>Delete</button>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No users available.</p>
+                            )}
                         </section>
                     </div>
                 </div>
