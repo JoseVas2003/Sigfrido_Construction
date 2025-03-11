@@ -1236,7 +1236,7 @@ describe('Create Account Functionality', async function ()
           let confirmPasswordInput = await driver.findElement(By.id('confirmPasswordInput'));
           await confirmPasswordInput.click()
           await driver.sleep(1000)
-          await confirmPasswordInput.sendKeys("Password123") //Valid Confirm Password
+          await confirmPasswordInput.sendKeys("Password123$") //Valid Confirm Password
           await driver.sleep(1000)
 
           let createAccountButton = await driver.findElement(By.id('createAccountButton'));
