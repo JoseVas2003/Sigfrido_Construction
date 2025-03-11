@@ -33,7 +33,33 @@ try {
     }
 };
 
-module.exports = {
-createInProgressProject,
+const getInProgressProjects = async (req, res) => {
+    try {
+      const projects = await InProgressProject.find(); // Fetch all projects
+      return res.status(200).json(projects);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
+  
+  const updateInProgressProject = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updatedProject = await InProgressProject.findByIdAndUpdate(id, req.body, { new: true });
+  
+      if (!updatedProject) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+  
+      return res.status(200).json(updatedProject);
+    } catch (error) {
+      return res.status(500).json({ message: "Error updating project", error: error.message });
+    }
+  };
+  
+  module.exports = {
+    createInProgressProject,
+    getInProgressProjects,
+    updateInProgressProject,
 // (Add additional functions for update, delete, etc. )
 };
