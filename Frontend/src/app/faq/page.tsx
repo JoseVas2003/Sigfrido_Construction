@@ -237,4 +237,3 @@ const styles: { [key: string]: CSSProperties } = {
         marginTop: '10px',
     },
 };
-
