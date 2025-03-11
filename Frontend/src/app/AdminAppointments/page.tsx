@@ -1,19 +1,20 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import "../Assets/css/adminAppointments.modules.css";
 import Navbar from "../navbar/navBar";
-import "../Assets/css/adminAppointments.modules.css"; 
 
 interface Appointment {
     _id: string;
-    clientName: string;
-    date: string;
-    time: string;
-    location: string;
-    status: string; // Add a status field (Pending, Approved, Past)
-    notes?: string;
-    email?: string;
-    phone?: string;
+  clientName: string;
+  name?: string;
+  date: string;
+  time: string;
+  location: string;
+  status: string; // e.g., Pending, Approved, Past
+  notes?: string;
+  email?: string;
+  phone?: string;
 }
 
 export default function AdminAppointments() {
@@ -22,7 +23,7 @@ export default function AdminAppointments() {
 
     // Fetch appointments
     useEffect(() => {
-        axios.get("http://localhost:3000/api/appointments")
+        axios.get("http://localhost:3001/api/appointments")
             .then((response) => {
                 setAppointments(response.data);
                 setLoading(false);
@@ -35,68 +36,172 @@ export default function AdminAppointments() {
     const pastAppointments = appointments.filter(app => new Date(app.date) < new Date());
     const pendingAppointments = appointments.filter(app => app.status === "Pending");
 
-    return (
-        <div>
-            <Navbar />
-            <div className="admin-appointments-container">
-                <h1>Appointments</h1>
+    // Handler to approve an appointment (set status to Approved)
+  const handleAcceptAppointment = (id: string) => {
+    axios
+      .put(`http://localhost:3001/api/appointments/${id}`, {
+        status: "Approved",
+      })
+      .then(() => {
+        setAppointments((prevAppointments) =>
+          prevAppointments.map((appointment) =>
+            appointment._id === id
+              ? { ...appointment, status: "Approved" }
+              : appointment
+          )
+        );
+      })
+      .catch((error) => console.error("Error updating appointment:", error));
+  };
 
-                {/* Pending Appointments */}
-                <div className="sectionWrapper">
-                    <section className="appointments">
-                        <h2 className="sectionHeader">Pending Approval</h2>
-                        {pendingAppointments.length > 0 ? (
-                            pendingAppointments.map((appointment) => (
-                                <div key={appointment._id} className="appointment-card">
-                                    <p><strong>{appointment.clientName}</strong></p>
-                                    <p>{appointment.date} - {appointment.time}</p>
-                                    <p><strong>Location:</strong> {appointment.location}</p>
-                                    <button>Approve</button>
-                                    <button>Reject</button>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No pending appointments.</p>
-                        )}
-                    </section>
-                </div>
+  // Handler to reject/delete an appointment
+  const handleDeleteAppointment = (id: string) => {
+    axios
+      .delete(`http://localhost:3001/api/appointments/${id}`)
+      .then(() => {
+        setAppointments(
+          appointments.filter((appointment) => appointment._id !== id)
+        );
+      })
+      .catch((error) => console.error("Error deleting appointment:", error));
+  };
+  
+  return (
+    <div>
+      <Navbar />
+      <div className="admin-appointments-container">
+        <h1>Appointments</h1>
 
-                {/* Upcoming Appointments */}
-                <div className="sectionWrapper">
-                    <section className="appointments">
-                        <h2 className="sectionHeader">Upcoming Appointments</h2>
-                        {upcomingAppointments.length > 0 ? (
-                            upcomingAppointments.map((appointment) => (
-                                <div key={appointment._id} className="appointment-card">
-                                    <p><strong>{appointment.clientName}</strong></p>
-                                    <p>{appointment.date} - {appointment.time}</p>
-                                    <p><strong>Location:</strong> {appointment.location}</p>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No upcoming appointments.</p>
-                        )}
-                    </section>
-                </div>
+        {/* Pending Appointments */}
+        <div className="sectionWrapper">
+          <section className="appointments">
+            <h2 className="sectionHeader">Pending Approval</h2>
+            {pendingAppointments.length > 0 ? (
+              pendingAppointments.map((appointment) => (
+                <div key={appointment._id} className="appointment-card">
+                  <p>
+                    <strong>
+                      Name: {appointment.clientName || appointment.name}
+                    </strong>
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {appointment.date} -{" "}
+                    {appointment.time}
+                  </p>
 
-                {/* Past Appointments */}
-                <div className="sectionWrapper">
-                    <section className="appointments">
-                        <h2 className="sectionHeader">Past Appointments</h2>
-                        {pastAppointments.length > 0 ? (
-                            pastAppointments.map((appointment) => (
-                                <div key={appointment._id} className="appointment-card">
-                                    <p><strong>{appointment.clientName}</strong></p>
-                                    <p>{appointment.date} - {appointment.time}</p>
-                                    <p><strong>Location:</strong> {appointment.location}</p>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No past appointments.</p>
-                        )}
-                    </section>
+                  {appointment.notes && (
+                    <p>
+                      <strong>Notes:</strong> {appointment.notes}
+                    </p>
+                  )}
+                  {appointment.email && (
+                    <p>
+                      <strong>Email:</strong> {appointment.email}
+                    </p>
+                  )}
+                  {appointment.phone && (
+                    <p>
+                      <strong>Phone:</strong> {appointment.phone}
+                    </p>
+                  )}
+                  <button
+                    onClick={() => handleAcceptAppointment(appointment._id)}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleDeleteAppointment(appointment._id)}
+                  >
+                    Reject
+                  </button>
                 </div>
-            </div>
+              ))
+            ) : (
+              <p>No pending appointments.</p>
+            )}
+          </section>
         </div>
-    );
+
+        {/* Upcoming Appointments */}
+        <div className="sectionWrapper">
+          <section className="appointments">
+            <h2 className="sectionHeader">Upcoming Appointments</h2>
+            {upcomingAppointments.length > 0 ? (
+              upcomingAppointments.map((appointment) => (
+                <div key={appointment._id} className="appointment-card">
+                  <p>
+                    <strong>
+                      Name: {appointment.clientName || appointment.name}
+                    </strong>
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {appointment.date} -{" "}
+                    {appointment.time}
+                  </p>
+
+                  {appointment.notes && (
+                    <p>
+                      <strong>Notes:</strong> {appointment.notes}
+                    </p>
+                  )}
+                  {appointment.email && (
+                    <p>
+                      <strong>Email:</strong> {appointment.email}
+                    </p>
+                  )}
+                  {appointment.phone && (
+                    <p>
+                      <strong>Phone:</strong> {appointment.phone}
+                    </p>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p>No upcoming appointments.</p>
+            )}
+          </section>
+        </div>
+
+        {/* Past Appointments */}
+        <div className="sectionWrapper">
+          <section className="appointments">
+            <h2 className="sectionHeader">Past Appointments</h2>
+            {pastAppointments.length > 0 ? (
+              pastAppointments.map((appointment) => (
+                <div key={appointment._id} className="appointment-card">
+                  <p>
+                    <strong>
+                      Name: {appointment.clientName || appointment.name}
+                    </strong>
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {appointment.date} -{" "}
+                    {appointment.time}
+                  </p>
+
+                  {appointment.notes && (
+                    <p>
+                      <strong>Notes:</strong> {appointment.notes}
+                    </p>
+                  )}
+                  {appointment.email && (
+                    <p>
+                      <strong>Email:</strong> {appointment.email}
+                    </p>
+                  )}
+                  {appointment.phone && (
+                    <p>
+                      <strong>Phone:</strong> {appointment.phone}
+                    </p>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p>No past appointments.</p>
+            )}
+          </section>
+        </div>
+      </div>
+    </div>
+  );
 }
