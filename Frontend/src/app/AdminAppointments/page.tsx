@@ -5,7 +5,7 @@ import "../Assets/css/adminAppointments.modules.css";
 import Navbar from "../navbar/navBar";
 
 interface Appointment {
-    _id: string;
+  _id: string;
   clientName: string;
   name?: string;
   date: string;
@@ -18,54 +18,103 @@ interface Appointment {
 }
 
 export default function AdminAppointments() {
-    const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [loading, setLoading] = useState(true);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [rescheduleData, setRescheduleData] = useState<{ id: string; date: string; time: string } | null>(null);
 
-    // Fetch appointments
-    useEffect(() => {
-        axios.get("http://localhost:3001/api/appointments")
-            .then((response) => {
-                setAppointments(response.data);
-                setLoading(false);
-            })
-            .catch((error) => console.error("Error fetching appointments:", error));
-    }, []);
-
-    // Categorize appointments
-    const upcomingAppointments = appointments.filter(app => new Date(app.date) > new Date() && app.status === "Approved");
-    const pastAppointments = appointments.filter(app => new Date(app.date) < new Date());
-    const pendingAppointments = appointments.filter(app => app.status === "Pending");
-
-    // Handler to approve an appointment (set status to Approved)
-  const handleAcceptAppointment = (id: string) => {
+  // Fetch appointments
+  useEffect(() => {
     axios
-      .put(`http://localhost:3001/api/appointments/${id}`, {
-        status: "Approved",
+      .get("http://localhost:3001/api/appointments")
+      .then((response) => {
+        console.log("Fetched Appointments:", response.data);
+        setAppointments(response.data);
+        setLoading(false);
       })
+      .catch((error) => console.error("Error fetching appointments:", error));
+  }, []);
+
+  // Cancel an appointment (used for upcoming appointments)
+  const handleCancelAppointment = (id: string) => {
+    if (window.confirm("Are you sure you want to cancel this appointment?")) {
+      axios
+        .delete(`http://localhost:3001/api/appointments/${id}`)
+        .then(() => {
+          setAppointments(appointments.filter((appointment) => appointment._id !== id));
+        })
+        .catch((error) => console.error("Error canceling appointment:", error));
+    }
+  };
+
+  // Reject an appointment (used for pending appointments)
+  const handleRejectAppointment = (id: string) => {
+    if (window.confirm("Are you sure you want to reject this appointment?")) {
+      axios
+        .delete(`http://localhost:3001/api/appointments/${id}`)
+        .then(() => {
+          setAppointments(appointments.filter((appointment) => appointment._id !== id));
+        })
+        .catch((error) => console.error("Error rejecting appointment:", error));
+    }
+  };
+
+  // Open reschedule modal
+  const handleRescheduleClick = (id: string, date: string, time: string) => {
+    setRescheduleData({ id, date, time });
+  };
+
+  // Confirm reschedule
+  const handleConfirmReschedule = () => {
+    if (!rescheduleData) return;
+    const { id, date, time } = rescheduleData;
+
+    axios
+      .put(`http://localhost:3001/api/appointments/${id}`, { date, time })
       .then(() => {
-        setAppointments((prevAppointments) =>
-          prevAppointments.map((appointment) =>
-            appointment._id === id
-              ? { ...appointment, status: "Approved" }
-              : appointment
+        setAppointments(
+          appointments.map((appointment) =>
+            appointment._id === id ? { ...appointment, date, time } : appointment
+          )
+        );
+        setRescheduleData(null);
+      })
+      .catch((error) => console.error("Error rescheduling appointment:", error));
+  };
+
+  // Approve an appointment
+  const handleApproveAppointment = (id: string) => {
+    axios
+      .put(`http://localhost:3001/api/appointments/${id}`, { status: "Approved" })
+      .then(() => {
+        setAppointments(
+          appointments.map((appointment) =>
+            appointment._id === id ? { ...appointment, status: "Approved" } : appointment
           )
         );
       })
-      .catch((error) => console.error("Error updating appointment:", error));
+      .catch((error) => console.error("Error approving appointment:", error));
   };
 
-  // Handler to reject/delete an appointment
-  const handleDeleteAppointment = (id: string) => {
-    axios
-      .delete(`http://localhost:3001/api/appointments/${id}`)
-      .then(() => {
-        setAppointments(
-          appointments.filter((appointment) => appointment._id !== id)
-        );
-      })
-      .catch((error) => console.error("Error deleting appointment:", error));
+  // Format date for display
+  const formatDateTime = (isoString: string) => {
+    return new Date(isoString).toLocaleString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
-  
+
+  // Categorize appointments
+  const pendingAppointments = appointments.filter((app) => app.status === "Pending");
+  const upcomingAppointments = appointments.filter(
+    (app) => new Date(app.date) > new Date() && app.status === "Approved"
+  );
+  const pastAppointments = appointments.filter((app) => new Date(app.date) < new Date());
+
   return (
     <div>
       <Navbar />
@@ -80,38 +129,39 @@ export default function AdminAppointments() {
               pendingAppointments.map((appointment) => (
                 <div key={appointment._id} className="appointment-card">
                   <p>
-                    <strong>
-                      Name: {appointment.clientName || appointment.name}
-                    </strong>
+                    <strong>{appointment.clientName}</strong>
                   </p>
                   <p>
-                    <strong>Date:</strong> {appointment.date} -{" "}
-                    {appointment.time}
-                  </p>
+                      <strong>
+                        Name: {appointment.clientName || appointment.name}
+                      </strong>
+                    </p>
+                    <p>
+                      <strong>Date:</strong> {formatDateTime(appointment.date)}
+                    </p>
 
-                  {appointment.notes && (
-                    <p>
-                      <strong>Notes:</strong> {appointment.notes}
-                    </p>
-                  )}
-                  {appointment.email && (
-                    <p>
-                      <strong>Email:</strong> {appointment.email}
-                    </p>
-                  )}
-                  {appointment.phone && (
-                    <p>
-                      <strong>Phone:</strong> {appointment.phone}
-                    </p>
-                  )}
+                    {appointment.notes && (
+                      <p>
+                        <strong>Notes:</strong> {appointment.notes}
+                      </p>
+                    )}
+                    {appointment.email && (
+                      <p>
+                        <strong>Email:</strong> {appointment.email}
+                      </p>
+                    )}
+                    {appointment.phone && (
+                      <p>
+                        <strong>Phone:</strong> {appointment.phone}
+                      </p>
+                    )}
                   <button
-                    onClick={() => handleAcceptAppointment(appointment._id)}
+                    className="approveButton"
+                    onClick={() => handleApproveAppointment(appointment._id)}
                   >
                     Approve
                   </button>
-                  <button
-                    onClick={() => handleDeleteAppointment(appointment._id)}
-                  >
+                  <button className="rejectButton" onClick={() => handleRejectAppointment(appointment._id)}>
                     Reject
                   </button>
                 </div>
@@ -130,30 +180,41 @@ export default function AdminAppointments() {
               upcomingAppointments.map((appointment) => (
                 <div key={appointment._id} className="appointment-card">
                   <p>
-                    <strong>
-                      Name: {appointment.clientName || appointment.name}
-                    </strong>
+                    <strong>{appointment.clientName}</strong>
                   </p>
                   <p>
-                    <strong>Date:</strong> {appointment.date} -{" "}
-                    {appointment.time}
-                  </p>
+                      <strong>
+                        Name: {appointment.clientName || appointment.name}
+                      </strong>
+                    </p>
+                    <p>
+                      <strong>Date:</strong> {formatDateTime(appointment.date)}
+                    </p>
 
-                  {appointment.notes && (
-                    <p>
-                      <strong>Notes:</strong> {appointment.notes}
-                    </p>
-                  )}
-                  {appointment.email && (
-                    <p>
-                      <strong>Email:</strong> {appointment.email}
-                    </p>
-                  )}
-                  {appointment.phone && (
-                    <p>
-                      <strong>Phone:</strong> {appointment.phone}
-                    </p>
-                  )}
+                    {appointment.notes && (
+                      <p>
+                        <strong>Notes:</strong> {appointment.notes}
+                      </p>
+                    )}
+                    {appointment.email && (
+                      <p>
+                        <strong>Email:</strong> {appointment.email}
+                      </p>
+                    )}
+                    {appointment.phone && (
+                      <p>
+                        <strong>Phone:</strong> {appointment.phone}
+                      </p>
+                    )}
+                  <button className="cancelButton" onClick={() => handleCancelAppointment(appointment._id)}>
+                    Cancel
+                  </button>
+                  <button
+                    className="rescheduleButton"
+                    onClick={() => handleRescheduleClick(appointment._id, appointment.date, appointment.time)}
+                  >
+                    Reschedule
+                  </button>
                 </div>
               ))
             ) : (
@@ -170,30 +231,32 @@ export default function AdminAppointments() {
               pastAppointments.map((appointment) => (
                 <div key={appointment._id} className="appointment-card">
                   <p>
-                    <strong>
-                      Name: {appointment.clientName || appointment.name}
-                    </strong>
+                    <strong>{appointment.clientName}</strong>
                   </p>
                   <p>
-                    <strong>Date:</strong> {appointment.date} -{" "}
-                    {appointment.time}
-                  </p>
+                      <strong>
+                        Name: {appointment.clientName || appointment.name}
+                      </strong>
+                    </p>
+                    <p>
+                      <strong>Date:</strong> {formatDateTime(appointment.date)}
+                    </p>
 
-                  {appointment.notes && (
-                    <p>
-                      <strong>Notes:</strong> {appointment.notes}
-                    </p>
-                  )}
-                  {appointment.email && (
-                    <p>
-                      <strong>Email:</strong> {appointment.email}
-                    </p>
-                  )}
-                  {appointment.phone && (
-                    <p>
-                      <strong>Phone:</strong> {appointment.phone}
-                    </p>
-                  )}
+                    {appointment.notes && (
+                      <p>
+                        <strong>Notes:</strong> {appointment.notes}
+                      </p>
+                    )}
+                    {appointment.email && (
+                      <p>
+                        <strong>Email:</strong> {appointment.email}
+                      </p>
+                    )}
+                    {appointment.phone && (
+                      <p>
+                        <strong>Phone:</strong> {appointment.phone}
+                      </p>
+                    )}
                 </div>
               ))
             ) : (
@@ -201,6 +264,29 @@ export default function AdminAppointments() {
             )}
           </section>
         </div>
+
+        {/* Reschedule Modal */}
+        {rescheduleData && (
+          <div className="modal">
+            <div className="modal-content">
+              <h3>Reschedule Appointment</h3>
+              <label>New Date:</label>
+              <input
+                type="date"
+                value={rescheduleData.date}
+                onChange={(e) => setRescheduleData({ ...rescheduleData, date: e.target.value })}
+              />
+              <label>New Time:</label>
+              <input
+                type="time"
+                value={rescheduleData.time}
+                onChange={(e) => setRescheduleData({ ...rescheduleData, time: e.target.value })}
+              />
+              <button onClick={handleConfirmReschedule}>Confirm</button>
+              <button onClick={() => setRescheduleData(null)}>Cancel</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
