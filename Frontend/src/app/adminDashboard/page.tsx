@@ -162,7 +162,7 @@ export default function AdminDashboard() {
                             ) : (
                                 <p>No appointments available.</p>
                             )}
-                             <button className="viewAllAppointmentsButton" onClick={() => window.location.href = "/admin/appointments"}>View All Appointments
+                             <button className="viewAllAppointmentsButton" onClick={() => window.location.href = "/AdminAppointments"}>View All Appointments
                            </button>
                         </section>
                     </div>
