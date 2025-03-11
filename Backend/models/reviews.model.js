@@ -8,8 +8,8 @@ const ReviewSchema = new mongoose.Schema(
         },
         email: {
             type: String,
-            required: true, // Ties the review to the user’s email
-          },
+            required: true,
+        },
         title: {
             type: String,
             required: [true, 'Title'],
@@ -25,14 +25,15 @@ const ReviewSchema = new mongoose.Schema(
             max: [5, 'Rating cannot exceed 5'],
         },
         image: {
-            type: String,
-            required: false,
+            data: Buffer,
+            contentType: String,
         },
     },
     {
         timestamps: true, 
     }
 );
+
 
 const Review = mongoose.model('Review', ReviewSchema);
 module.exports = Review;

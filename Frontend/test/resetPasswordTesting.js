@@ -225,7 +225,7 @@ describe('Reset Password Functionality', async function ()
         let endingURL = await driver.getCurrentUrl()
         assert.strictEqual(endingURL, "http://localhost:3000/resetPassword/ResetToken", 'Reset Password Testing FAILED, Left Reset Password Page')
 
-        //Check That ERROR Message Displayed in Reset PAssword Page For Invalid Password Field, If So, Test PASSED.  Else, Test FAILED
+        //Check That ERROR Message Displayed in Reset Password Page For Invalid Password Field, If So, Test PASSED.  Else, Test FAILED
         let confirmPasswordError = await driver.findElement(By.id('confirmPasswordError')).getText();
         assert.strictEqual(confirmPasswordError, "Your Passwords Don't Match", 'Reset Password Test FAILED, Did Not Catch Reset Password Error')
         
@@ -252,7 +252,7 @@ describe('Reset Password Functionality', async function ()
         let resetPasswordConfirmInput = await driver.findElement(By.id('resetPasswordConfirmInput'));
         await resetPasswordConfirmInput.click()
         await driver.sleep(1000)
-        await resetPasswordConfirmInput.sendKeys("Password123$") //Invalid Confirm Password - Passwords Dont Match
+        await resetPasswordConfirmInput.sendKeys("Password123$") //Valid Confirm Password
         await driver.sleep(1000)
 
         let saveButton = await driver.findElement(By.id('saveButton'));

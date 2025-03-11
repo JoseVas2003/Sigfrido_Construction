@@ -38,6 +38,76 @@
   padding: 8px 15px;
   border-radius: 5px;
 }
+/* Add new in progress project Modal*/
+.modalOverlay {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  z-index: 9999; 
+}
+
+.modalContent {
+  background-color: #fff;
+  padding: 20px;
+  max-width: 600px;
+  width: 90%;
+  border-radius: 8px;
+  position: relative; 
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* form styles */
+.addProjectForm {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem; /* space between rows and columns */
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+}
+
+.formField label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.addProjectForm input[type="text"],
+.addProjectForm input[type="email"],
+.addProjectForm input[type="number"],
+.addProjectForm input[type="file"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.addProjectForm button {
+  grid-column: 1 / span 2; /* make the button span both columns */
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  background-color: #0070f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 
 /* Appointments Section */
 .appointments ul {
