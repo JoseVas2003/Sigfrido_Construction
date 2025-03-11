@@ -5,7 +5,7 @@ import '../Assets/css/calendar.modules.css';
 import Calendar from '../calendar/calendar';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import Confirmation from './confirm';
 import {useSession} from 'next-auth/react';
 
 const placeholderUserId = '672c51b59ccd804fc4195ed0';
@@ -21,6 +21,10 @@ export default function Page() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
     const [showForm, setShowForm] = useState<boolean>(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+    const [Message, setMessage] = useState("");
+    const [Action, setAction] = useState<(() => void) | null>(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -34,7 +38,20 @@ export default function Page() {
     const isAdmin = session?.user?.admin;
     const [blockedDates, setBlockedDates] = useState<string[]>([]);  // Track blocked dates
     const [emailStatus, setEmailStatus] = useState<string | null>(null);
+    const connection = 'http://localhost:3001/api/appointments/';
+    const authenticationURL = connection + (email);
+
+    const open = (message: string, action: () => void) => {
+        setMessage(message);
+        setAction(() => action);
+        setIsOpen(true);
+    };
     
+    const close = () => {
+        setIsOpen(false);
+        setAction(null);
+    };
+
     useEffect(() => {
         if (!email) return;
         fetchAppointments();
@@ -42,9 +59,18 @@ export default function Page() {
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get("http://localhost:3001/api/appointments", {
-                params: { email, isAdmin },
-            });
+            let response;
+    
+            if (isAdmin) {
+                // Admin gets all appointments
+                response = await axios.get(connection);
+            } else {
+                // Regular user fetches appointments based on their email
+                response = await axios.get(authenticationURL, { 
+                    params: { email }  
+                });
+            }
+
             setAppointments(response.data);
             setLoading(false);
         } catch (error) {
@@ -155,41 +181,59 @@ export default function Page() {
         }
     };
         
-    const handleReschedule = async (appointmentId: string) => {
-        // Prepare the updated appointment data (this is based on the form data)
-        const updatedAppointmentData = {
-            date: selectedDate?.toISOString(),
-            time: selectedTime,
-            email: formData.email,
-            name: formData.name,
-            phone: formData.phone,
-            message: formData.message,
-        };
-    
-        try {
-            // Send the PUT request to update the appointment in the backend
-            await axios.put(`http://localhost:3001/api/appointments/${appointmentId}`, updatedAppointmentData, {
-                headers: { "Content-Type": "application/json" },
-            });
-    
-            alert("Appointment rescheduled successfully.");
-            fetchAppointments();  // Refresh the appointment list after rescheduling
-        } catch (error) {
-            console.error("Error rescheduling appointment:", error);
-            alert(`Error: ${error.response?.data?.message || error.message}`);
+    const handleReschedule = (appointmentId: string) => {
+        if (!selectedDate || !selectedTime) {
+            alert("Please select a new date and time before rescheduling.");
+            return;
         }
+    
+        open(
+            `Are you sure you want to reschedule this appointment to ${selectedDate.toLocaleDateString()} at ${selectedTime}?`,
+            async () => {
+                try {
+                    const response = await axios.get(`http://localhost:3001/api/appointments/${appointmentId}`);
+                    const existingAppointment = response.data; 
+    
+                    const updatedAppointmentData = {
+                        date: selectedDate.toISOString(),
+                        time: selectedTime,
+                        email: existingAppointment.email,  
+                        name: existingAppointment.name,
+                        phone: formData.phone || existingAppointment.phone,
+                        message: formData.message || existingAppointment.message,
+                    };
+    
+                    await axios.put(`http://localhost:3001/api/appointments/${appointmentId}`, updatedAppointmentData, {
+                        headers: { "Content-Type": "application/json" },
+                    });
+    
+                    alert("Appointment rescheduled successfully.");
+                    fetchAppointments(); 
+                } catch (error) {
+                    console.error("Error rescheduling appointment:", error);
+                    alert(`Error: ${error.response?.data?.message || error.message}`);
+                }
+                close();
+            }
+        );
     };
     
-    const handleCancel = async (appointmentId: string) => {
-        try {
-            await axios.delete(`http://localhost:3001/api/appointments/${appointmentId}`);
-            alert("Appointment canceled successfully.");
-            fetchAppointments();  // Refresh the appointment list
-        } catch (error) {
-            console.error("Error canceling appointment:", error);
-            alert(`Error: ${error.response?.data?.message || error.message}`);
-        }
-    };    
+    const handleCancel = (appointmentId: string) => {
+        open(
+            "Are you sure you want to cancel this appointment? This action cannot be undone.",
+            async () => {
+                try {
+                    await axios.delete(`http://localhost:3001/api/appointments/${appointmentId}`);
+                    alert("Appointment canceled successfully.");
+                    fetchAppointments();  
+                } catch (error) {
+                    console.error("Error canceling appointment:", error);
+                    alert(`Error: ${error.response?.data?.message || error.message}`);
+                }
+                close();
+            }
+        );
+    }; 
 
     const blockSelectedDate = () => {
         if (selectedDate) {
@@ -199,6 +243,15 @@ export default function Page() {
         }
     };
 
+    const filteredAppointments = appointments.filter((appt) => {
+        const dateStr = new Date(appt.date).toLocaleDateString();
+        return (
+            appt.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            appt.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            dateStr.includes(searchQuery)
+        );
+    });
+
     if (status === 'loading') return <p>Loading session...</p>;
     if (!session) return <p>You need to sign in to book an appointment.</p>;
 
@@ -206,15 +259,6 @@ export default function Page() {
         <div>
             <Navbar />
             <div className="pageContainer">
-                {/* Display User Session Information (temp)*/}
-                <div className="userSessionInfo">
-                    <h2>User Session Information</h2>
-                    <p><strong>Name:</strong> {session.user?.name}</p>
-                    <p><strong>Email:</strong> {session.user?.email}</p>
-                    <p><strong>Role:</strong> {session.user?.admin ? 'Admin' : 'User'}</p>
-                    
-                </div>
-
                 {/* Left Container: Worker Information */}
                 <div className="workerSection">
                     <div className="workerDescriptionContainer">
@@ -229,13 +273,24 @@ export default function Page() {
                     {/* Below workers: Appointments */}
                     <div className="appContainer">
                         <h2>Existing Appointments for {names}</h2>
+
+                        {isAdmin && (
+                        <input 
+                            type="text" 
+                            placeholder="Search by name, email, or date" 
+                            value={searchQuery} 
+                            onChange={(e) => setSearchQuery(e.target.value)} 
+                            className="searchBar"
+                        />
+                    )}
+
                         {loading ? (
                             <p>Loading appointments...</p>
                         ) : appointments.length > 0 ? (
                         <ul>
-                        {appointments.map((appt) => (
+                        {filteredAppointments.map((appt) => (
                             <li key={appt._id}>
-                                <strong>{new Date(appt.date).toLocaleDateString()}</strong> at {appt.time}
+                            <strong>{new Date(appt.date).toLocaleDateString()}</strong> at {appt.time} - {appt.name} ({appt.email})
                                 <div className="appointmentActions">
                                     <button
                                         className="rescheduleButton"
@@ -307,7 +362,15 @@ export default function Page() {
                     <button onClick={blockSelectedDate}>Block Selected Date</button>
                 </div>
             )}
-
-        </div>
+            <Confirmation
+                isOpen={isOpen}
+                message={Message}
+                onConfirm={() => {
+                    if (Action) Action();
+                }}
+                onCancel={close}
+            />
+                    </div>
+        
     );
 }

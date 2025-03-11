@@ -6,6 +6,7 @@ import galleryIcon from '../createProject/galleryIcon.png'
 import Image from 'next/image';
 import {clicksOut} from '../navbar/navBar'
 import axios from "axios"
+import {useRouter} from 'next/navigation';
 
 export default function CreateProjectPage() {
     const [formData, setFormData] = useState({
@@ -16,30 +17,61 @@ export default function CreateProjectPage() {
         categories: [] as string[], 
         image: null as File | null,
     });
+    const router = useRouter();
 
-  // Error states for each field
-  const [projectNameError, setProjectNameError] = useState("");
-  const [descriptionError, setDescriptionError] = useState("");
-  const [timeTakenError, setTimeTakenError] = useState("");
-  const [costError, setCostError] = useState("");
-  const [categoriesError, setCategoriesError] = useState("");
-  const [imageError, setImageError] = useState("");
+    // Error states for each field
+    const [projectNameError, setProjectNameError] = useState("");
+    const [descriptionError, setDescriptionError] = useState("");
+    const [timeTakenError, setTimeTakenError] = useState("");
+    const [costError, setCostError] = useState("");
+    const [categoriesError, setCategoriesError] = useState("");
+    const [imageError, setImageError] = useState("");
 
-  // Ref for hidden file input
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Ref for hidden file input
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Handle text changes and clear errors on input
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+        let inputValue = value;
+        let maxLength = 0;
+        let setError: React.Dispatch<React.SetStateAction<string>> | null = null;
+
+        switch (name) {
+            case 'name':
+                maxLength = 30;
+                setError = setProjectNameError;
+                break;
+            case 'timeTaken':
+                maxLength = 15; 
+                setError = setTimeTakenError;
+                break;
+            case 'cost':
+                maxLength = 15; 
+                setError = setCostError;
+                break;
+            case 'description':
+                maxLength = 100;
+                setError = setDescriptionError;
+                break;
+            default:
+                maxLength = 100;
+        }
+
+        // If the length exceeds the character limit, then truncate and set error message
+        if (value.length > maxLength) {
+            inputValue = value.substring(0, maxLength);
+            setError?.(`${maxLength} character max limit reached`);
+        } else {
+            // Clear the error if within limit
+            setError?.("");
+        }
+        
         setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
+            ...prevFormData,
+            [name]: inputValue,
         }));
-        // Clear error when user starts typing
-        if (name === "name") setProjectNameError("");
-        if (name === "description") setDescriptionError("");
-        if (name === "timeTaken") setTimeTakenError("");
-        if (name === "cost") setCostError("");
     };
 
     // Handle multiple checkboxes
@@ -63,70 +95,69 @@ export default function CreateProjectPage() {
 
     const handleImageClick = () => {
         if (fileInputRef.current) {
-          fileInputRef.current.click();
+            fileInputRef.current.click();
         }
-      };
+    };
     
- const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-        setImageError("");
-        // Immediately check file type/size on selection
-        const validTypes = ["image/heic", "image/png", "image/jpeg"];
-        if (!validTypes.includes(file.type)) {
-            setImageError("Only HEIC, PNG and JPEG images are allowed.");
-            return;
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageError("");
+            const validTypes = ["image/heic", "image/png", "image/jpeg"];
+            if (!validTypes.includes(file.type)) {
+                setImageError("Only HEIC, PNG and JPEG images are allowed.");
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                setImageError("Image must be less than 10MB.");
+                return;
+            }
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                image: file,
+            }));
         }
-        if (file.size > 10 * 1024 * 1024) {
-            setImageError("Image must be less than 10MB.");
-            return;
-        }
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            image: file,
-        }));
-    }
- };
+    };
 
-  // Validate the form fields before submitting
-  const validateForm = (): boolean => {
-    let valid = true;
-    if (!formData.name.trim()) {
-      setProjectNameError("Project Name cannot be empty.");
-      valid = false;
-    }
-    if (!formData.description.trim()) {
-      setDescriptionError("Description cannot be empty.");
-      valid = false;
-    }
-    if (!formData.timeTaken.trim()) {
-      setTimeTakenError("Time Taken cannot be empty.");
-      valid = false;
-    }
-    if (!formData.cost.trim()) {
-      setCostError("Cost cannot be empty.");
-      valid = false;
-    }
-    if (formData.categories.length === 0) {
-      setCategoriesError("Please select at least one project category.");
-      valid = false;
-    }
-    if (!formData.image) {
-      setImageError("Please upload an image.");
-      valid = false;
-    } else {
-      const validTypes = ["image/heic", "image/png", "image/jpeg"];
-      if (!validTypes.includes(formData.image.type)) {
-        setImageError("Only HEIC, PNG and JPEG images are allowed.");
-        valid = false;
-      }
-      if (formData.image.size > 10 * 1024 * 1024) {
-        setImageError("Image must be less than 10MB.");
-        valid = false;
-      }
-    }
-    return valid;
-  };
+    // Validate the form fields before submitting
+    const validateForm = (): boolean => {
+        let valid = true;
+        if (!formData.name.trim()) {
+            setProjectNameError("Project Name cannot be empty.");
+            valid = false;
+        }
+        if (!formData.description.trim()) {
+            setDescriptionError("Description cannot be empty.");
+            valid = false;
+        }
+        if (!formData.timeTaken.trim()) {
+            setTimeTakenError("Time Taken cannot be empty.");
+            valid = false;
+        }
+        if (!formData.cost.trim()) {
+            setCostError("Cost cannot be empty.");
+            valid = false;
+        }
+        if (formData.categories.length === 0) {
+            setCategoriesError("Please select at least one project category.");
+            valid = false;
+        }
+        if (!formData.image) {
+            setImageError("Please upload an image.");
+            valid = false;
+        } else {
+            const validTypes = ["image/heic", "image/png", "image/jpeg"];
+            if (!validTypes.includes(formData.image.type)) {
+                setImageError("Only HEIC, PNG and JPEG images are allowed.");
+                valid = false;
+            }
+            if (formData.image.size > 10 * 1024 * 1024) {
+                setImageError("Image must be less than 10MB.");
+                valid = false;
+            }
+        }
+        return valid;
+    };
 
     // Submitting form using Axios
     const handleSubmit = async (e: React.FormEvent) => {
@@ -136,28 +167,28 @@ export default function CreateProjectPage() {
             return;
         }
 
-    try {
-        // necessary since I am sending a reg file and text together
-        const data = new FormData();
-        data.append("name", formData.name);
-        data.append("description", formData.description);
-        data.append("timeTaken", formData.timeTaken);
-        data.append("cost", formData.cost);
-        formData.categories.forEach((cat) => data.append("categories", cat));
-        
-        // Append file if it exists
-        if (formData.image) {
-            data.append("image", formData.image);
-        }
+        try {
+            // necessary since I am sending a reg file and text together
+            const data = new FormData();
+            data.append("name", formData.name);
+            data.append("description", formData.description);
+            data.append("timeTaken", formData.timeTaken);
+            data.append("cost", formData.cost);
+            formData.categories.forEach((cat) => data.append("categories", cat));
+            
+            // Append file if it exists
+            if (formData.image) {
+                data.append("image", formData.image);
+            }
 
-        const response = await axios.post('http://localhost:3001/api/projects', data);
-        console.log('Response from server:', response.data);
-        alert('Project created successfully!');
-    } catch (error: any) {
-        console.error('Error response:', error.response?.data || error.message);
-        alert(`Error: ${error.response?.data?.message || error.message}`);
-    }
-};
+            const response = await axios.post('http://localhost:3001/api/projects', data);
+            router.push("/portfolio?message=" + encodeURIComponent("Project created successfully!"));
+            //router.push('/portfolio');
+        } catch (error: any) {
+            console.error('Error response:', error.response?.data || error.message);
+            alert(`Error: ${error.response?.data?.message || error.message}`);
+        }
+    };
 
     return (
         <div>
@@ -245,8 +276,8 @@ export default function CreateProjectPage() {
                                 <input
                                     type="checkbox"
                                     name="category"
-                                    value="adu"
-                                    checked={formData.categories.includes('adu')}
+                                    value="ADU"
+                                    checked={formData.categories.includes('ADU')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                 />
@@ -256,8 +287,8 @@ export default function CreateProjectPage() {
                                     <input
                                     type="checkbox"
                                     name="category"
-                                    value="bathrooms"
-                                    checked={formData.categories.includes('bathrooms')}
+                                    value="Bathrooms"
+                                    checked={formData.categories.includes('Bathrooms')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                     />
@@ -267,8 +298,8 @@ export default function CreateProjectPage() {
                                     <input
                                     type="checkbox"
                                     name="category"
-                                    value="floors"
-                                    checked={formData.categories.includes('floors')}
+                                    value="Floors"
+                                    checked={formData.categories.includes('Floors')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                     />
@@ -278,8 +309,8 @@ export default function CreateProjectPage() {
                                 <input
                                     type="checkbox"
                                     name="category"
-                                    value="kitchen"
-                                    checked={formData.categories.includes('kitchen')}
+                                    value="Kitchen"
+                                    checked={formData.categories.includes('Kitchen')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                 />
@@ -289,8 +320,8 @@ export default function CreateProjectPage() {
                                 <input
                                     type="checkbox"
                                     name="category"
-                                    value="roofs"
-                                    checked={formData.categories.includes('roofs')}
+                                    value="Roofs"
+                                    checked={formData.categories.includes('Roofs')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                 />
@@ -300,8 +331,8 @@ export default function CreateProjectPage() {
                                 <input
                                     type="checkbox"
                                     name="category"
-                                    value="rooms"
-                                    checked={formData.categories.includes('rooms')}
+                                    value="Rooms"
+                                    checked={formData.categories.includes('Rooms')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                 />
@@ -381,19 +412,18 @@ const styles: { [key: string]: CSSProperties } = {
         border: '2px solid black',
     },
     inputGroup: {
-        
         marginBottom: '15px',
         fontFamily: 'Arial, sans-serif',
         color: '#333',
         textAlign: 'center',
-        fontSize: '32px',
+        fontSize: '24px',
     },
     input: {
         width: '100%',
         padding: '10px',
         borderRadius: '15px',
         border: '2px solid black',
-        fontSize: '36px',
+        fontSize: '24px',
     },
     textarea: {
         width: '100%',
@@ -411,42 +441,32 @@ const styles: { [key: string]: CSSProperties } = {
         backgroundColor: '#4FB6CE',
         cursor: 'pointer',
         fontWeight: 'bold',
-        fontSize: '32px',
+        fontSize: '24px',
         color: '#000'
     },
     checkboxGroup: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))',
         gap: '10px', 
     },
     checkboxLabel: {
         display: 'flex',
         alignItems: 'center',
         fontWeight: 'normal',
-        fontSize: '36px',
+        fontSize: '24px',
+        width: '175px',
     },
     checkbox: {
         marginRight: '10px',
         marginLeft: '20px',
-        width: '30px',
-        height: '30px',
+        width: '25px',
+        height: '25px',
         alignItems: 'center',
-
-    },
-    imageUploadContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        height: '200px',
-        border: '2px dashed #ccc',
-        borderRadius: '8px',
         cursor: 'pointer',
-        backgroundColor: '#fafafa',
     },
     label: {
         display: 'block',
-        fontSize: '32px',
+        fontSize: '24px',
         textAlign: 'center',
     },
     row: {
@@ -459,8 +479,8 @@ const styles: { [key: string]: CSSProperties } = {
         fontFamily: 'Arial, sans-serif',
         color: '#333',
         textAlign: 'center',
-        fontSize: '32px',
-        marginTop: '30px',
+        fontSize: '24px',
+        marginTop: '00px',
     },
     imageContainer: {
         display: 'flex',
@@ -472,5 +492,5 @@ const styles: { [key: string]: CSSProperties } = {
         fontSize: '20px',
         marginTop: '5px',
         textAlign: 'center',
-      },
+    },
 };

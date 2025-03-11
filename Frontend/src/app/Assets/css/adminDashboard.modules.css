@@ -143,6 +143,18 @@
   border-radius: 5px;
 }
 
+/* User Section */
+.users .user-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+  background: #f9f9f9;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
 /* Calendar Placeholder */
 .calendarWidget {
   text-align: center;

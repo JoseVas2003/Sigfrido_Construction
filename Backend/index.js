@@ -9,6 +9,7 @@ const projectRoutes = require("./routes/projects.routes.js");
 const inProgressProjectRoutes = require("./routes/inProgressProjects.routes.js");
 const contactUsRoutes = require("./routes/contactUs.routes.js");
 const forgotPasswordEmailRoutes = require("./routes/forgotPassword.routes.js");
+const resetPasswordRoutes = require("./routes/resetPassword.routes.js");
 const app = express();
 const PORT = process.env.PORT || 3001;
 const cors = require("cors");
@@ -30,6 +31,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/emails",emailRoutes);
 app.use("/api/contactUs", contactUsRoutes);
 app.use("/api/forgotPasswordEmail", forgotPasswordEmailRoutes);
+app.use("/api/resetPassword", resetPasswordRoutes);
 
 
 app.get("/", (req, res) => {

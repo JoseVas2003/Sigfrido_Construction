@@ -25,12 +25,18 @@ const ContactUsSchema = mongoose.Schema(
             type:String,
             required: [true, "please enter your desired message"],
         },
+        ts: {
+            type: Date,
+            
+
+        }
     },
     {
         timestamps: true,
     }
 );
 
+ContactUsSchema.index({ ts: 1 }, { expiresAfterSeconds: 2592000 });
 const ContactUs = mongoose.model("ContactUs", ContactUsSchema)
 
 module.exports = ContactUs;
