@@ -1,11 +1,11 @@
 "use client";
 
 import { useSession } from 'next-auth/react';
-import React, { useState, CSSProperties, useRef, DragEvent, ChangeEvent } from 'react';
+import React, { useState, CSSProperties, ChangeEvent, DragEvent } from 'react';
 import Navbar from '../navbar/navBar';
 
 export default function ContactPage() {
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const [activeIndex, setActiveIndex] = useState<{ [key: number]: number | null }>({});
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [sections, setSections] = useState([
         { title: 'General Questions', questionsAndAnswers: [{ question: 'How many days?', answer: '10 days.' }] },
@@ -15,8 +15,11 @@ export default function ContactPage() {
 
     const { data: session, status } = useSession();
 
-    const handleAccordionClick = (index: number) => {
-        setActiveIndex(prev => (prev === index ? null : index));
+    const handleAccordionClick = (sectionIndex: number, index: number) => {
+        setActiveIndex(prev => ({
+            ...prev,
+            [sectionIndex]: prev[sectionIndex] === index ? null : index,
+        }));
     };
 
     const handleEditToggle = () => {
@@ -74,32 +77,30 @@ export default function ContactPage() {
 
     const addQuestion = (sectionIndex: number) => {
         setSections((prev) => {
-            const updatedSections = [...prev];  // copy previous sections
+            const updatedSections = [...prev];
             updatedSections[sectionIndex] = {
-                ...updatedSections[sectionIndex],  // copy the section
+                ...updatedSections[sectionIndex],
                 questionsAndAnswers: [
-                    ...updatedSections[sectionIndex].questionsAndAnswers,  // copy current questions
-                    { question: 'New question?', answer: 'New answer.' },  // add new question
+                    ...updatedSections[sectionIndex].questionsAndAnswers,
+                    { question: 'New question?', answer: 'New answer.' },
                 ],
             };
-            return updatedSections;  // return updated state
+            return updatedSections;
         });
     };
-    
+
     const removeQuestion = (sectionIndex: number, index: number) => {
         setSections((prev) => {
-            const updatedSections = [...prev];  // copy previous sections
+            const updatedSections = [...prev];
             updatedSections[sectionIndex] = {
-                ...updatedSections[sectionIndex],  // copy the section
+                ...updatedSections[sectionIndex],
                 questionsAndAnswers: updatedSections[sectionIndex].questionsAndAnswers.filter(
-                    (_, i) => i !== index  // filter out the question
+                    (_, i) => i !== index
                 ),
             };
-            return updatedSections;  // return updated state
+            return updatedSections;
         });
     };
-    
-    
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -163,11 +164,12 @@ export default function ContactPage() {
                             {/* Accordion for Questions in the Section */}
                             <div>
                                 {section.questionsAndAnswers.map((qa, index) => (
-                                    <div 
-                                        key={index} 
-                                        draggable={isEditing}
-                                    >
-                                        <button className="accordion" onClick={() => handleAccordionClick(index)} style={styles.accordion}>
+                                    <div key={index} draggable={isEditing}>
+                                        <button
+                                            className="accordion"
+                                            onClick={() => handleAccordionClick(sectionIndex, index)} // Pass sectionIndex and index
+                                            style={styles.accordion}
+                                        >
                                             {isEditing ? (
                                                 <input 
                                                     type="text" 
@@ -179,11 +181,17 @@ export default function ContactPage() {
                                                 qa.question
                                             )}
                                         </button>
-                                        <div className="panel" style={{ ...styles.panel, maxHeight: activeIndex === index ? '100px' : '0' }}>
+                                        <div
+                                            className="panel"
+                                            style={{
+                                                ...styles.panel,
+                                                maxHeight: activeIndex[sectionIndex] === index ? '100px' : '0', // Use section-specific activeIndex
+                                            }}
+                                        >
                                             {isEditing ? (
-                                                <textarea 
-                                                    value={qa.answer} 
-                                                    onChange={(e) => handleChange(sectionIndex, index, 'answer', e.target.value)} 
+                                                <textarea
+                                                    value={qa.answer}
+                                                    onChange={(e) => handleChange(sectionIndex, index, 'answer', e.target.value)}
                                                     style={styles.textarea}
                                                 />
                                             ) : (
@@ -220,6 +228,14 @@ export default function ContactPage() {
                         </button>
                     )}
                 </div>
+            </div>
+
+            {/* Contact Us Section */}
+            <div style={styles.contactUsContainer}>
+                <p style={styles.contactUsText}>
+                    Don't see your question answered here? Feel free to{' '}
+                    <a href="http://localhost:3000/contactPage" style={styles.contactLink}>contact us here</a>.
+                </p>
             </div>
         </div>
     );
@@ -346,5 +362,16 @@ const styles: { [key: string]: CSSProperties } = {
         width: '100%',
         minHeight: '80px',
     },
+    contactUsContainer: {
+        textAlign: 'center',
+        marginTop: '40px',
+        padding: '10px',
+    },
+    contactUsText: {
+        fontSize: '16px',
+    },
+    contactLink: {
+        color: '#57bcd3',
+        textDecoration: 'none',
+    },
 };
-
