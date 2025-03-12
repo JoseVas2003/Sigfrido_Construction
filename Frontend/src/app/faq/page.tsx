@@ -8,8 +8,9 @@ export default function ContactPage() {
     const [activeIndex, setActiveIndex] = useState<{ [key: number]: number | null }>({});
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [sections, setSections] = useState([
-        { title: 'General Questions', questionsAndAnswers: [{ question: 'How many days?', answer: '10 days.' }] },
-        { title: 'Product Queries', questionsAndAnswers: [{ question: 'How many months?', answer: '100 months.' }] },
+        { title: 'General Questions', questionsAndAnswers: [{ question: 'Question 1', answer: 'Answer 1' }, { question: 'Question 2', answer: 'Answer 2' }] },
+        { title: 'Product Questions', questionsAndAnswers: [{ question: 'Question 1', answer: 'Answer 1' }] },
+        { title: 'Support Questions', questionsAndAnswers: [{ question: 'Question 1', answer: 'Answer 1' }] },
     ]);
     const [imageSrc, setImageSrc] = useState<string>("https://t4.ftcdn.net/jpg/02/31/09/95/360_F_231099575_lZ0t1s4lR3YtrQbeEqUPDqiW0UsQNKcy.jpg");
 
