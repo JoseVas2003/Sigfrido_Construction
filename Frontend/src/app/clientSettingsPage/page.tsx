@@ -380,10 +380,6 @@ export default function page(){
               <Image src={Settings} alt="Settings Icon" height={25} width={25} />
               Settings
             </Link>
-            <Link href="../">
-              <Image src={Signout} alt="Logout Icon" height={25} width={25} />
-              Logout
-            </Link>
           </div>
         </div>
 

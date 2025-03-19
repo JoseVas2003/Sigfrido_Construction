@@ -9,7 +9,6 @@ import Link from "next/link";
 import Message from '../Assets/clientDashboardIcons/Message.png';
 import Question from '../Assets/clientDashboardIcons/Question.png';
 import Settings from '../Assets/clientDashboardIcons/Setting_line_light@3x.png';
-import Signout from '../Assets/clientDashboardIcons/Sign_out_squre.png';
 
 // Static images
 import Bathroom from '../Assets/clientStaticImages/Bathroom-static.jpg';
@@ -54,10 +53,6 @@ export default function page(){
             <Link href="../clientSettingsPage">
               <Image src={Settings} alt="Settings Icon" height={25} width={25} />
               Settings
-            </Link>
-            <Link href="../home">
-              <Image src={Signout} alt="Logout Icon" height={20} width={20} />
-              Logout
             </Link>
           </div>
         </div>
