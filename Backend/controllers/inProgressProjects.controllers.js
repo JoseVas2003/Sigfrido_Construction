@@ -57,9 +57,25 @@ const getInProgressProjects = async (req, res) => {
     }
   };
   
+  const getUsersProjects = async (req, res) => {
+    try {
+      const { email } = req.params;
+      const getProjects = await InProgressProject.find({email}, req.body);
+
+      if (!getProjects) {
+        return res.status(404).json({ message: "Projects not found" });
+      }
+
+      return res.status(200).json(getProjects);
+    } catch (error) {
+      return res.status(500).json({ message: "Error getting projects", error: error.message });
+    }
+  };
+
   module.exports = {
     createInProgressProject,
     getInProgressProjects,
     updateInProgressProject,
+    getUsersProjects,
 // (Add additional functions for update, delete, etc. )
 };
