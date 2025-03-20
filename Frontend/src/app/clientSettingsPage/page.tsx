@@ -16,7 +16,6 @@ import "../Assets/css/ClientDashboardProfile.modules.css";
 import Message from '../Assets/clientDashboardIcons/Message.png';
 import Question from '../Assets/clientDashboardIcons/Question.png';
 import Settings from '../Assets/clientDashboardIcons/Setting_line_light@3x.png';
-import Signout from '../Assets/clientDashboardIcons/Sign_out_squre.png';
 
 // Static image
 import Construction from '../Assets/clientStaticImages/Construction-static.jpg';
