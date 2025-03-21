@@ -4,6 +4,7 @@ const { sendAppointmentConfirmation } = require("../controllers/email.controller
 const getAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({});
+    res.status(200).json(appointments);
     console.log("Fetched Appointments:", appointments);
 
   } catch (error) {
@@ -19,7 +20,6 @@ const getAppointment = async (req, res) => {
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
-
     res.status(200).json(appointment);
   } catch (error) {
     res.status(500).json({ message: error.message });
