@@ -5,6 +5,7 @@ import {useSession} from 'next-auth/react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import {signOut} from 'next-auth/react';
+import bcrypt from 'bcryptjs';
 
 import Image from 'next/image';
 import Navbar from "../navbar/navBar";
@@ -145,8 +146,9 @@ export default function page(){
       });
 
       let userCurrent = user.data.password;
+      const matches = await bcrypt.compare(currentPassword,user.data.password);
 
-      if (userCurrent != currentPassword) {
+      if (!matches) {
         setPasswordError("Current password is incorrect.");
         setPasswordBorder(true);
         return false;
@@ -165,6 +167,10 @@ export default function page(){
       const connection = 'http://localhost:3001/api/users/';
       const resetPasswordURL = connection + (email);
       updatedPassword.password = newPassword;
+
+      const salt = await bcrypt.genSalt();
+      const passwordHash = await bcrypt.hash(updatedPassword.password,salt);
+      updatedPassword.password = passwordHash;
 
       try {
         await axios.put(resetPasswordURL, updatedPassword, {
@@ -260,7 +266,9 @@ export default function page(){
       let userCurrent = user.data.password;
       userID = user.data._id;
 
-      if (userCurrent != oldPasswordDelete) {
+      const matches = await bcrypt.compare(oldPasswordDelete,user.data.password);
+
+      if (!matches) {
         setPasswordError("Current password is incorrect.");
         setPasswordBorder(true);
         return false;
