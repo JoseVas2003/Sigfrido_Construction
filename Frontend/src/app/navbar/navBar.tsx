@@ -52,7 +52,7 @@ const Navbar = () =>{
                     </Link>
 
                     <Link href="../portfolio">
-                        <button type="button" className="menuePageButtons">Portfolio</button>
+                        <button type="button" className="menuePageButtons" id='portfolioButton'>Portfolio</button>
                     </Link>
 
                     <Link href="../meetTheOwner">
