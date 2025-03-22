@@ -25,7 +25,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   onDelete
 }) => {
   return (
-    <div style={styles.cardContainer}>
+    <div style={styles.cardContainer} data-testid="project-card">
       {/* Project Title */}
       <h2 style={styles.title}>{title}</h2>
 
@@ -42,7 +42,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         <div style={styles.textContainer}>
           <p style={styles.descriptionTitle}>Description:</p>
           <p style={styles.descriptionText}>{description}</p>
-          <p style={styles.detail}>
+          <p style={styles.detail} data-testid="project-category">
             <strong>Project Category:</strong> {category}
           </p>
           <p style={styles.detail}>
@@ -58,7 +58,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       {editMode && (
         <div style={styles.actionsContainer}>
           {/* Delete Button */}
-          <div style={styles.deleteIcon} onClick={() => onDelete(id)}>
+          <div id="deleteButton" style={styles.deleteIcon} onClick={() => onDelete(id)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -75,7 +75,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
           {/* Edit Button */}
             <Link href={`/editProject/${id}`}>
-              <button style={styles.editButton}>Edit Project</button>
+              <button style={styles.editButton} data-testid={'edit-project-button'}>Edit Project</button>
             </Link>
           </div>
       )}
@@ -85,13 +85,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
 const styles: { [key: string]: CSSProperties } = {
   cardContainer: {
-    width: '600px',
+    width: '700px',
     border: '1px solid #ccc',
     padding: '20px auto',
     backgroundColor: '#EBECE5',
     color: 'black',
     position: 'relative', 
     margin: '20px',
+    paddingBottom: '70px',
   },
   title: {
     textAlign: 'center',
