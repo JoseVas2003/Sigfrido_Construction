@@ -88,7 +88,7 @@ export default function Portfolio() {
                     {/* Only show add / edit buttons to admin */}
                     {/* Pencil Icon Button */}
                     {(session?.user?.admin) && (
-                        <div style={styles.iconSquare} onClick={toggleEditMode}>                        
+                        <div style={styles.iconSquare} id='editButton' onClick={toggleEditMode}>                        
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="32"
@@ -106,7 +106,7 @@ export default function Portfolio() {
                     {/* Plus Icon Button with Link to createProject*/}
                     {(session?.user?.admin) && (
                         <Link href="/createProject">
-                            <div style={styles.iconSquare} role="button">
+                            <div style={styles.iconSquare} id='createButton' role="button" >
                                 <span style={styles.plusSign}>+</span>
                             </div>
                         </Link>
@@ -115,27 +115,27 @@ export default function Portfolio() {
 
                     {/* Filter Dropdown */}
                     <div style={styles.filterContainer}>
-                        <label htmlFor="filter" style={styles.label}>Filter:</label>
+                        <label htmlFor="filter" id='filterButton' style={styles.label}>Filter:</label>
                         <select
                             id="filter"
                             style={styles.dropdown}
                             value={selectedFilter}
                             onChange={handleFilterChange}
                         >
-                            <option value="All">All</option>
-                            <option value="ADU">ADU</option>
-                            <option value="Bathrooms">Bathrooms</option>
-                            <option value="Floors">Floors</option>
-                            <option value="Kitchen">Kitchen</option>
-                            <option value="Roofs">Roofs</option>
-                            <option value="Rooms">Rooms</option>
+                            <option id="category-All" value="All">All</option>
+                            <option id="category-ADU" value="ADU">ADU</option>
+                            <option id="category-Bathrooms" value="Bathrooms">Bathrooms</option>
+                            <option id="category-Floors" value="Floors">Floors</option>
+                            <option id="category-Kitchen" value="Kitchen">Kitchen</option>
+                            <option id="category-Roofs" value="Roofs">Roofs</option>
+                            <option id="category-Rooms" value="Rooms">Rooms</option>
                         </select>
                     </div> 
                 </div>
 
                 {/* Notification Rectangle */}
                 {notification && (
-                <div style={styles.deleteNotification}>
+                <div id="deleteNotification" style={styles.deleteNotification}>
                     {notification}
                 </div>
                 )}
@@ -163,7 +163,7 @@ export default function Portfolio() {
 const styles: { [key: string]: CSSProperties } = {    
     container: {
         position: 'relative',
-      },
+    },
     headerContainer: {
         position: 'relative',
         top: '5px',
@@ -211,7 +211,7 @@ const styles: { [key: string]: CSSProperties } = {
         fontSize: '18px',
         zIndex: 1500,
         fontWeight: 'bold',
-      },
+    },
     dropdown: {
         backgroundColor: '#1E2D3D',
         color: '#EBECE5',  
@@ -228,13 +228,13 @@ const styles: { [key: string]: CSSProperties } = {
         alignItems: 'center',
         paddingTop: '30px',
     },
-Navbar: {
-    width: '100%',
-    position: 'fixed',
-    top: 0,
-    left: 0, // Ensures the Navbar takes up the full width
-    right: 0,
-    zIndex: 1000, // High z-index to overlay content
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-},
+    Navbar: {
+        width: '100%',
+        position: 'fixed',
+        top: 0,
+        left: 0, // Ensures the Navbar takes up the full width
+        right: 0,
+        zIndex: 1000, // High z-index to overlay content
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    },
 };
