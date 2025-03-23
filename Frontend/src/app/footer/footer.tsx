@@ -13,7 +13,7 @@ export default function Footer() {
               <button type="button">About</button>
             </Link>
             <Link href="../contactPage">
-              <button type="button">Contact</button>
+              <button type="button" id='contactButton'>Contact</button>
             </Link>
             <Link href="../reviews">
               <button type="button">Review</button>
