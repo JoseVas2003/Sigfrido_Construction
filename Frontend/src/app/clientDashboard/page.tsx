@@ -78,7 +78,7 @@ export default function page(){
               <Image src={Message} alt="Message Icon" height={25} width={25} />
               Contact Us
             </Link>
-            <Link href="../clientSettingsPage">
+            <Link href="../clientSettingsPage" id='clientSettingsButton'>
               <Image src={Settings} alt="Settings Icon" height={25} width={25} />
               Settings
             </Link>

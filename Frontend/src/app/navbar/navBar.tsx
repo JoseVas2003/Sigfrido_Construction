@@ -69,7 +69,7 @@ const Navbar = () =>{
                         </Link>
                     ) : (
                         <Link href="../clientDashboard">
-                            <button type="button" className="menuePageButtons">Dashboard</button>
+                            <button type="button" className="menuePageButtons" id='clientDashboardButton'>Dashboard</button>
                         </Link>
                     )}
 
