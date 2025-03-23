@@ -381,7 +381,7 @@ export default function AdminDashboard() {
                                         {new Date(contactForm.createdAt).toLocaleString()}
                                     </em>
                                 </p>
-                                <button onClick={() => handleDeleteContactForm(contactForm._id)}>
+                                <button onClick={() => handleDeleteContactForm(contactForm._id)} id={contactForm.email + contactForm.subject}> {/*id specified for testing purposes*/}
                                     Delete
                                 </button>
                             </div>
