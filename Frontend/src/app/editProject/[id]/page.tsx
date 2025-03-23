@@ -28,6 +28,7 @@ export default function EditProjectPage() {
   const [costError, setCostError] = useState("");
   const [categoriesError, setCategoriesError] = useState("");
   const [imageError, setImageError] = useState("");
+  const [submitHovered, setSubmitHovered] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -406,9 +407,18 @@ export default function EditProjectPage() {
 
             {/* Submit */}
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
-              <button type="submit" style={styles.button}>
+              <button
+                type="submit"
+                style={{
+                  ...styles.button,
+                  backgroundColor: submitHovered ? '#1E2D3D' : styles.button.backgroundColor,
+                  color: submitHovered ? '#EBECE5' : styles.button.color,
+                }}
+                onMouseEnter={() => setSubmitHovered(true)}
+                onMouseLeave={() => setSubmitHovered(false)}
+              >
                 Save Changes
-              </button>
+              </button>   
             </div>
           </form>
         </div>
@@ -472,7 +482,6 @@ const styles: { [key: string]: CSSProperties } = {
   button: {
     padding: '10px 20px',
     borderRadius: '15px',
-    border: '2px solid black',
     backgroundColor: '#4FB6CE',
     cursor: 'pointer',
     fontWeight: 'bold',

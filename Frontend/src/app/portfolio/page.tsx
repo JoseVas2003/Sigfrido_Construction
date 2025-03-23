@@ -19,8 +19,8 @@ export default function Portfolio() {
     const [editMode, setEditMode] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState("All");
     const [notification, setNotification] = useState("");
-
-    // we fetch all the projects
+    const [hoveredIcon, setHoveredIcon] = useState<"pencil" | "plus" | null>(null);
+    // fetch all the projects
     useEffect(() => {
         axios.get('http://localhost:3001/api/projects')
           .then((response: { data: React.SetStateAction<any[]>; }) => {
@@ -88,13 +88,22 @@ export default function Portfolio() {
                     {/* Only show add / edit buttons to admin */}
                     {/* Pencil Icon Button */}
                     {(session?.user?.admin) && (
-                        <div style={styles.iconSquare} id='editButton' onClick={toggleEditMode}>                        
+                        <div
+                            id='editButton'
+                            style={{
+                                ...styles.iconSquare,
+                                backgroundColor: hoveredIcon === 'pencil' ? '#4FB6CE' : '#1E2D3D',
+                            }}
+                            onMouseEnter={() => setHoveredIcon('pencil')}
+                            onMouseLeave={() => setHoveredIcon(null)}
+                            onClick={toggleEditMode}
+                        >                        
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="32"
                                 height="32"
                                 viewBox="0 0 24 24"
-                                stroke="#EBECE5"
+                                stroke={hoveredIcon === 'pencil' ? '#1E2D3D' : '#EBECE5'}
                                 strokeWidth="2"
                                 strokeLinecap="round"
                             >
@@ -106,12 +115,27 @@ export default function Portfolio() {
                     {/* Plus Icon Button with Link to createProject*/}
                     {(session?.user?.admin) && (
                         <Link href="/createProject">
-                            <div style={styles.iconSquare} id='createButton' role="button" >
-                                <span style={styles.plusSign}>+</span>
+                            <div
+                                id="createButton"
+                                role="button"
+                                style={{
+                                    ...styles.iconSquare,
+                                    backgroundColor: hoveredIcon === 'plus' ? '#4FB6CE' : '#1E2D3D',
+                                }}
+                                onMouseEnter={() => setHoveredIcon('plus')}
+                                onMouseLeave={() => setHoveredIcon(null)}
+                            >
+                                <span
+                                    style={{
+                                        ...styles.plusSign,
+                                        color: hoveredIcon === 'plus' ? '#1E2D3D' : '#EBECE5',
+                                    }}
+                                >
+                                    +
+                                </span>
                             </div>
                         </Link>
                     )}
-
 
                     {/* Filter Dropdown */}
                     <div style={styles.filterContainer}>
@@ -168,7 +192,7 @@ const styles: { [key: string]: CSSProperties } = {
         position: 'relative',
         top: '5px',
         display: 'flex',
-        paddingTop: '120px', // Add padding to offset the fixed Navbar height
+        paddingTop: '120px',
         paddingRight: '20px', 
         justifyContent: 'flex-end',
     },
@@ -192,7 +216,6 @@ const styles: { [key: string]: CSSProperties } = {
         display: 'flex',
         alignItems: 'center',
         boxShadow: 'none',
-        
     },
     label: {
         fontWeight: 'bold',
@@ -232,9 +255,9 @@ const styles: { [key: string]: CSSProperties } = {
         width: '100%',
         position: 'fixed',
         top: 0,
-        left: 0, // Ensures the Navbar takes up the full width
+        left: 0,
         right: 0,
-        zIndex: 1000, // High z-index to overlay content
+        zIndex: 1000,
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
     },
 };

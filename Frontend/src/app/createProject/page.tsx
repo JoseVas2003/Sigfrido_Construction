@@ -26,7 +26,7 @@ export default function CreateProjectPage() {
     const [costError, setCostError] = useState("");
     const [categoriesError, setCategoriesError] = useState("");
     const [imageError, setImageError] = useState("");
-
+    const [submitHovered, setSubmitHovered] = useState(false);
 
     // Ref for hidden file input
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -378,7 +378,16 @@ export default function CreateProjectPage() {
                         </div>
                     </div>
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                        <button type="submit" style={styles.button}>
+                        <button
+                            type="submit"
+                            style={{
+                                ...styles.button,
+                                backgroundColor: submitHovered ? '#1E2D3D' : styles.button.backgroundColor,
+                                color: submitHovered ? '#EBECE5' : styles.button.color,
+                            }}
+                            onMouseEnter={() => setSubmitHovered(true)}
+                            onMouseLeave={() => setSubmitHovered(false)}
+                        >
                             Create Project
                         </button>                
                     </div>
@@ -394,14 +403,14 @@ const styles: { [key: string]: CSSProperties } = {
         width: '100%',
         position: 'fixed',
         top: 0,
-        left: 0, // Ensures the Navbar takes up the full width
+        left: 0, 
         right: 0,
-        zIndex: 1000, // High z-index to overlay content
+        zIndex: 1000, 
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
         marginBottom: '20px',
     },
     formContainer: {
-        marginTop: '100px', // Adjust to ensure it's below the navbar
+        marginTop: '100px', 
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -410,7 +419,7 @@ const styles: { [key: string]: CSSProperties } = {
         zIndex: 1,
     },
     form: {
-        backgroundColor: '#ffffff', // White background
+        backgroundColor: '#ffffff',
         padding: '30px',
         borderRadius: '15px',
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
@@ -444,7 +453,6 @@ const styles: { [key: string]: CSSProperties } = {
     button: {
         padding: '10px 20px',
         borderRadius: '15px',
-        border: '2px solid black',
         backgroundColor: '#4FB6CE',
         cursor: 'pointer',
         fontWeight: 'bold',

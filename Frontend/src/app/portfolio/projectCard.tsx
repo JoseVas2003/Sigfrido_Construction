@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import Link from 'next/link';
 
 interface ProjectCardProps {
@@ -24,6 +24,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   editMode,
   onDelete
 }) => {
+  const [hovered, setHovered] = useState<'delete' | 'edit' | null>(null);
   return (
     <div style={styles.cardContainer} data-testid="project-card">
       {/* Project Title */}
@@ -54,51 +55,100 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
       </div>
 
-      {/* Actiosn rendered when when edit mode is on */}
+      {/* Actions rendered when when edit mode is on */}
       {editMode && (
         <div style={styles.actionsContainer}>
           {/* Delete Button */}
-          <div id="deleteButton" style={styles.deleteIcon} onClick={() => onDelete(id)}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="#1E2D3D"
+          <div
+            id="deleteButton"
+            style={{
+              ...styles.deleteIcon,
+              backgroundColor: hovered === 'delete'
+                ? '#4FB6CE'
+                : styles.deleteIcon.backgroundColor,
+            }}
+            onMouseEnter={() => setHovered('delete')}
+            onMouseLeave={() => setHovered(null)}
+            onClick={() => onDelete(id)}
+          >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill={hovered === 'delete' ? '#EBECE5' : '#1E2D3D'}
+          >
+            <path 
+              d="M3 6h18" 
+              stroke={hovered === 'delete' ? '#EBECE5' : '#1E2D3D'}
+              strokeWidth="2" 
+              strokeLinecap="round" 
+            />
+            <path 
+              d="M8 6v12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V6" 
+              stroke={hovered === 'delete' ? '#EBECE5' : '#1E2D3D'} 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+            />
+            <path 
+              d="M10 11v6" 
+              stroke={hovered === 'delete' ? '#EBECE5' : '#1E2D3D'} 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+            />
+            <path 
+              d="M14 11v6" 
+              stroke={hovered === 'delete' ? '#EBECE5' : '#1E2D3D'} 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+            />
+            <path 
+              d="M5 6h14l-1-3H6L5 6z" 
+              stroke={hovered === 'delete' ? '#EBECE5' : '#1E2D3D'} 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+            />  
+          </svg>
+        </div>
+        {/* Edit Button */}
+          <Link href={`/editProject/${id}`}>
+            <button
+                style={{
+                  ...styles.editButton,
+                  backgroundColor: hovered === 'edit'
+                    ? '#1E2D3D'
+                    : styles.editButton.backgroundColor,
+                  color: hovered === 'edit' ? '#EBECE5' : 'black',
+                }}
+                onMouseEnter={() => setHovered('edit')}
+                onMouseLeave={() => setHovered(null)}
+                data-testid="edit-project-button"
               >
-              <path d="M3 6h18" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-              <path d="M8 6v12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V6" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-              <path d="M10 11v6" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-              <path d="M14 11v6" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-              <path d="M5 6h14l-1-3H6L5 6z" stroke="#1E2D3D" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </div>
-          {/* Edit Button */}
-            <Link href={`/editProject/${id}`}>
-              <button style={styles.editButton} data-testid={'edit-project-button'}>Edit Project</button>
-            </Link>
-          </div>
+                Edit Project
+            </button>
+          </Link>
+        </div>
       )}
     </div>
   );
 };
-
 const styles: { [key: string]: CSSProperties } = {
   cardContainer: {
-    width: '700px',
+    maxWidth: '700px',
     border: '1px solid #ccc',
-    padding: '20px auto',
+    padding: '30px 30px 70px 30px',
     backgroundColor: '#EBECE5',
-    color: 'black',
     position: 'relative', 
     margin: '20px',
     paddingBottom: '70px',
+    boxShadow: '0 0 5px rgba(0,0,0,0.3)',
   },
   title: {
     textAlign: 'center',
     marginBottom: '20px',
     fontSize: '24px',
     color: 'black',
+    fontWeight: 'bold',
   },
   contentArea: {
     display: 'flex',
@@ -122,6 +172,7 @@ const styles: { [key: string]: CSSProperties } = {
   descriptionText: {
     marginBottom: '16px',
     lineHeight: '1.5',
+    wordBreak: 'break-word',
   },
   detail: {
     marginBottom: '8px',
@@ -141,6 +192,7 @@ const styles: { [key: string]: CSSProperties } = {
     cursor: 'pointer',
     padding: '4px',
     borderRadius: '5%',
+    backgroundColor: '#EBECE5',
     boxShadow: '0 0 5px rgba(0,0,0,0.3)',
   },
   editButton: {
