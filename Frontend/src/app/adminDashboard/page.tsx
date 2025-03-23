@@ -321,7 +321,7 @@ export default function AdminDashboard() {
                 </div>
         
                 {/* Users Section */}
-                <div className="sectionWrapper">
+                <div className="sectionWrapper" id="usersSection">
                     <section className="users">
                     <h2 className="sectionHeader">Users</h2>
                     {users.length > 0 ? (
@@ -343,7 +343,7 @@ export default function AdminDashboard() {
                                         {new Date(user.createdAt).toLocaleString()}
                                     </em>
                                 </p>
-                                <button onClick={() => handleDeleteUser(user._id)}>
+                                <button onClick={() => handleDeleteUser(user._id)} id={user.email}> {/* Specified id for testing */}
                                     Delete
                                 </button>
                             </div>
@@ -355,7 +355,7 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Contact Forms Section */}
-                <div className="sectionWrapper">
+                <div className="sectionWrapper" id="contactFormsSection">
                     <section className="contactForms">
                     <h2 className="sectionHeader">Contact Us Forms</h2>
                     {contactForms.length > 0 ? (
