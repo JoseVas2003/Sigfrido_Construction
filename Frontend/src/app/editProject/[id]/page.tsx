@@ -28,6 +28,7 @@ export default function EditProjectPage() {
   const [costError, setCostError] = useState("");
   const [categoriesError, setCategoriesError] = useState("");
   const [imageError, setImageError] = useState("");
+  const [submitHovered, setSubmitHovered] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,11 +71,11 @@ export default function EditProjectPage() {
               setError = setCostError;
               break;
             case 'description':
-              maxLength = 100;
+              maxLength = 300;
               setError = setDescriptionError;
               break;
             default:
-              maxLength = 100; // fallback
+              maxLength = 100;
           }
 
         // If input length exceeds the custom limit, truncate and set error message
@@ -218,10 +219,10 @@ export default function EditProjectPage() {
           <form style={styles.form} onSubmit={handleSubmit}>            
             {/* Project Name */}
             <div style={styles.inputGroup}>
-              <label htmlFor='name'>Project Name:</label>
+              <label htmlFor='projectName'>Project Name:</label>
               <input
                 type="text"
-                id="name"
+                id="projectName"
                 name="name"
                 style={{
                   ...styles.input,
@@ -231,15 +232,15 @@ export default function EditProjectPage() {
                 onChange={handleChange}
               />
               {projectNameError && (
-                <p style={styles.errorText}>{projectNameError}</p>
+                <p id="projectNameError" style={styles.errorText}>{projectNameError}</p>
               )}
             </div>
 
             {/* Description */}
             <div style={styles.inputGroup}>
-              <label htmlFor="description">Description:</label>
+              <label htmlFor="descriptionText">Description:</label>
               <textarea
-                id="description"
+                id="descriptionText"
                 name="description"
                 style={{
                   ...styles.textarea,
@@ -249,7 +250,7 @@ export default function EditProjectPage() {
                 onChange={handleChange}
               />
               {descriptionError && (
-                <p style={styles.errorText}>{descriptionError}</p>
+                <p id="descriptionError" style={styles.errorText}>{descriptionError}</p>
               )}
             </div>
 
@@ -269,7 +270,7 @@ export default function EditProjectPage() {
                   onChange={handleChange}
                 />
                 {timeTakenError && (
-                  <p style={styles.errorText}>{timeTakenError}</p>
+                  <p id="timeTakenError"style={styles.errorText}>{timeTakenError}</p>
                 )}
               </div>
               <div style={styles.halfInputGroup}>
@@ -286,7 +287,7 @@ export default function EditProjectPage() {
                   onChange={handleChange}
                 />
                 {costError && (
-                  <p style={styles.errorText}>{costError}</p>
+                  <p id="costError" style={styles.errorText}>{costError}</p>
                 )}
               </div>
             </div>
@@ -300,6 +301,7 @@ export default function EditProjectPage() {
                   <label style={styles.checkboxLabel}>
                     <input
                       type="checkbox"
+                      id="category-ADU"
                       name="category"
                       value="ADU"
                       checked={formData.categories.includes('ADU')}
@@ -311,6 +313,7 @@ export default function EditProjectPage() {
                   <label style={styles.checkboxLabel}>
                     <input
                       type="checkbox"
+                      id="category-bathrooms"
                       name="category"
                       value="Bathrooms"
                       checked={formData.categories.includes('Bathrooms')}
@@ -322,6 +325,7 @@ export default function EditProjectPage() {
                   <label style={styles.checkboxLabel}>
                     <input
                       type="checkbox"
+                      id="category-floors"
                       name="category"
                       value="Floors"
                       checked={formData.categories.includes('Floors')}
@@ -333,6 +337,7 @@ export default function EditProjectPage() {
                   <label style={styles.checkboxLabel}>
                     <input
                       type="checkbox"
+                      id="category-kitchen"
                       name="category"
                       value="Kitchen"
                       checked={formData.categories.includes('Kitchen')}
@@ -344,6 +349,7 @@ export default function EditProjectPage() {
                   <label style={styles.checkboxLabel}>
                     <input
                       type="checkbox"
+                      id="category-roofs"
                       name="category"
                       value="Roofs"
                       checked={formData.categories.includes('Roofs')}
@@ -355,6 +361,7 @@ export default function EditProjectPage() {
                   <label style={styles.checkboxLabel}>
                     <input
                       type="checkbox"
+                      id="category-rooms"
                       name="category"
                       value="Rooms"
                       checked={formData.categories.includes('Rooms')}
@@ -365,7 +372,7 @@ export default function EditProjectPage() {
                   </label>
                 </div>
                 {categoriesError && (
-                  <p style={styles.errorText}>{categoriesError}</p>
+                  <p id="categoriesError" style={styles.errorText}>{categoriesError}</p>
                 )}
               </div>
 
@@ -385,6 +392,7 @@ export default function EditProjectPage() {
                   {/* Hidden file input */}
                   <input
                     type="file"
+                    id="imageFile"
                     ref={fileInputRef}
                     style={{ display: 'none' }}
                     accept=".heic,.jpg,.jpeg,.png"
@@ -392,16 +400,25 @@ export default function EditProjectPage() {
                   />
                 </div>
                 {imageError && (
-                  <p style={styles.errorText}>{imageError}</p>
+                  <p id="imageError" style={styles.errorText}>{imageError}</p>
                 )}
               </div>
             </div>
 
             {/* Submit */}
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
-              <button type="submit" style={styles.button}>
+              <button
+                type="submit"
+                style={{
+                  ...styles.button,
+                  backgroundColor: submitHovered ? '#1E2D3D' : styles.button.backgroundColor,
+                  color: submitHovered ? '#EBECE5' : styles.button.color,
+                }}
+                onMouseEnter={() => setSubmitHovered(true)}
+                onMouseLeave={() => setSubmitHovered(false)}
+              >
                 Save Changes
-              </button>
+              </button>   
             </div>
           </form>
         </div>
@@ -444,14 +461,14 @@ const styles: { [key: string]: CSSProperties } = {
     fontFamily: 'Arial, sans-serif',
     color: '#333',
     textAlign: 'center',
-    fontSize: '32px',
+    fontSize: '24px',
   },
   input: {
     width: '100%',
     padding: '10px',
     borderRadius: '15px',
     border: '2px solid black',
-    fontSize: '36px',
+    fontSize: '24px',
   },
   textarea: {
     width: '100%',
@@ -465,35 +482,35 @@ const styles: { [key: string]: CSSProperties } = {
   button: {
     padding: '10px 20px',
     borderRadius: '15px',
-    border: '2px solid black',
     backgroundColor: '#4FB6CE',
     cursor: 'pointer',
     fontWeight: 'bold',
-    fontSize: '32px',
+    fontSize: '24px',
     color: '#000'
   },
   checkboxGroup: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))',
     gap: '10px',
   },
   checkboxLabel: {
     display: 'flex',
     alignItems: 'center',
     fontWeight: 'normal',
-    fontSize: '36px',
+    fontSize: '24px',
+    width: '175px',
   },
   checkbox: {
     marginRight: '10px',
     marginLeft: '20px',
-    width: '30px',
-    height: '30px',
+    width: '25px',
+    height: '25px',
     alignItems: 'center',
-
+    cursor: 'pointer',
   },
   label: {
     display: 'block',
-    fontSize: '32px',
+    fontSize: '24px',
     textAlign: 'center',
   },
   row: {
@@ -506,8 +523,8 @@ const styles: { [key: string]: CSSProperties } = {
     fontFamily: 'Arial, sans-serif',
     color: '#333',
     textAlign: 'center',
-    fontSize: '32px',
-    marginTop: '30px',
+    fontSize: '24px',
+    marginTop: '00px',
   },
   imageContainer: {
     display: 'flex',
