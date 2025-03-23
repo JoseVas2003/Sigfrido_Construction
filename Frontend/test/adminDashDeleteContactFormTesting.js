@@ -61,7 +61,7 @@ describe('Admin Deleting a Contact Form via the Admin Dashboard Functionality', 
 
             let dashboardButton = await driver.wait(until.elementLocated(By.id('dashboardButton')), 5000);
             await dashboardButton.click()
-            await driver.sleep(2000)
+            await driver.sleep(3000)
 
             //scroll to bottom of page
             await driver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
