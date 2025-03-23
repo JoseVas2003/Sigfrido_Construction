@@ -7,7 +7,9 @@ const appointmentSchema = new mongoose.Schema({
   },
   time: {
     type: String,
-    required: true,
+    required: function () {
+      return !this.block;
+    },
   },
   email: {
     type: String,
@@ -24,7 +26,9 @@ const appointmentSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: true,
+    required: function () {
+      return !this.block; 
+    },
   },
   description: {
     type: String,
@@ -41,8 +45,13 @@ const appointmentSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  block: {
+    type: Boolean,
+    default: false,
+  },
 });
 
+appointmentSchema.index({ date: 1, time: 1 }, { unique: true });
 const Appointment = mongoose.model("appointments", appointmentSchema);
 
 module.exports = Appointment;

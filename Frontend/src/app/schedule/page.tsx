@@ -40,6 +40,7 @@ export default function Page() {
     const [emailStatus, setEmailStatus] = useState<string | null>(null);
     const connection = 'http://localhost:3001/api/appointments/';
     const authenticationURL = connection + (email);
+    const formatDateOnly = (dateStr: string) => new Date(dateStr).toISOString().split('T')[0];
 
     const open = (message: string, action: () => void) => {
         setMessage(message);
@@ -96,21 +97,26 @@ export default function Page() {
         setShowForm(false);
         setSelectedTime(null);
     
-        const formattedDate = date.toISOString();
+        const formattedDateOnly = date.toISOString().split('T')[0];
+    
         // Block dates for users when the admin schedules
-        if (blockedDates.includes(formattedDate)) {
+        const blockedDateOnly = blockedDates.map(d => formatDateOnly(d));
+        if (blockedDateOnly.includes(formattedDateOnly)) {
             alert("Sorry, this day is blocked. Please choose another date.");
-            setAvailableTimes([]); // Prevent available times from showing
+            setAvailableTimes([]); 
             return;
         }
-
+    
         const bookedTimes = appointments
-            .filter(appointment => appointment.date === formattedDate)
+            .filter(appointment => formatDateOnly(appointment.date) === formattedDateOnly)
             .map(appointment => appointment.time);
     
         const freeTimes = availableHours.filter(time => !bookedTimes.includes(time));
     
-        const appointmentCountForDate = appointments.filter(appointment => appointment.date === formattedDate).length;
+        const appointmentCountForDate = appointments.filter(appointment => 
+            formatDateOnly(appointment.date) === formattedDateOnly
+        ).length;
+    
         if (appointmentCountForDate >= 5) {
             alert("Sorry, there are already 5 appointments booked for this day. Please choose another date.");
             setAvailableTimes([]); 
@@ -118,7 +124,7 @@ export default function Page() {
             setAvailableTimes(freeTimes);
         }
     };
-
+    
     const handleSubmitForm = async (e: React.FormEvent) => {
         e.preventDefault();
     
@@ -127,10 +133,24 @@ export default function Page() {
             return;
         }
     
-        const formattedDate = selectedDate.toISOString()
-        const appointmentCountForDate = appointments.filter(appointment => appointment.date === formattedDate).length;
-        
-        // Check if there are already 5 appointments before allowing submission
+        const formattedDateOnly = selectedDate.toISOString().split('T')[0];
+    
+        // Count appointments for the date only
+        const appointmentCountForDate = appointments.filter(appointment => 
+            formatDateOnly(appointment.date) === formattedDateOnly
+        ).length;
+    
+        // Check for duplicate appointment for this date and time
+        const duplicateAppointment = appointments.some(appointment => 
+            formatDateOnly(appointment.date) === formattedDateOnly &&
+            appointment.time === selectedTime
+        );
+    
+        if (duplicateAppointment) {
+            alert("This time slot is already booked. Please choose another time.");
+            return;
+        }
+    
         if (appointmentCountForDate >= 5) {
             alert("Sorry, there are already 5 appointments booked for this day. Please choose another date.");
             return;
@@ -142,11 +162,12 @@ export default function Page() {
         }
     
         try {
-            // Prepare the appointment data to send
+            const isoDate = selectedDate.toISOString();
+    
             const appointmentData = {
-                date: selectedDate.toISOString(),
+                date: isoDate,
                 time: selectedTime,
-                email: email,  // Use email from session
+                email: email,
                 userId: placeholderUserId,
                 name: formData.name,
                 phone: formData.phone,
@@ -154,21 +175,13 @@ export default function Page() {
             };
     
             const emailData = {
-                date: selectedDate.toISOString(),
-                time: selectedTime,
-                email: formData.email,  // Use email from the form
-                userId: placeholderUserId,
-                name: formData.name,
-                phone: formData.phone,
-                message: formData.message,
+                email: formData.email,
             };
     
-            // Save the appointment to the database
             await axios.post("http://localhost:3001/api/appointments", appointmentData, {
                 headers: { "Content-Type": "application/json" },
             });
     
-            // Send the email notification
             await axios.post("http://localhost:3001/api/emails/send", emailData, {
                 headers: { "Content-Type": "application/json" },
             });
@@ -180,6 +193,7 @@ export default function Page() {
             alert(`Error: ${error.response?.data?.message || error.message}`);
         }
     };
+    
         
     const handleReschedule = (appointmentId: string) => {
         if (!selectedDate || !selectedTime) {
@@ -235,22 +249,40 @@ export default function Page() {
         );
     }; 
 
-    const blockSelectedDate = () => {
-        if (selectedDate) {
-            const formattedDate = selectedDate.toISOString().split('T')[0];
-            setBlockedDates((prev) => [...prev, formattedDate]);
-            alert(`The selected day ${formattedDate} has been blocked.`);
+    const blockSelectedDate = async () => {
+        if (selectedDate && selectedTime) {
+            try {
+                await axios.post("http://localhost:3001/api/appointments", {
+                    date: selectedDate.toISOString(),
+                    time: selectedTime,
+                    email: email,
+                    userId: placeholderUserId,
+                    name: "Blocked",
+                    phone: "0",
+                    message: "Time slot blocked"
+                }, {
+                    headers: { "Content-Type": "application/json" },
+                });
+    
+                alert(`Time slot ${selectedTime} on ${selectedDate.toLocaleDateString()} has been blocked.`);
+                fetchAppointments();
+            } catch (error) {
+                console.error("Error blocking time slot:", error);
+                alert(`Error blocking time: ${error?.response?.data?.message || error.message}`);
+            }
+        } else {
+            alert("Please select both a date and time to block.");
         }
-    };
+    };    
 
     const filteredAppointments = appointments.filter((appt) => {
-        const dateStr = new Date(appt.date).toLocaleDateString();
+        const dateStr = formatDateOnly(appt.date);  // Properly formatted date
         return (
             appt.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
             appt.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
             dateStr.includes(searchQuery)
         );
-    });
+    });    
 
     if (status === 'loading') return <p>Loading session...</p>;
     if (!session) return <p>You need to sign in to book an appointment.</p>;
@@ -341,27 +373,27 @@ export default function Page() {
                         </div>
                     </div>
 
-                    {showForm && (
-                        <form className="provideInfoForm" onSubmit={handleSubmitForm}>
+                    <form className="provideInfoForm" onSubmit={handleSubmitForm}>
                             <h2>Provide Your Information</h2>
                             <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} required />
                             <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
                             <input type="tel" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} required />
                             <textarea name="message" placeholder="Message" value={formData.message} onChange={handleChange} required />
                             <button type="submit" className="submitButton">Submit</button>
-                        </form>
-                    )}
-                </div>
+                
+                     {/* Admin-specific Block Date button */}
+                     {isAdmin && (
+                            <button
+                                type="button"
+                                className="blockButton"
+                                onClick={blockSelectedDate}
+                            >
+                                Block
+                            </button>
+                        )}
+                    </form>
             </div>
-
-            {/* Render Admin-Specific Content */}
-            {isAdmin && (
-                <div className="adminPanel">
-                    <h2>Admin Control Panel</h2>
-                    <p>Manage appointments, users, and more.</p>
-                    <button onClick={blockSelectedDate}>Block Selected Date</button>
-                </div>
-            )}
+        </div>
             <Confirmation
                 isOpen={isOpen}
                 message={Message}
