@@ -11,12 +11,12 @@ async function loginAsAdmin(driver) {
     await driver.sleep(1000);
     const emailInput = await driver.wait(until.elementLocated(By.id('emailInput')), 5000);
     await driver.sleep(1000);
-    await emailInput.sendKeys("Admin@Admin.com");
+    await emailInput.sendKeys("NewAdmin@account.com");
 
     await driver.sleep(1000);
     const passwordInput = await driver.wait(until.elementLocated(By.id('passwordInput')), 5000);
     await driver.sleep(1000);
-    await passwordInput.sendKeys("Admin12345");
+    await passwordInput.sendKeys("Admin12345$");
 
     await driver.sleep(1000);
     const loginButton = await driver.wait(until.elementLocated(By.id('LoginButton')), 5000);
@@ -61,7 +61,7 @@ describe('Admin Deleting a User Acconut via the Admin Dashboard Functionality', 
 
             let dashboardButton = await driver.wait(until.elementLocated(By.id('dashboardButton')), 5000);
             await dashboardButton.click()
-            await driver.sleep(3000)
+            await driver.sleep(5000)
 
             //scroll to bottom of page
             await driver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
