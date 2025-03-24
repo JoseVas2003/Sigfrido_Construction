@@ -7,6 +7,7 @@ import Link from 'next/link';
 import {clicksOut} from '../navbar/navBar'
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import bcrypt from 'bcryptjs';
 
 export default function createUser(){
 
@@ -15,7 +16,7 @@ export default function createUser(){
 
   if(session){
       changePage.replace('/');
-  }
+ }
 
      // State to hold form data
   const [formData, setFormData] = useState({
@@ -200,7 +201,7 @@ export default function createUser(){
   const createAccountFormClientSideValidationEmail = () => {
         
     let emailErrorInputBorder = document.getElementById("createAcountEmailInput");
-    let validEmail = /^[a-zA-Z0-9-_]+@[a-zA-Z]+\.[a-zA-Z]+$/;
+    let validEmail = /^[a-zA-Z0-9-_.]+@[a-zA-Z]+\.[a-zA-Z]+$/;
     
     emailErrorSetter("");
 
@@ -345,6 +346,12 @@ export default function createUser(){
     && await checkForExistingUser())
     {
       formData.token = "";
+
+      const passwordHashSalt = await bcrypt.genSalt();
+      const usersHashedPassword = await bcrypt.hash(formData.password, passwordHashSalt);
+
+      formData.password = usersHashedPassword;
+
       console.log("Submitting form with data:", formData); // Debugging log
   
       try {
@@ -354,9 +361,20 @@ export default function createUser(){
           },
         });
         console.log("Response from server:", response.data); // Debugging log
-        //alert('Account created successfully!');
-        openPopup();
       } catch (error) {
+        const err = error as any;
+        console.error("Error response:", err.response?.data || err.message); // Debugging log
+        alert(`Error: ${err.response?.data?.message || err.message}`);
+      }
+
+      try{
+
+        await axios.post("http://localhost:3001/api/createAccountEmail/sendEmail", formData, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        openPopup();
+      }catch(error){
         const err = error as any;
         console.error("Error response:", err.response?.data || err.message); // Debugging log
         alert(`Error: ${err.response?.data?.message || err.message}`);

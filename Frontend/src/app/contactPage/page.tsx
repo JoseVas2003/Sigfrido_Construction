@@ -36,6 +36,7 @@ export default function ContactPage() {
                 },
             });
             console.log("Response from server:", response.data); //debug log
+            console.log("SUBMITTED");
         } catch (error) {
             const err = error as any;
             console.error("Error response:", err.response?.data || err.message); //debugging log
@@ -116,7 +117,7 @@ export default function ContactPage() {
                                     <textarea id="message" name="message" value={formData.message} onChange={handleChange} required style={styles.textArea}></textarea>
                                 </div>
 
-                                <button type="submit" style={styles.button}>Submit</button>
+                                <button type="submit" style={styles.button} id="submitButton">Submit</button>
                             </form>
                         )}
                     </div>

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from 'axios';
+import bcrypt from "bcryptjs";
 
 const nextAuthenticationOptions = {
     providers: [
@@ -26,8 +27,9 @@ const nextAuthenticationOptions = {
                     //No User Was Found In The Database
                     return null;
                 }
+                const passwordsMatch = await bcrypt.compare(password, user.data.password);
 
-                if(!(password === user.data.password))
+                if(!passwordsMatch)
                 {
                     //Passwords Don't Match
                     return null;
@@ -57,7 +59,7 @@ const nextAuthenticationOptions = {
             session.user.email = token.email;
             session.user.name = token.name;
             session.user.admin = token.admin;
-            console.log("SESSION: ", session);
+
             return session;
             },
         },
@@ -68,6 +70,7 @@ const nextAuthenticationOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     pages:{
         signIn: "/login",
+        error: "/",
     },
 };
 
