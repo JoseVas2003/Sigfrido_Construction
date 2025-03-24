@@ -27,7 +27,7 @@ export default function Page() {
     const [Action, setAction] = useState<(() => void) | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isBlocking, setIsBlocking] = useState(false);
-    const [actionInProgressId, setActionInProgressId] = useState<string | null>(null); 
+    const [actionInProgressId, setActionInProgressId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -233,18 +233,34 @@ export default function Page() {
         open(
             `Are you sure you want to reschedule this appointment to ${selectedDate.toLocaleDateString()} at ${selectedTime}?`,
             async () => {
+                close();
                 try {
-                    const response = await axios.get(`http://localhost:3001/api/appointments/${appointmentId}`);
+                    const response = await axios.get(`http://localhost:3001/api/appointments/id/${appointmentId}`);
                     const existingAppointment = response.data; 
     
-                    const updatedAppointmentData = {
+                    const rescheduleEmailData = {
+                        name: existingAppointment.name,
+                        email: existingAppointment.email,
+                        message: formData.message || existingAppointment.message || "No message provided",
+                        originalDate: existingAppointment.date,
+                        originalTime: existingAppointment.time,
+                        newDate: selectedDate.toISOString(),
+                        newTime: selectedTime,
+                      };
+              
+                      // Send reschedule email
+                      await axios.post("http://localhost:3001/api/emails/reschedule", rescheduleEmailData, {
+                        headers: { "Content-Type": "application/json" },
+                      });
+
+                      const updatedAppointmentData = {
                         date: selectedDate.toISOString(),
                         time: selectedTime,
-                        email: existingAppointment.email,  
+                        email: existingAppointment.email,
                         name: existingAppointment.name,
                         phone: formData.phone || existingAppointment.phone,
                         message: formData.message || existingAppointment.message,
-                    };
+                      };
     
                     await axios.put(`http://localhost:3001/api/appointments/${appointmentId}`, updatedAppointmentData, {
                         headers: { "Content-Type": "application/json" },
@@ -257,7 +273,6 @@ export default function Page() {
                     console.error("Error rescheduling appointment:", error);
                     alert(`Error: ${error.response?.data?.message || error.message}`);
                 }
-                close();
             }
         );
     };
@@ -266,22 +281,40 @@ export default function Page() {
         open(
             "Are you sure you want to cancel this appointment? This action cannot be undone.",
             async () => {
+                close();
                 try {
                     setActionInProgressId(appointmentId);
+
+                    const response = await axios.get(`http://localhost:3001/api/appointments/id/${appointmentId}`);
+                    const existingAppointment = response.data;
+    
+                    const formattedDate = new Date(existingAppointment.date).toLocaleDateString();
+    
+                    const cancelAppointmentData = {
+                        date: existingAppointment.date,
+                        time: existingAppointment.time,           
+                        email: existingAppointment.email,         
+                        name: existingAppointment.name,
+                        phone: existingAppointment.phone,
+                    };
+
+                    await axios.post("http://localhost:3001/api/emails/cancel", cancelAppointmentData, {
+                        headers: { "Content-Type": "application/json" },
+                    });
+    
                     await axios.delete(`http://localhost:3001/api/appointments/${appointmentId}`);
                     alert("Appointment canceled successfully.");
                     fetchAppointments();  
-                } catch (error) {
+                } catch (error: any) {
                     console.error("Error canceling appointment:", error);
                     alert(`Error: ${error.response?.data?.message || error.message}`);
-                }finally {
+                } finally {
                     setActionInProgressId(null);
                 }
-                close();
             }
         );
-    }; 
-
+    };
+    
     const blockSelectedDate = async () => {
         if (selectedDate && selectedTime) {
             try {
