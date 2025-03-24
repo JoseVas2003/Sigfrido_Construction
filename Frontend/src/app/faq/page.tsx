@@ -1,66 +1,106 @@
 "use client";
 
-import {useSession} from 'next-auth/react';
-import React, { useState, CSSProperties, useRef, DragEvent, ChangeEvent } from 'react';
+import { useSession } from 'next-auth/react';
+import { CSSProperties, ChangeEvent, DragEvent, useState } from 'react';
 import Navbar from '../navbar/navBar';
 
 export default function ContactPage() {
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
-    const [panelHeights, setPanelHeights] = useState<number[]>([0, 0, 0]);
+    const [activeIndex, setActiveIndex] = useState<{ [key: number]: number | null }>({});
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [questionsAndAnswers, setQuestionsAndAnswers] = useState([
-        { question: 'How many days?', answer: '10 days.' },
-        { question: 'How many months?', answer: '100 months.' },
-        { question: 'How many years?', answer: '1000 years.' },
+    const [sections, setSections] = useState([
+        { title: 'General Questions', questionsAndAnswers: [{ question: 'Question 1', answer: 'Answer 1' }, { question: 'Question 2', answer: 'Answer 2' }] },
+        { title: 'Product Questions', questionsAndAnswers: [{ question: 'Question 1', answer: 'Answer 1' }] },
+        { title: 'Support Questions', questionsAndAnswers: [{ question: 'Question 1', answer: 'Answer 1' }] },
     ]);
-    const [imageSrc, setImageSrc] = useState<string>("https://www.souderbrothersconstruction.com/blog/wp-content/uploads/2019/03/iStock-1316374976-825x510.jpg");
+    const [imageSrc, setImageSrc] = useState<string>("https://t4.ftcdn.net/jpg/02/31/09/95/360_F_231099575_lZ0t1s4lR3YtrQbeEqUPDqiW0UsQNKcy.jpg");
 
-    const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const { data: session, status } = useSession();
 
-    const handleAccordionClick = (index: number) => {
-        setActiveIndex(prev => (prev === index ? null : index));
+    const handleAccordionClick = (sectionIndex: number, index: number) => {
+        setActiveIndex(prev => ({
+            ...prev,
+            [sectionIndex]: prev[sectionIndex] === index ? null : index,
+        }));
     };
 
     const handleEditToggle = () => {
         setIsEditing(prev => !prev);
     };
 
-    const handleChange = (index: number, field: 'question' | 'answer', value: string) => {
-        setQuestionsAndAnswers(prev => {
-            const newQuestions = [...prev];
-            newQuestions[index] = { ...newQuestions[index], [field]: value };
-            return newQuestions;
+    const handleChange = (sectionIndex: number, index: number, field: 'question' | 'answer', value: string) => {
+        setSections(prev => {
+            const updatedSections = [...prev];
+            updatedSections[sectionIndex].questionsAndAnswers[index] = {
+                ...updatedSections[sectionIndex].questionsAndAnswers[index],
+                [field]: value,
+            };
+            return updatedSections;
         });
     };
 
-    const handleDragStart = (index: number, event: DragEvent) => {
+    const handleSectionTitleChange = (index: number, newTitle: string) => {
+        setSections(prev => {
+            const updatedSections = [...prev];
+            updatedSections[index].title = newTitle;
+            return updatedSections;
+        });
+    };
+
+    const handleSectionDragStart = (index: number, event: DragEvent) => {
         event.dataTransfer.setData("index", index.toString());
     };
 
-    const handleDrop = (index: number, event: DragEvent) => {
+    const handleSectionDrop = (index: number, event: DragEvent) => {
         const fromIndex = Number(event.dataTransfer.getData("index"));
         if (fromIndex !== index) {
-            const newQuestions = [...questionsAndAnswers];
-            const movedItem = newQuestions[fromIndex];
-            newQuestions.splice(fromIndex, 1);
-            newQuestions.splice(index, 0, movedItem);
-            setQuestionsAndAnswers(newQuestions);
+            const newSections = [...sections];
+            const movedSection = newSections[fromIndex];
+            newSections.splice(fromIndex, 1);
+            newSections.splice(index, 0, movedSection);
+            setSections(newSections);
         }
     };
 
-    const handleDragOver = (event: DragEvent) => {
+    const handleSectionDragOver = (event: DragEvent) => {
         event.preventDefault();
     };
 
-    const addQuestion = () => {
-        setQuestionsAndAnswers(prev => [
+    const addSection = () => {
+        setSections(prev => [
             ...prev,
-            { question: 'New question?', answer: 'New answer.' }
+            { title: 'New Section', questionsAndAnswers: [{ question: 'New question?', answer: 'New answer.' }] }
         ]);
     };
 
-    const removeQuestion = (index: number) => {
-        setQuestionsAndAnswers(prev => prev.filter((_, i) => i !== index));
+    const removeSection = (index: number) => {
+        setSections(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const addQuestion = (sectionIndex: number) => {
+        setSections((prev) => {
+            const updatedSections = [...prev];
+            updatedSections[sectionIndex] = {
+                ...updatedSections[sectionIndex],
+                questionsAndAnswers: [
+                    ...updatedSections[sectionIndex].questionsAndAnswers,
+                    { question: 'New question?', answer: 'New answer.' },
+                ],
+            };
+            return updatedSections;
+        });
+    };
+
+    const removeQuestion = (sectionIndex: number, index: number) => {
+        setSections((prev) => {
+            const updatedSections = [...prev];
+            updatedSections[sectionIndex] = {
+                ...updatedSections[sectionIndex],
+                questionsAndAnswers: updatedSections[sectionIndex].questionsAndAnswers.filter(
+                    (_, i) => i !== index
+                ),
+            };
+            return updatedSections;
+        });
     };
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -70,8 +110,6 @@ export default function ContactPage() {
             setImageSrc(imageURL);
         }
     };
-
-    const {data: session, status} = useSession();
 
     return (
         <div style={styles.container}>
@@ -95,56 +133,109 @@ export default function ContactPage() {
             <div style={styles.contentWrapper}>
                 {/* Accordion Section */}
                 <div style={styles.accordionContainer}>
-                    {questionsAndAnswers.map((qa, index) => (
+                    {sections.map((section, sectionIndex) => (
                         <div 
-                            key={index} 
+                            key={sectionIndex} 
                             draggable={isEditing}
-                            onDragStart={(e) => handleDragStart(index, e)}
-                            onDragOver={handleDragOver}
-                            onDrop={(e) => handleDrop(index, e)}
+                            onDragStart={(e) => handleSectionDragStart(sectionIndex, e)}
+                            onDragOver={handleSectionDragOver}
+                            onDrop={(e) => handleSectionDrop(sectionIndex, e)}
                         >
-                            <button className="accordion" onClick={() => handleAccordionClick(index)} style={styles.accordion}>
+                            {/* Section Title */}
+                            <div style={styles.sectionTitleContainer}>
                                 {isEditing ? (
                                     <input 
                                         type="text" 
-                                        value={qa.question} 
-                                        onChange={(e) => handleChange(index, 'question', e.target.value)} 
+                                        value={section.title} 
+                                        onChange={(e) => handleSectionTitleChange(sectionIndex, e.target.value)} 
                                         style={styles.input} 
                                     />
                                 ) : (
-                                    qa.question
+                                    <h2>{section.title}</h2>
                                 )}
-                            </button>
-                            <div className="panel" style={{ ...styles.panel, maxHeight: activeIndex === index ? '100px' : '0' }}>
-                                {isEditing ? (
-                                    <textarea 
-                                        value={qa.answer} 
-                                        onChange={(e) => handleChange(index, 'answer', e.target.value)} 
-                                        style={styles.textarea}
-                                    />
-                                ) : (
-                                    <p>{qa.answer}</p>
+
+                                {/* Remove Section Button */}
+                                {isEditing && (
+                                    <button onClick={() => removeSection(sectionIndex)} style={styles.removeButton}>
+                                        Remove Section
+                                    </button>
                                 )}
                             </div>
 
-                            {isEditing && (
-                                <button onClick={() => removeQuestion(index)} style={styles.removeButton}>
-                                    Remove
-                                </button>
-                            )}
+                            {/* Accordion for Questions in the Section */}
+                            <div>
+                                {section.questionsAndAnswers.map((qa, index) => (
+                                    <div key={index} draggable={isEditing}>
+                                        <button
+                                            className="accordion"
+                                            onClick={() => handleAccordionClick(sectionIndex, index)} // Pass sectionIndex and index
+                                            style={styles.accordion}
+                                        >
+                                            {isEditing ? (
+                                                <input 
+                                                    type="text" 
+                                                    value={qa.question} 
+                                                    onChange={(e) => handleChange(sectionIndex, index, 'question', e.target.value)} 
+                                                    style={styles.input} 
+                                                />
+                                            ) : (
+                                                qa.question
+                                            )}
+                                        </button>
+                                        <div
+                                            className="panel"
+                                            style={{
+                                                ...styles.panel,
+                                                maxHeight: activeIndex[sectionIndex] === index ? '100px' : '0', // Use section-specific activeIndex
+                                            }}
+                                        >
+                                            {isEditing ? (
+                                                <textarea
+                                                    value={qa.answer}
+                                                    onChange={(e) => handleChange(sectionIndex, index, 'answer', e.target.value)}
+                                                    style={styles.textarea}
+                                                />
+                                            ) : (
+                                                <p>{qa.answer}</p>
+                                            )}
+                                        </div>
+
+                                        {isEditing && (
+                                            <button onClick={() => removeQuestion(sectionIndex, index)} style={styles.removeButton}>
+                                                Remove Question
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+
+                                {isEditing && (
+                                    <button onClick={() => addQuestion(sectionIndex)} style={styles.addButton}>
+                                        Add Question
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     ))}
 
                     {isEditing && (
-                        <button onClick={addQuestion} style={styles.addButton}>
-                            Add Question
+                        <button onClick={addSection} style={styles.addButton}>
+                            Add Section
                         </button>
                     )}
-                    {session?.user?.admin? ( <button onClick={handleEditToggle} style={styles.editButton}>
-                        {isEditing ? 'Save' : 'Edit'}
-                    </button> ):(<div> </div>)}
-                    
+                    {(session?.user as any)?.admin && (
+                        <button onClick={handleEditToggle} style={styles.editButton}>
+                            {isEditing ? 'Save' : 'Edit'}
+                        </button>
+                    )}
                 </div>
+            </div>
+
+            {/* Contact Us Section */}
+            <div style={styles.contactUsContainer}>
+                <p style={styles.contactUsText}>
+                    Don't see your question answered here? Feel free to{' '}
+                    <a href="http://localhost:3000/contactPage" style={styles.contactLink}>contact us here</a>.
+                </p>
             </div>
         </div>
     );
@@ -176,7 +267,7 @@ const styles: { [key: string]: CSSProperties } = {
     },
     title: {
         fontSize: '22px',
-        fontWeight: 'bold',
+        fontWeight: 'bold',  // Title is now bold
         margin: 0,
         color: '#fff',
         flex: '1',
@@ -211,6 +302,13 @@ const styles: { [key: string]: CSSProperties } = {
         padding: '20px',
         borderRadius: '8px',
     },
+    sectionTitleContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '10px',
+        fontWeight: 'bold',  // Section titles are now bold
+    },
     accordion: {
         backgroundColor: '#eee',
         color: '#444',
@@ -236,5 +334,44 @@ const styles: { [key: string]: CSSProperties } = {
         cursor: 'pointer',
         marginTop: '10px',
     },
+    removeButton: {
+        backgroundColor: '#FE0000',
+        color: '#fff',
+        padding: '5px 10px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        marginTop: '5px',
+    },
+    addButton: {
+        backgroundColor: '#50C878',
+        color: '#fff',
+        padding: '5px 10px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        marginTop: '5px',
+        marginRight: '5px',
+    },
+    input: {
+        padding: '5px',
+        fontSize: '14px',
+        width: '300px',
+    },
+    textarea: {
+        padding: '5px',
+        fontSize: '14px',
+        width: '100%',
+        minHeight: '80px',
+    },
+    contactUsContainer: {
+        textAlign: 'center',
+        marginTop: '40px',
+        padding: '10px',
+    },
+    contactUsText: {
+        fontSize: '16px',
+    },
+    contactLink: {
+        color: '#57bcd3',
+        textDecoration: 'none',
+    },
 };
-

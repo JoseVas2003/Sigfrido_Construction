@@ -1,11 +1,10 @@
 'use client'
-import '../Assets/css/forgotPassword.modules.css';
-import '../Assets/css/resetRequestPopup.css';
-import Navbar from '../navbar/navBar';
+import axios from 'axios';
 import Link from 'next/link';
 import { useState } from 'react';
-import {clicksOut} from '../navbar/navBar'
-import axios from 'axios';
+import '../Assets/css/forgotPassword.modules.css';
+import '../Assets/css/resetRequestPopup.css';
+import Navbar, { clicksOut } from '../navbar/navBar';
 const crypto = require('crypto');
 
 /* popup functions */
@@ -52,7 +51,7 @@ export default function page(){
       const createAccountFormClientSideValidationEmail = () => {
         
         let emailErrorInputBorder = document.getElementById("forgotPasswordEmailInput");
-        let validEmail = /^[a-zA-Z0-9-_]+@[a-zA-Z]+\.[a-zA-Z]+$/;
+        let validEmail = /^[a-zA-Z0-9-_.]+@[a-zA-Z]+\.[a-zA-Z]+$/;
         
         emailErrorSetter("");
     
@@ -105,7 +104,7 @@ export default function page(){
          }
     
         }catch(error){
-         const err = error;
+         const err = error as any;
          console.error("Error response:", err.response?.data || err.message);
         }
       }
@@ -143,8 +142,9 @@ export default function page(){
 
             }catch(error){
                 sendButton!.disabled = false;
+                const err = error as any;
                 console.error("Error Sending Password Reset Email:", error);
-                alert(`Error: ${error.response?.data?.message || error.message}`);
+                alert(`Error: ${err.response?.data?.message || err.message}`);
             }
         }
         
