@@ -240,3 +240,9 @@ button:hover {
 .addProjectButton:hover {
   background-color: #555; /* Darker background color on hover */
 }
+.fc-event {
+  background-color: #3788d8 !important;
+  color: white !important;
+  border-radius: 5px;
+  padding: 3px;
+}
