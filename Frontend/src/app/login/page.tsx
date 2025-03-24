@@ -25,11 +25,11 @@ const closePopup = () =>{
 export default function page(){
 
     const {data: session} = useSession();
-    const changePage = useRouter();
+     const changePage = useRouter();
 
-    if(session){
-        changePage.replace('/');
-    }
+     if(session){
+         changePage.replace('/');
+     }
 
     const [formData, setFormData] = useState({
         email: '',
@@ -76,7 +76,7 @@ export default function page(){
     const loginFormClientSideValidationEmail = () => {
         
         let emailErrorInputBorder = document.getElementById("emailInput");
-        let validEmail = /^[a-zA-z0-9-_]+@[a-zA-z]+\.[a-zA-z]+$/;
+        let validEmail = /^[a-zA-z0-9-_.]+@[a-zA-z]+\.[a-zA-z]+$/;
         
         emailErrorSetter("");
         setAccountError("");
