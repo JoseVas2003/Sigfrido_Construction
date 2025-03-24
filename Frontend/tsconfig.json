@@ -8,6 +8,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "noImplicitAny": false,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -34,7 +35,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/reviews/page.tsx"
-, "src/app/api/reviews/route.js"  ],
+, "src/app/api/reviews/route.js"
+, "src/app/lib/authOptions.js"  ],
   "exclude": [
     "node_modules"
   ]

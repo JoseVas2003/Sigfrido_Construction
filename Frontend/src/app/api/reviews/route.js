@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { authOptions } from "@/lib/authOptions";
 import axios from "axios";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
 import FormData from "form-data";
+import { getServerSession } from "next-auth/next";
+import { NextResponse } from "next/server";
 
 
 // Fetch all reviews

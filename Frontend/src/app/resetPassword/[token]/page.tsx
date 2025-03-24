@@ -1,13 +1,10 @@
 'use client'
-import '../../Assets/css/resetPassword.modules.css';
-import Navbar from '../../navbar/navBar';
-import Link from 'next/link';
-import {clicksOut} from '../../navbar/navBar'
-import { useState } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import {openPopup} from '../../login/page';
 import bcrypt from 'bcryptjs';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import '../../Assets/css/resetPassword.modules.css';
+import Navbar, { clicksOut } from '../../navbar/navBar';
 
 export default function page({params}: any){
 
@@ -152,8 +149,9 @@ export default function page({params}: any){
                 //openPopup();
     
             }catch(error){
+                const err = error as any;
                 console.error("Error Updating Users Password:", error);
-                alert(`Error: ${error.response?.data?.message || error.message}`);
+                alert(`Error: ${err.response?.data?.message || err.message}`);
             }
         }
         
