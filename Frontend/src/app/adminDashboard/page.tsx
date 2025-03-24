@@ -114,21 +114,24 @@ const handleAppointmentSelect = (data: { name: string; email: string }) => {
     setShowAppointmentSelector(false);
 };
 
-const calendarEvents = appointments.map((appointment) => {
-    if (!appointment.date || !appointment.time) {
-        console.error("❌ Missing Date/Time in Appointment:", appointment);
-        return null; // Skip invalid entries
-    }
+const calendarEvents: { title: string; start: string; id: string }[] = appointments
+    .map((appointment) => {
+        if (!appointment.date || !appointment.time) {
+            console.error("❌ Missing Date/Time in Appointment:", appointment);
+            return null; // Skip invalid entries
+        }
 
-    try {
-        // ✅ Parse and format the date correctly
-        const formattedDate = new Date(appointment.date).toISOString().split("T")[0];
+        try {
+            // ✅ Parse and format the date correctly
+            const formattedDate = new Date(appointment.date).toISOString().split("T")[0];
 
-        // ✅ Convert time to a valid format
-        let appointmentTime = "Invalid Time";
-        const timeParts = appointment.time.match(/^(\d{1,2}):(\d{2}) (AM|PM)$/i); // Matches "9:00 PM" format
+            // ✅ Convert time to a valid format
+            const timeParts = appointment.time.match(/^(\d{1,2}):(\d{2}) (AM|PM)$/i);
+            if (!timeParts) {
+                console.warn("⚠️ Time format does not match expected format:", appointment.time);
+                return null;
+            }
 
-        if (timeParts) {
             const hours = parseInt(timeParts[1], 10);
             const minutes = timeParts[2];
             const ampm = timeParts[3];
@@ -137,24 +140,20 @@ const calendarEvents = appointments.map((appointment) => {
             const militaryHours = ampm.toUpperCase() === "PM" && hours !== 12 ? hours + 12 : hours;
             const formattedTime = `${militaryHours.toString().padStart(2, "0")}:${minutes}:00`;
 
-            appointmentTime = `${hours}:${minutes} ${ampm}`; // 12-hour format for UI
             console.log("✅ Processed Time:", formattedTime);
-        } else {
-            console.warn("⚠️ Time format does not match expected format:", appointment.time);
+
+            return {
+                title: `${hours}:${minutes} ${ampm}`, // Display 12-hour format for UI
+                start: `${formattedDate}T${formattedTime}`, // Ensure correct date-time format
+                id: appointment._id,
+            };
+        } catch (error) {
+            console.error("⚠️ Error processing event:", appointment, error);
+            return null;
         }
+    })
+    .filter((event): event is { title: string; start: string; id: string } => event !== null); // ✅ Type-safe filtering
 
-        console.log("📆 Event:", formattedDate, "🕒 Time:", appointmentTime);
-
-        return {
-            title: appointmentTime, // ✅ Display only time
-            start: `${formattedDate}T00:00:00`, // ✅ Force date-only for correct positioning
-            id: appointment._id,
-        };
-    } catch (error) {
-        console.error("⚠️ Error processing event:", appointment, error);
-        return null;
-    }
-}).filter(Boolean); 
 
 return (
     <div>
