@@ -7,6 +7,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import {openPopup} from '../../login/page';
+import bcrypt from 'bcryptjs';
 
 export default function page({params}: any){
 
@@ -135,6 +136,11 @@ export default function page({params}: any){
             const resetPassordURL = connection + (usersToken);
             formData.token = "";
     
+            const passwordHashSalt = await bcrypt.genSalt();
+            const usersHashedPassword = await bcrypt.hash(formData.password, passwordHashSalt);
+      
+            formData.password = usersHashedPassword;
+
             try{
     
                 await axios.put(resetPassordURL, formData, {
