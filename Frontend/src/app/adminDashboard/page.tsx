@@ -8,6 +8,9 @@ import AddProjectForm from "./addProjectForm";
 import AppointmentSelector, { Appointment as AppointmentType } from "./appointmentSelector";
 
 
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+
 
 
 interface Review {
@@ -18,9 +21,6 @@ interface Review {
     content: string;
     createdAt: string;
 }
-
-
-
 
 interface Appointment {
     _id: string;
@@ -43,12 +43,6 @@ createdAt: string;
 }
 
 
-
-
-
-
-
-
 export default function AdminDashboard() {
 const [reviews, setReviews] = useState<Review[]>([]);
 const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -62,12 +56,6 @@ const [autofillData, setAutofillData] = useState({
 const [users, setUsers] = useState<User[]>([]);
 
 
-
-
-
-
-
-
 // Fetch reviews from MongoDB
 useEffect(() => {
     axios.get("http://localhost:3001/api/reviews")
@@ -76,10 +64,6 @@ useEffect(() => {
         })
         .catch((error) => console.error("Error fetching reviews:", error));
 }, []);
-
-
-
-
 // Fetch appointments from MongoDB
 useEffect(() => {
     axios.get("http://localhost:3001/api/appointments")
@@ -89,7 +73,6 @@ useEffect(() => {
         })
         .catch((error) => console.error("Error fetching appointments:", error));
 }, []);
-
 
 
 
@@ -113,6 +96,8 @@ useEffect(() => {
 
 
 
+
+
 // Delete a user
 const handleDeleteUser = (id: string) => {
     axios.delete(`http://localhost:3001/api/users/${id}`)
@@ -122,14 +107,9 @@ const handleDeleteUser = (id: string) => {
     .catch((error) => console.error("Error deleting user:", error));
 };
 
-
-
-
 const handleProjectAdded = (project: any) => {
     setShowAddProjectForm(false);
 };
-
-
 
 
     // When an appointment is selected, update autofillData
@@ -138,16 +118,51 @@ const handleAppointmentSelect = (data: { name: string; email: string }) => {
     setShowAppointmentSelector(false);
 };
 
+const calendarEvents = appointments.map((appointment) => {
+    if (!appointment.date || !appointment.time) {
+        console.error("❌ Missing Date/Time in Appointment:", appointment);
+        return null; // Skip invalid entries
+    }
 
+    try {
+        // ✅ Parse and format the date correctly
+        const formattedDate = new Date(appointment.date).toISOString().split("T")[0];
 
+        // ✅ Convert time to a valid format
+        let appointmentTime = "Invalid Time";
+        const timeParts = appointment.time.match(/^(\d{1,2}):(\d{2}) (AM|PM)$/i); // Matches "9:00 PM" format
+
+        if (timeParts) {
+            const hours = parseInt(timeParts[1], 10);
+            const minutes = timeParts[2];
+            const ampm = timeParts[3];
+
+            // Convert to 24-hour format for ISO string
+            const militaryHours = ampm.toUpperCase() === "PM" && hours !== 12 ? hours + 12 : hours;
+            const formattedTime = `${militaryHours.toString().padStart(2, "0")}:${minutes}:00`;
+
+            appointmentTime = `${hours}:${minutes} ${ampm}`; // 12-hour format for UI
+            console.log("✅ Processed Time:", formattedTime);
+        } else {
+            console.warn("⚠️ Time format does not match expected format:", appointment.time);
+        }
+
+        console.log("📆 Event:", formattedDate, "🕒 Time:", appointmentTime);
+
+        return {
+            title: appointmentTime, // ✅ Display only time
+            start: `${formattedDate}T00:00:00`, // ✅ Force date-only for correct positioning
+            id: appointment._id,
+        };
+    } catch (error) {
+        console.error("⚠️ Error processing event:", appointment, error);
+        return null;
+    }
+}).filter(Boolean); 
 
 return (
     <div>
         <Navbar />
-
-
-
-
         {/* Add Project Button + Overlays */}
         <div className="addProjectButtonContainer">
         <button
@@ -156,9 +171,6 @@ return (
         >
             Add Project
         </button>
-
-
-
 
         {/* Add Project Modal */}
         {showAddProjectForm && (
@@ -178,6 +190,8 @@ return (
                 >
                     Autofill from Appointment
                 </button>
+
+
 
 
 
@@ -335,15 +349,30 @@ return (
    
             {/* Calendar Section */}
             <div className="sectionWrapper">
-                <section className="calendar">
-                <h2 className="sectionHeader">Appointments</h2>
-                <div className="calendarWidget">
-                    <Calendar
-                    onDateChange={function (date: Date): void {
-                        throw new Error("Function not implemented.");
-                    }}
-                    />
-                </div>
+                        <section className="calendar">
+                            <h2 className="sectionHeader">Appointments</h2>
+                            <div className="calendarWidget">
+                            <FullCalendar
+    key={calendarEvents.length} // ✅ Forces re-rendering when events update
+    plugins={[dayGridPlugin]}
+    initialView="dayGridMonth"
+    events={calendarEvents.length > 0 ? calendarEvents : []}
+    eventColor="#3788d8"
+    height={"auto"}
+    initialDate={new Date()} 
+    selectable={true}
+    headerToolbar={{
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,dayGridWeek,dayGridDay"
+    }}
+    eventContent={(eventInfo) => (
+        <div style={{ textAlign: "left", paddingLeft: "5px" }}>
+            {eventInfo.event.title}
+        </div>
+    )}
+/>
+                            </div>
                 </section>
             </div>
    
