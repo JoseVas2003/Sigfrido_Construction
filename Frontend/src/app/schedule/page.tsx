@@ -25,6 +25,9 @@ export default function Page() {
     const [isOpen, setIsOpen] = useState(false);
     const [Message, setMessage] = useState("");
     const [Action, setAction] = useState<(() => void) | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isBlocking, setIsBlocking] = useState(false);
+    const [actionInProgressId, setActionInProgressId] = useState<string | null>(null); 
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -57,6 +60,19 @@ export default function Page() {
         if (!email) return;
         fetchAppointments();
     }, [email]);
+
+    const resetForm = () => {
+        setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            message: '',
+        });
+        setSelectedDate(null);
+        setSelectedTime(null);
+        setAvailableTimes([]);
+        setShowForm(false);
+    };    
 
     const fetchAppointments = async () => {
         try {
@@ -127,9 +143,14 @@ export default function Page() {
     
     const handleSubmitForm = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (isSubmitting) return; 
+
+        setIsSubmitting(true); 
     
         if (!selectedDate || !selectedTime) {
             alert("Please select a date and time.");
+            setIsSubmitting(false);
             return;
         }
     
@@ -148,20 +169,24 @@ export default function Page() {
     
         if (duplicateAppointment) {
             alert("This time slot is already booked. Please choose another time.");
+            setIsSubmitting(false);
             return;
         }
     
         if (appointmentCountForDate >= 5) {
             alert("Sorry, there are already 5 appointments booked for this day. Please choose another date.");
+            setIsSubmitting(false);
             return;
         }
     
         if (!formData.name || !formData.email || !formData.phone || !formData.message) {
             alert("Please fill in all the fields.");
+            setIsSubmitting(false);
             return;
         }
     
         try {
+            setIsSubmitting(true);
             const isoDate = selectedDate.toISOString();
     
             const appointmentData = {
@@ -171,11 +196,12 @@ export default function Page() {
                 userId: placeholderUserId,
                 name: formData.name,
                 phone: formData.phone,
-                message: formData.message,
             };
     
             const emailData = {
+                ...appointmentData,
                 email: formData.email,
+                message: formData.message,
             };
     
             await axios.post("http://localhost:3001/api/appointments", appointmentData, {
@@ -187,10 +213,13 @@ export default function Page() {
             });
     
             alert("Appointment scheduled successfully!");
+            resetForm();
             fetchAppointments();
         } catch (error) {
             console.error("Error scheduling appointment:", error);
             alert(`Error: ${error.response?.data?.message || error.message}`);
+        }finally {
+            setIsSubmitting(false);  
         }
     };
     
@@ -222,6 +251,7 @@ export default function Page() {
                     });
     
                     alert("Appointment rescheduled successfully.");
+                    resetForm();
                     fetchAppointments(); 
                 } catch (error) {
                     console.error("Error rescheduling appointment:", error);
@@ -237,12 +267,15 @@ export default function Page() {
             "Are you sure you want to cancel this appointment? This action cannot be undone.",
             async () => {
                 try {
+                    setActionInProgressId(appointmentId);
                     await axios.delete(`http://localhost:3001/api/appointments/${appointmentId}`);
                     alert("Appointment canceled successfully.");
                     fetchAppointments();  
                 } catch (error) {
                     console.error("Error canceling appointment:", error);
                     alert(`Error: ${error.response?.data?.message || error.message}`);
+                }finally {
+                    setActionInProgressId(null);
                 }
                 close();
             }
@@ -252,6 +285,7 @@ export default function Page() {
     const blockSelectedDate = async () => {
         if (selectedDate && selectedTime) {
             try {
+                setIsBlocking(true);
                 await axios.post("http://localhost:3001/api/appointments", {
                     date: selectedDate.toISOString(),
                     time: selectedTime,
@@ -265,10 +299,13 @@ export default function Page() {
                 });
     
                 alert(`Time slot ${selectedTime} on ${selectedDate.toLocaleDateString()} has been blocked.`);
+                resetForm();
                 fetchAppointments();
             } catch (error) {
                 console.error("Error blocking time slot:", error);
                 alert(`Error blocking time: ${error?.response?.data?.message || error.message}`);
+            }finally {
+                setIsBlocking(false); 
             }
         } else {
             alert("Please select both a date and time to block.");
@@ -324,18 +361,20 @@ export default function Page() {
                             <li key={appt._id}>
                             <strong>{new Date(appt.date).toLocaleDateString()}</strong> at {appt.time} - {appt.name} ({appt.email})
                                 <div className="appointmentActions">
-                                    <button
-                                        className="rescheduleButton"
-                                        onClick={() => handleReschedule(appt._id)}  // Call handleReschedule to pre-fill form
-                                    >
-                                        Reschedule
-                                    </button>
-                                    <button
-                                        className="cancelButton"
-                                        onClick={() => handleCancel(appt._id)} // Call handleCancel for canceling
-                                    >
-                                        Cancel
-                                    </button>
+                                <button
+                                    className="rescheduleButton"
+                                    onClick={() => handleReschedule(appt._id)}
+                                    disabled={actionInProgressId === appt._id}
+                                >
+                                    {actionInProgressId === appt._id ? "Processing..." : "Reschedule"}
+                                </button>
+                                <button
+                                    className="cancelButton"
+                                    onClick={() => handleCancel(appt._id)}
+                                    disabled={actionInProgressId === appt._id}
+                                >
+                                    {actionInProgressId === appt._id ? "Processing..." : "Cancel"}
+                                </button>
                                 </div>
                             </li>
                         ))}
@@ -379,16 +418,12 @@ export default function Page() {
                             <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
                             <input type="tel" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} required />
                             <textarea name="message" placeholder="Message" value={formData.message} onChange={handleChange} required />
-                            <button type="submit" className="submitButton">Submit</button>
-                
-                     {/* Admin-specific Block Date button */}
-                     {isAdmin && (
-                            <button
-                                type="button"
-                                className="blockButton"
-                                onClick={blockSelectedDate}
-                            >
-                                Block
+                            <button type="submit" className="submitButton" disabled={isSubmitting}>
+                            {isSubmitting ? "Submitting..." : "Submit"}
+                        </button>
+                        {isAdmin && (
+                            <button type="button" className="blockButton" onClick={blockSelectedDate} disabled={isBlocking}>
+                                {isBlocking ? "Blocking..." : "Block"}
                             </button>
                         )}
                     </form>
