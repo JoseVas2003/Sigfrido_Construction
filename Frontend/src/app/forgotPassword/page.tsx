@@ -52,7 +52,7 @@ export default function page(){
       const createAccountFormClientSideValidationEmail = () => {
         
         let emailErrorInputBorder = document.getElementById("forgotPasswordEmailInput");
-        let validEmail = /^[a-zA-Z0-9-_]+@[a-zA-Z]+\.[a-zA-Z]+$/;
+        let validEmail = /^[a-zA-Z0-9-_.]+@[a-zA-Z]+\.[a-zA-Z]+$/;
         
         emailErrorSetter("");
     
