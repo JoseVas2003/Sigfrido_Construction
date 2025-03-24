@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../../auth/[...nextauth]/route';
+//import { authOptions } from '../../../auth/[...nextauth]/route';
+
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // PUT /api/inProgressProjects/[id]: Update a project (admin only)
 export async function PUT(

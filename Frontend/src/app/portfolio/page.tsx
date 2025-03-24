@@ -19,8 +19,8 @@ export default function Portfolio() {
     const [editMode, setEditMode] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState("All");
     const [notification, setNotification] = useState("");
-
-    // we fetch all the projects
+    const [hoveredIcon, setHoveredIcon] = useState<"pencil" | "plus" | null>(null);
+    // fetch all the projects
     useEffect(() => {
         axios.get('http://localhost:3001/api/projects')
           .then((response: { data: React.SetStateAction<any[]>; }) => {
@@ -88,13 +88,22 @@ export default function Portfolio() {
                     {/* Only show add / edit buttons to admin */}
                     {/* Pencil Icon Button */}
                     {(session?.user?.admin) && (
-                        <div style={styles.iconSquare} onClick={toggleEditMode}>                        
+                        <div
+                            id='editButton'
+                            style={{
+                                ...styles.iconSquare,
+                                backgroundColor: hoveredIcon === 'pencil' ? '#4FB6CE' : '#1E2D3D',
+                            }}
+                            onMouseEnter={() => setHoveredIcon('pencil')}
+                            onMouseLeave={() => setHoveredIcon(null)}
+                            onClick={toggleEditMode}
+                        >                        
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="32"
                                 height="32"
                                 viewBox="0 0 24 24"
-                                stroke="#EBECE5"
+                                stroke={hoveredIcon === 'pencil' ? '#1E2D3D' : '#EBECE5'}
                                 strokeWidth="2"
                                 strokeLinecap="round"
                             >
@@ -106,36 +115,51 @@ export default function Portfolio() {
                     {/* Plus Icon Button with Link to createProject*/}
                     {(session?.user?.admin) && (
                         <Link href="/createProject">
-                            <div style={styles.iconSquare} role="button">
-                                <span style={styles.plusSign}>+</span>
+                            <div
+                                id="createButton"
+                                role="button"
+                                style={{
+                                    ...styles.iconSquare,
+                                    backgroundColor: hoveredIcon === 'plus' ? '#4FB6CE' : '#1E2D3D',
+                                }}
+                                onMouseEnter={() => setHoveredIcon('plus')}
+                                onMouseLeave={() => setHoveredIcon(null)}
+                            >
+                                <span
+                                    style={{
+                                        ...styles.plusSign,
+                                        color: hoveredIcon === 'plus' ? '#1E2D3D' : '#EBECE5',
+                                    }}
+                                >
+                                    +
+                                </span>
                             </div>
                         </Link>
                     )}
 
-
                     {/* Filter Dropdown */}
                     <div style={styles.filterContainer}>
-                        <label htmlFor="filter" style={styles.label}>Filter:</label>
+                        <label htmlFor="filter" id='filterButton' style={styles.label}>Filter:</label>
                         <select
                             id="filter"
                             style={styles.dropdown}
                             value={selectedFilter}
                             onChange={handleFilterChange}
                         >
-                            <option value="All">All</option>
-                            <option value="ADU">ADU</option>
-                            <option value="Bathrooms">Bathrooms</option>
-                            <option value="Floors">Floors</option>
-                            <option value="Kitchen">Kitchen</option>
-                            <option value="Roofs">Roofs</option>
-                            <option value="Rooms">Rooms</option>
+                            <option id="category-All" value="All">All</option>
+                            <option id="category-ADU" value="ADU">ADU</option>
+                            <option id="category-Bathrooms" value="Bathrooms">Bathrooms</option>
+                            <option id="category-Floors" value="Floors">Floors</option>
+                            <option id="category-Kitchen" value="Kitchen">Kitchen</option>
+                            <option id="category-Roofs" value="Roofs">Roofs</option>
+                            <option id="category-Rooms" value="Rooms">Rooms</option>
                         </select>
                     </div> 
                 </div>
 
                 {/* Notification Rectangle */}
                 {notification && (
-                <div style={styles.deleteNotification}>
+                <div id="deleteNotification" style={styles.deleteNotification}>
                     {notification}
                 </div>
                 )}
@@ -163,12 +187,12 @@ export default function Portfolio() {
 const styles: { [key: string]: CSSProperties } = {    
     container: {
         position: 'relative',
-      },
+    },
     headerContainer: {
         position: 'relative',
         top: '5px',
         display: 'flex',
-        paddingTop: '120px', // Add padding to offset the fixed Navbar height
+        paddingTop: '120px',
         paddingRight: '20px', 
         justifyContent: 'flex-end',
     },
@@ -192,7 +216,6 @@ const styles: { [key: string]: CSSProperties } = {
         display: 'flex',
         alignItems: 'center',
         boxShadow: 'none',
-        
     },
     label: {
         fontWeight: 'bold',
@@ -211,7 +234,7 @@ const styles: { [key: string]: CSSProperties } = {
         fontSize: '18px',
         zIndex: 1500,
         fontWeight: 'bold',
-      },
+    },
     dropdown: {
         backgroundColor: '#1E2D3D',
         color: '#EBECE5',  
@@ -228,13 +251,13 @@ const styles: { [key: string]: CSSProperties } = {
         alignItems: 'center',
         paddingTop: '30px',
     },
-Navbar: {
-    width: '100%',
-    position: 'fixed',
-    top: 0,
-    left: 0, // Ensures the Navbar takes up the full width
-    right: 0,
-    zIndex: 1000, // High z-index to overlay content
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-},
+    Navbar: {
+        width: '100%',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    },
 };

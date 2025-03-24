@@ -22,32 +22,32 @@ const AdminProjects = () => {
     fetchProjects();
   }, []);
 
-  // ✅ Fetch Projects
+  //  Fetch Projects
   const fetchProjects = async () => {
     try {
-      const response = await axios.get<Project[]>("/api/inProgressProjects");
+      const response = await axios.get<Project[]>("http://localhost:3001/api/inProgressProjects");
       setProjects(response.data);
     } catch (error) {
       console.error("Error fetching projects:", error);
     }
   };
 
-  // ✅ Enable Edit Mode
+  //  Enable Edit Mode
   const handleEdit = (project: Project) => {
     setEditing(project._id);
     setUpdatedProject({ ...project });
   };
 
-  // ✅ Handle Input Changes
+  // Handle Input Changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setUpdatedProject((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Save Updated Project to Backend
+  //  Save Updated Project to Backend
   const handleSave = async (id: string) => {
     try {
-      await axios.put(`/api/inProgressProjects/${id}`, updatedProject);
+      await axios.put(`http://localhost:3001/api/inProgressProjects/${id}`, updatedProject);
       fetchProjects();
       setEditing(null);
     } catch (error) {

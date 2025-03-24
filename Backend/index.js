@@ -10,6 +10,7 @@ const inProgressProjectRoutes = require("./routes/inProgressProjects.routes.js")
 const contactUsRoutes = require("./routes/contactUs.routes.js");
 const forgotPasswordEmailRoutes = require("./routes/forgotPassword.routes.js");
 const resetPasswordRoutes = require("./routes/resetPassword.routes.js");
+const createAccountEmailRoutes = require("./routes/createAccountEmail.routes.js");
 const app = express();
 const PORT = process.env.PORT || 3001;
 const cors = require("cors");
@@ -32,6 +33,7 @@ app.use("/api/emails",emailRoutes);
 app.use("/api/contactUs", contactUsRoutes);
 app.use("/api/forgotPasswordEmail", forgotPasswordEmailRoutes);
 app.use("/api/resetPassword", resetPasswordRoutes);
+app.use("/api/createAccountEmail", createAccountEmailRoutes);
 
 
 app.get("/", (req, res) => {
