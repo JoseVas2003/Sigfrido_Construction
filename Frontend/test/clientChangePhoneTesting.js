@@ -2,7 +2,7 @@ const { Builder, By } = require('selenium-webdriver');
 const assert = require('assert');
 const { describe } = require('node:test');
 
-// BEFORE STARTING TEST: Make sure phone number for Non-Admin@account.com is 1234567890
+// BEFORE STARTING TEST: Make sure phone number for NewNon-Admin@account.com is 1234567890
 describe('Client Change Phone Functionality', async function() {
   it('Entering Correct Current Phone Number and Match New Phone Number', async function() {
     let driver = await new Builder().forBrowser('chrome').build()
@@ -23,13 +23,13 @@ describe('Client Change Phone Functionality', async function() {
       let emailInput = await driver.findElement(By.id('emailInput'));
       await emailInput.click()
       await driver.sleep(1000)
-      await emailInput.sendKeys("Non-Admin@account.com")
+      await emailInput.sendKeys("NewNon-Admin@account.com")
       await driver.sleep(1000)
 
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin123")
+      await passwordInput.sendKeys("NonAdmin12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -95,13 +95,13 @@ describe('Client Change Phone Functionality', async function() {
       let emailInput = await driver.findElement(By.id('emailInput'));
       await emailInput.click()
       await driver.sleep(1000)
-      await emailInput.sendKeys("Non-Admin@account.com")
+      await emailInput.sendKeys("NewNon-Admin@account.com")
       await driver.sleep(1000)
 
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin123")
+      await passwordInput.sendKeys("NonAdmin12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -164,13 +164,13 @@ describe('Client Change Phone Functionality', async function() {
       let emailInput = await driver.findElement(By.id('emailInput'));
       await emailInput.click()
       await driver.sleep(1000)
-      await emailInput.sendKeys("Non-Admin@account.com")
+      await emailInput.sendKeys("NewNon-Admin@account.com")
       await driver.sleep(1000)
 
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin123")
+      await passwordInput.sendKeys("NonAdmin12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -233,13 +233,13 @@ describe('Client Change Phone Functionality', async function() {
       let emailInput = await driver.findElement(By.id('emailInput'));
       await emailInput.click()
       await driver.sleep(1000)
-      await emailInput.sendKeys("Non-Admin@account.com")
+      await emailInput.sendKeys("NewNon-Admin@account.com")
       await driver.sleep(1000)
 
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin123")
+      await passwordInput.sendKeys("NonAdmin12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -302,13 +302,13 @@ describe('Client Change Phone Functionality', async function() {
       let emailInput = await driver.findElement(By.id('emailInput'));
       await emailInput.click()
       await driver.sleep(1000)
-      await emailInput.sendKeys("Non-Admin@account.com")
+      await emailInput.sendKeys("NewNon-Admin@account.com")
       await driver.sleep(1000)
 
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin123")
+      await passwordInput.sendKeys("NonAdmin12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -371,13 +371,13 @@ describe('Client Change Phone Functionality', async function() {
       let emailInput = await driver.findElement(By.id('emailInput'));
       await emailInput.click()
       await driver.sleep(1000)
-      await emailInput.sendKeys("Non-Admin@account.com")
+      await emailInput.sendKeys("NewNon-Admin@account.com")
       await driver.sleep(1000)
 
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin123")
+      await passwordInput.sendKeys("NonAdmin12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -440,13 +440,13 @@ describe('Client Change Phone Functionality', async function() {
       let emailInput = await driver.findElement(By.id('emailInput'));
       await emailInput.click()
       await driver.sleep(1000)
-      await emailInput.sendKeys("Non-Admin@account.com")
+      await emailInput.sendKeys("NewNon-Admin@account.com")
       await driver.sleep(1000)
 
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin123")
+      await passwordInput.sendKeys("NonAdmin12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -509,13 +509,13 @@ describe('Client Change Phone Functionality', async function() {
       let emailInput = await driver.findElement(By.id('emailInput'));
       await emailInput.click()
       await driver.sleep(1000)
-      await emailInput.sendKeys("Non-Admin@account.com")
+      await emailInput.sendKeys("NewNon-Admin@account.com")
       await driver.sleep(1000)
 
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin123")
+      await passwordInput.sendKeys("NonAdmin12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
