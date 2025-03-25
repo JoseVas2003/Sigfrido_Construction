@@ -28,6 +28,10 @@ export default function faqPage() {
             save: 'Save',
             contactUsText: "Don't see your question answered here? Feel free to ",
             contactLinkText: 'contact us here',
+            editTipsTitle: 'Edit Tips',
+            editTip1: 'Click on a question or answer to edit.',
+            editTip2: 'Click the "Save" button to save changes.',
+            editTip3: 'You can add, remove, and change sections and questions.',
         },
         es: {
             title: 'Preguntas Frecuentes',
@@ -39,6 +43,10 @@ export default function faqPage() {
             save: 'Guardar',
             contactUsText: '¿No ves tu pregunta respondida aquí? No dudes en ',
             contactLinkText: 'contactarnos aquí',
+            editTipsTitle: 'Consejos de Edición',
+            editTip1: 'Haz clic en una pregunta o respuesta para editar.',
+            editTip2: 'Haz clic en el botón "Guardar" para guardar los cambios.',
+            editTip3: 'Puedes añadir, eliminar y cambiar secciones y preguntas.',
         },
     };
 
@@ -256,9 +264,22 @@ export default function faqPage() {
                     )}
 
                     {session?.user?.admin && (
+                        <>
                         <button onClick={handleEditToggle} style={styles.editButton}>
                             {isEditing ? translations[language].save : translations[language].edit}
                         </button>
+
+                        {isEditing && (
+                            <div style={styles.sidebar}>
+                                <h2>{translations[language].editTipsTitle}</h2>
+                                <ul>
+                                    <li>{translations[language].editTip1}</li>
+                                    <li>{translations[language].editTip2}</li>
+                                    <li>{translations[language].editTip3}</li>
+                                </ul>
+                            </div>
+                        )}
+                        </>
                     )}
                 </div>
             </div>
@@ -274,11 +295,13 @@ export default function faqPage() {
             </div>
 
             {/* Language Toggle */}
-            <div style={styles.languageToggleContainer}>
-                <button onClick={toggleLanguage} style={styles.languageToggleButton}>
-                    {language === 'en' ? 'Español' : 'English'}
-                </button>
-            </div>
+            {session?.user?.admin && (
+                <div style={styles.languageToggleContainer}>
+                    <button onClick={toggleLanguage} style={styles.languageToggleButton}>
+                        {language === 'en' ? 'Español' : 'English'}
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
