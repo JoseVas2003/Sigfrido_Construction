@@ -63,11 +63,11 @@ const Navbar = () =>{
 
                     {(session?.user as any)?.admin ? (
                     <Link href="../adminDashboard">
-                        <button type="button" className="menuePageButtons">Dashboard</button>
+                        <button type="button" id='dashboardButton'className="menuePageButtons">Dashboard</button>
                     </Link>
                     ) : (
                         <Link href="../clientDashboard">
-                            <button type="button" className="menuePageButtons" id='clientDashboardButton'>Dashboard</button>
+                            <button type="button" className="menuePageButtons" id='dashboardButton'>Dashboard</button>
                         </Link>
                     )}
 

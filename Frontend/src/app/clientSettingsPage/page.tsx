@@ -269,8 +269,8 @@ export default function page(){
     setTimeout(() => setShowPhoneSuccess(false), 3000);
   };
 
+  const router = useRouter();
   const handleConfirmDelete = async() => {
-    const router = useRouter();
     const connection = 'http://localhost:3001/api/users/';
     const userURL = connection + (email);
     let userID = '';
