@@ -9,10 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
-    "@fullcalendar/core": "^6.1.15",
-    "axios": "^1.7.9",
+    "axios": "^1.8.4",
     "bcryptjs": "^3.0.2",
     "mongodb": "^6.15.0",
     "next-auth": "^4.24.11",

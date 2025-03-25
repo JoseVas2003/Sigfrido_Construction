@@ -1,17 +1,14 @@
 "use client";
 
 import { useSession } from 'next-auth/react';
-import { CSSProperties, ChangeEvent, DragEvent, useState } from 'react';
+import { CSSProperties, ChangeEvent, useState, useEffect } from 'react';
+import axios from 'axios';
 import Navbar from '../navbar/navBar';
 
 export default function faqPage() {
     const [activeIndex, setActiveIndex] = useState<{ [key: number]: number | null }>({});
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [sections, setSections] = useState([
-        { title: 'General Questions', questionsAndAnswers: [{ question: 'Question 1', answer: 'Answer 1' }, { question: 'Question 2', answer: 'Answer 2' }] },
-        { title: 'Product Questions', questionsAndAnswers: [{ question: 'Question 1', answer: 'Answer 1' }] },
-        { title: 'Support Questions', questionsAndAnswers: [{ question: 'Question 1', answer: 'Answer 1' }] },
-    ]);
+    const [sections, setSections] = useState([]);
     const [imageSrc, setImageSrc] = useState<string>("https://t4.ftcdn.net/jpg/02/31/09/95/360_F_231099575_lZ0t1s4lR3YtrQbeEqUPDqiW0UsQNKcy.jpg");
 
     const { data: session, status } = useSession();
@@ -50,6 +47,19 @@ export default function faqPage() {
         },
     };
 
+    useEffect(() => {
+        // Fetch the FAQ data from the backend on component mount
+        const fetchFaqData = async () => {
+            try {
+                const response = await axios.get('http://localhost:3001/api/faq');
+                setSections(response.data);
+            } catch (error) {
+                console.error('Error fetching FAQ data', error);
+            }
+        };
+        fetchFaqData();
+    }, []);
+
     const handleAccordionClick = (sectionIndex: number, index: number) => {
         setActiveIndex(prev => ({
             ...prev,
@@ -64,8 +74,8 @@ export default function faqPage() {
     const handleChange = (sectionIndex: number, index: number, field: 'question' | 'answer', value: string) => {
         setSections(prev => {
             const updatedSections = [...prev];
-            updatedSections[sectionIndex].questionsAndAnswers[index] = {
-                ...updatedSections[sectionIndex].questionsAndAnswers[index],
+            updatedSections[sectionIndex].question[index] = {
+                ...updatedSections[sectionIndex].questions[index],
                 [field]: value,
             };
             return updatedSections;
@@ -75,66 +85,76 @@ export default function faqPage() {
     const handleSectionTitleChange = (index: number, newTitle: string) => {
         setSections(prev => {
             const updatedSections = [...prev];
-            updatedSections[index].title = newTitle;
+            updatedSections[index].sectionTitleContainer = newTitle;
             return updatedSections;
         });
     };
 
-    const handleSectionDragStart = (index: number, event: DragEvent) => {
-        event.dataTransfer.setData("index", index.toString());
-    };
-
-    const handleSectionDrop = (index: number, event: DragEvent) => {
-        const fromIndex = Number(event.dataTransfer.getData("index"));
-        if (fromIndex !== index) {
-            const newSections = [...sections];
-            const movedSection = newSections[fromIndex];
-            newSections.splice(fromIndex, 1);
-            newSections.splice(index, 0, movedSection);
-            setSections(newSections);
+    const addSection = async () => {
+        try {
+            const newSection = { section: 'New Section', questions: [{ question: 'New question?', answer: 'New answer.' }] };
+            const response = await axios.post('http://localhost:3001/api/faq/sections', newSection);
+            setSections(prev => [...prev, response.data]);
+        } catch (error) {
+            console.error('Error adding section', error);
         }
     };
 
-    const handleSectionDragOver = (event: DragEvent) => {
-        event.preventDefault();
+    const removeSection = async (index: number) => {
+        try {
+            const sectionId = sections[index]._id; // Assuming each section has an _id
+            await axios.delete(`http://localhost:3001/api/faq/sections/${sectionId}`);
+            setSections(prev => prev.filter((_, i) => i !== index));
+        } catch (error) {
+            console.error('Error removing section', error);
+        }
     };
 
-    const addSection = () => {
-        setSections(prev => [
-            ...prev,
-            { title: 'New Section', questionsAndAnswers: [{ question: 'New question?', answer: 'New answer.' }] }
-        ]);
+    const addQuestion = async (sectionIndex: number) => {
+        try {
+            const newQuestion = { question: 'New question?', answer: 'New answer.' };
+            const sectionId = sections[sectionIndex]._id;
+            const response = await axios.post(`http://localhost:3001/api/faq/${sectionId}/questions`, newQuestion);
+            setSections(prev => {
+                const updatedSections = [...prev];
+                updatedSections[sectionIndex].questions.push(response.data);
+                return updatedSections;
+            });
+        } catch (error) {
+            console.error('Error adding question', error);
+        }
     };
 
-    const removeSection = (index: number) => {
-        setSections(prev => prev.filter((_, i) => i !== index));
-    };
-
-    const addQuestion = (sectionIndex: number) => {
-        setSections((prev) => {
-            const updatedSections = [...prev];
-            updatedSections[sectionIndex] = {
-                ...updatedSections[sectionIndex],
-                questionsAndAnswers: [
-                    ...updatedSections[sectionIndex].questionsAndAnswers,
-                    { question: 'New question?', answer: 'New answer.' },
-                ],
-            };
-            return updatedSections;
-        });
-    };
-
-    const removeQuestion = (sectionIndex: number, index: number) => {
-        setSections((prev) => {
-            const updatedSections = [...prev];
-            updatedSections[sectionIndex] = {
-                ...updatedSections[sectionIndex],
-                questionsAndAnswers: updatedSections[sectionIndex].questionsAndAnswers.filter(
+    const removeQuestion = async (sectionIndex: number, index: number) => {
+        try {
+            const sectionId = sections[sectionIndex]._id;
+            const questionId = sections[sectionIndex].questions[index]._id;
+            await axios.delete(`http://localhost:3001/api/faq/${sectionId}/questions/${questionId}`);
+            setSections(prev => {
+                const updatedSections = [...prev];
+                updatedSections[sectionIndex].questions = updatedSections[sectionIndex].questions.filter(
                     (_, i) => i !== index
-                ),
-            };
-            return updatedSections;
-        });
+                );
+                return updatedSections;
+            });
+        } catch (error) {
+            console.error('Error removing question', error);
+        }
+    };
+
+    const handleSaveChanges = async () => {
+        try {
+            const updateData = sections.map(section => ({
+                section: section.section,
+                questions: section.questions.map(qa => ({
+                    question: qa.question,
+                    answer: qa.answer,
+                })),
+            }));
+            await axios.put('http://localhost:3001/api/faq', updateData);
+        } catch (error) {
+            console.error('Error saving changes', error);
+        }
     };
 
     const handleImageUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -204,7 +224,7 @@ export default function faqPage() {
 
                             {/* Accordion for Questions in the Section */}
                             <div>
-                                {section.questionsAndAnswers.map((qa, index) => (
+                                {section.questions.map((qa, index) => (
                                     <div key={index} draggable={isEditing}>
                                         <button
                                             className="accordion"
@@ -262,46 +282,14 @@ export default function faqPage() {
                             {translations[language].addSection}
                         </button>
                     )}
-
-                    {session?.user?.admin && (
-                        <>
-                        <button onClick={handleEditToggle} style={styles.editButton}>
-                            {isEditing ? translations[language].save : translations[language].edit}
-                        </button>
-
-                        {isEditing && (
-                            <div style={styles.sidebar}>
-                                <h2>{translations[language].editTipsTitle}</h2>
-                                <ul>
-                                    <li>{translations[language].editTip1}</li>
-                                    <li>{translations[language].editTip2}</li>
-                                    <li>{translations[language].editTip3}</li>
-                                </ul>
-                            </div>
-                        )}
-                        </>
-                    )}
                 </div>
-            </div>
 
-            {/* Contact Us Section */}
-            <div style={styles.contactUsContainer}>
-                <p style={styles.contactUsText}>
-                    {translations[language].contactUsText} 
-                    <a href="http://localhost:3000/contactPage" style={styles.contactLink}>
-                        {translations[language].contactLinkText}
-                    </a>.
-                </p>
-            </div>
-
-            {/* Language Toggle */}
-            {session?.user?.admin && (
-                <div style={styles.languageToggleContainer}>
-                    <button onClick={toggleLanguage} style={styles.languageToggleButton}>
-                        {language === 'en' ? 'Español' : 'English'}
+                <div style={styles.saveContainer}>
+                    <button onClick={handleEditToggle} style={styles.saveButton}>
+                        {isEditing ? translations[language].save : translations[language].edit}
                     </button>
                 </div>
-            )}
+            </div>
         </div>
     );
 }
