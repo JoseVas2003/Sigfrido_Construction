@@ -44,19 +44,27 @@ const getInProgressProjects = async (req, res) => {
   
   const updateInProgressProject = async (req, res) => {
     try {
-      const { id } = req.params;
-      const updatedProject = await InProgressProject.findByIdAndUpdate(id, req.body, { new: true });
-  
-      if (!updatedProject) {
-        return res.status(404).json({ message: "Project not found" });
-      }
-  
-      return res.status(200).json(updatedProject);
+        const { id } = req.params;
+
+        // Validate that ID exists
+        const project = await InProgressProject.findById(id);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        // Update only the fields that were provided in the request
+        const updatedProject = await InProgressProject.findByIdAndUpdate(
+            id,
+            { $set: req.body }, // ✅ Updates only provided fields
+            { new: true, runValidators: true }
+        );
+
+        return res.status(200).json(updatedProject);
     } catch (error) {
-      return res.status(500).json({ message: "Error updating project", error: error.message });
+        console.error("Error updating project:", error);
+        return res.status(500).json({ message: "Error updating project", error: error.message });
     }
-  };
-  
+};
   module.exports = {
     createInProgressProject,
     getInProgressProjects,

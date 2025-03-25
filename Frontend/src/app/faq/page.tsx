@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from 'next-auth/react';
-import React, { useState, CSSProperties, ChangeEvent, DragEvent } from 'react';
+import { CSSProperties, ChangeEvent, DragEvent, useState } from 'react';
 import Navbar from '../navbar/navBar';
 
 export default function faqPage() {
