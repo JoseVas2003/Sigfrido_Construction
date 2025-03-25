@@ -451,9 +451,9 @@ export default function Page() {
                             <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
                             <input type="tel" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} required />
                             <textarea name="message" placeholder="Message" value={formData.message} onChange={handleChange} required />
-                            <button type="submit" className="submitButton" disabled={isSubmitting}>
-                            {isSubmitting ? "Submitting..." : "Submit"}
-                        </button>
+                            <button type="submit" className="submitButton" id="submitButton" disabled={isSubmitting}>
+                                {isSubmitting ? "Submitting..." : "Submit"}
+                            </button>   
                         {isAdmin && (
                             <button type="button" className="blockButton" onClick={blockSelectedDate} disabled={isBlocking}>
                                 {isBlocking ? "Blocking..." : "Block"}
