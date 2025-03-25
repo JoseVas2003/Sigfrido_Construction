@@ -66,9 +66,9 @@ const Navbar = () =>{
                         <button type="button" className="menuePageButtons">Dashboard</button>
                     </Link>
                     ) : (
-                    <Link href="../clientDashboard">
-                        <button type="button" className="menuePageButtons">Dashboard</button>
-                    </Link>
+                        <Link href="../clientDashboard">
+                            <button type="button" className="menuePageButtons" id='clientDashboardButton'>Dashboard</button>
+                        </Link>
                     )}
 
                     {session? (

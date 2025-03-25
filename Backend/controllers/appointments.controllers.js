@@ -26,6 +26,20 @@ const getAppointment = async (req, res) => {
   }
 };
 
+const getAppointmentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const appointment = await Appointment.findById(id);
+
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+    res.status(200).json(appointment);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const createAppointment = async (req, res) => {
   try {
     const { date, time, ...rest } = req.body;
@@ -113,6 +127,7 @@ const deleteAppointment = async (req, res) => {
 module.exports = {
   getAppointments,
   getAppointment,
+  getAppointmentById,
   createAppointment,
   updateAppointment,
   deleteAppointment,

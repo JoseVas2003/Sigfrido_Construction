@@ -55,9 +55,9 @@
 }
 
 /* Body title */
-.UpcomingText{
+.BodyTitles{
   font-weight: bold;
-  font-size: 32px;
+  font-size: 28px;
   text-decoration: underline;
   margin-left: 30px;
 }
@@ -83,6 +83,9 @@
   text-align: center;
   font-size: 24px;
   margin: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Grid list */
@@ -90,10 +93,10 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(150px, 1fr));
   gap: 10px;
-  padding: 20px;
+  padding: 10px;
   border-radius: 5px;
   background-color: #f9f9f9;
-  margin: 60px;
+  margin: 50px;
 }
 
 /* Grid items */
@@ -113,6 +116,8 @@
 .ProjectItem {
   position: relative;
   display: inline-block;
+  width: 250px;
+  height: 360px;
 }
 
 /* Image hover effect */
@@ -139,4 +144,18 @@
 /* Show overlay text on hover */
 .ProjectItem:hover .ProjectOverlay {
   opacity: 1;
+}
+
+.InactiveProject:hover .ProjectImage {
+  opacity: 1;
+}
+
+.InactiveProject:hover .ProjectOverlay {
+  opacity: 0;
+}
+
+.SeparatorLine {
+  border: none;
+  border-top: 2px solid #ccc; /* Light grey line */
+  margin: 40px 0;
 }

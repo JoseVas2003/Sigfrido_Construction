@@ -137,4 +137,125 @@ Please review and confirm with the client.
     }
 };
 
-module.exports = { sendEmail, sendAppointmentConfirmation, sendReminderEmail };
+const sendCancellationEmail = async (req, res) => {
+  const { name, email,  date, time } = req.body;
+
+  if (!name || !email || !date || !time ) {
+      return res.status(400).json({ message: "Missing required fields.", receivedData: req.body });
+  }
+  
+  const formattedDate = new Date(date).toLocaleDateString();
+
+  const clientMailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Your Appointment Cancellation",
+      text: `Hello ${name},
+
+Your appointment scheduled for:
+Date: ${formattedDate}
+Time: ${time}
+
+Has been canceled.
+
+If you have any questions or need to reschedule, feel free to contact us.
+
+Best regards,
+Sigfrido Vasquez
+Owner, Construction Services`,
+  };
+
+  const adminMailOptions = {
+      from: process.env.EMAIL,
+      to: process.env.EMAIL,
+      subject: "Appointment Cancellation Notice",
+      text: `An appointment has been canceled.
+
+Client: ${name}
+Email: ${email}
+Date: ${formattedDate}
+Time: ${time}
+
+Please update your records accordingly.`,
+  };
+
+  try {
+      await transporter.sendMail(clientMailOptions);
+      await transporter.sendMail(adminMailOptions);
+      console.log("Cancellation emails sent successfully!");
+      return res.status(200).json({ message: "Cancellation emails sent successfully!" });
+  } catch (error) {
+      console.error("Error sending cancellation emails:", error);
+      return res.status(500).json({ message: "Error sending cancellation emails", error });
+  }
+};
+
+const sendRescheduleEmail = async (req, res) => {
+  const { name, email, message, originalDate, originalTime, newDate, newTime } = req.body;
+
+  if (!name || !email || !originalDate || !originalTime || !newDate || !newTime) {
+    console.error("Missing required fields for reschedule email:", req.body);
+    return res.status(400).json({ message: "Missing required fields.", receivedData: req.body });
+  }
+
+  const formattedOriginalDate = new Date(originalDate).toLocaleDateString();
+  const formattedNewDate = new Date(newDate).toLocaleDateString();
+
+  const clientMailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Your Appointment Has Been Rescheduled",
+    text: `Hello ${name},
+
+Your appointment has been successfully rescheduled.
+
+Original Appointment:
+Date: ${formattedOriginalDate}
+Time: ${originalTime}
+
+New Appointment:
+Date: ${formattedNewDate}
+Time: ${newTime}
+
+If you have any questions or concerns, feel free to contact us.
+
+Best regards,
+Sigfrido Vasquez
+Owner, Construction Services`,
+  };
+
+  const adminMailOptions = {
+    from: process.env.EMAIL,
+    to: process.env.EMAIL,
+    subject: "Client Rescheduled Appointment",
+    text: `Client Rescheduled Appointment:
+
+Client: ${name}
+Email: ${email}
+
+Original:
+Date: ${formattedOriginalDate}
+Time: ${originalTime}
+
+New:
+Date: ${formattedNewDate}
+Time: ${newTime}
+
+Message: ${message || "No additional message"}
+
+Please confirm the new appointment time.`,
+  };
+
+  try {
+    await transporter.sendMail(clientMailOptions);
+    await transporter.sendMail(adminMailOptions);
+    console.log("Reschedule emails sent.");
+    return res.status(200).json({ message: "Reschedule emails sent successfully!" });
+  } catch (error) {
+    console.error("Error sending reschedule emails:", error);
+    return res.status(500).json({ message: "Error sending reschedule emails", error });
+  }
+};
+
+
+module.exports = { sendEmail, sendAppointmentConfirmation, sendReminderEmail, sendCancellationEmail,sendRescheduleEmail, };

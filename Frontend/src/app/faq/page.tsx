@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { CSSProperties, ChangeEvent, DragEvent, useState } from 'react';
 import Navbar from '../navbar/navBar';
 
-export default function ContactPage() {
+export default function faqPage() {
     const [activeIndex, setActiveIndex] = useState<{ [key: number]: number | null }>({});
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [sections, setSections] = useState([
@@ -15,6 +15,40 @@ export default function ContactPage() {
     const [imageSrc, setImageSrc] = useState<string>("https://t4.ftcdn.net/jpg/02/31/09/95/360_F_231099575_lZ0t1s4lR3YtrQbeEqUPDqiW0UsQNKcy.jpg");
 
     const { data: session, status } = useSession();
+    const [language, setLanguage] = useState<'en' | 'es'>('en');
+
+    const translations = {
+        en: {
+            title: 'Frequently Asked Questions',
+            removeSection: 'Remove Section',
+            addSection: 'Add Section',
+            removeQuestion: 'Remove Question',
+            addQuestion: 'Add Question',
+            edit: 'Edit',
+            save: 'Save',
+            contactUsText: "Don't see your question answered here? Feel free to ",
+            contactLinkText: 'contact us here',
+            editTipsTitle: 'Edit Tips',
+            editTip1: 'Click on a question or answer to edit.',
+            editTip2: 'Click the "Save" button to save changes.',
+            editTip3: 'You can add, remove, and change sections and questions.',
+        },
+        es: {
+            title: 'Preguntas Frecuentes',
+            removeSection: 'Eliminar Sección',
+            addSection: 'Añadir Sección',
+            removeQuestion: 'Eliminar Pregunta',
+            addQuestion: 'Añadir Pregunta',
+            edit: 'Editar',
+            save: 'Guardar',
+            contactUsText: '¿No ves tu pregunta respondida aquí? No dudes en ',
+            contactLinkText: 'contactarnos aquí',
+            editTipsTitle: 'Consejos de Edición',
+            editTip1: 'Haz clic en una pregunta o respuesta para editar.',
+            editTip2: 'Haz clic en el botón "Guardar" para guardar los cambios.',
+            editTip3: 'Puedes añadir, eliminar y cambiar secciones y preguntas. ',
+        },
+    };
 
     const handleAccordionClick = (sectionIndex: number, index: number) => {
         setActiveIndex(prev => ({
@@ -103,12 +137,12 @@ export default function ContactPage() {
         });
     };
 
-    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const imageURL = URL.createObjectURL(file);
-            setImageSrc(imageURL);
-        }
+    const handleImageUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setImageSrc(event.target.value);
+    };
+
+    const toggleLanguage = () => {
+        setLanguage(prev => (prev === 'en' ? 'es' : 'en'));
     };
 
     return (
@@ -119,13 +153,19 @@ export default function ContactPage() {
 
             {/* Title Section */}
             <div style={styles.titleContainer}>
-                <h1 style={styles.title}>Frequently Asked Questions</h1>
+                <h1 style={styles.title}>{translations[language].title}</h1>
                 
                 {/* Image Section with Editable Option */}
                 <div style={styles.imageContainer}>
                     <img src={imageSrc} alt="FAQ Illustration" style={styles.image} />
                     {isEditing && (
-                        <input type="file" accept="image/*" onChange={handleImageChange} style={styles.fileInput} />
+                        <input 
+                        type="text" 
+                        value={imageSrc} 
+                        onChange={handleImageUrlChange} 
+                        placeholder="Enter Image URL" 
+                        style={styles.input}
+                    />
                     )}
                 </div>
             </div>
@@ -157,7 +197,7 @@ export default function ContactPage() {
                                 {/* Remove Section Button */}
                                 {isEditing && (
                                     <button onClick={() => removeSection(sectionIndex)} style={styles.removeButton}>
-                                        Remove Section
+                                        {translations[language].removeSection}
                                     </button>
                                 )}
                             </div>
@@ -202,7 +242,7 @@ export default function ContactPage() {
 
                                         {isEditing && (
                                             <button onClick={() => removeQuestion(sectionIndex, index)} style={styles.removeButton}>
-                                                Remove Question
+                                                {translations[language].removeQuestion}
                                             </button>
                                         )}
                                     </div>
@@ -210,7 +250,7 @@ export default function ContactPage() {
 
                                 {isEditing && (
                                     <button onClick={() => addQuestion(sectionIndex)} style={styles.addButton}>
-                                        Add Question
+                                        {translations[language].addQuestion}
                                     </button>
                                 )}
                             </div>
@@ -219,13 +259,27 @@ export default function ContactPage() {
 
                     {isEditing && (
                         <button onClick={addSection} style={styles.addButton}>
-                            Add Section
+                            {translations[language].addSection}
                         </button>
                     )}
-                    {(session?.user as any)?.admin && (
+
+                    {session?.user?.admin && (
+                        <>
                         <button onClick={handleEditToggle} style={styles.editButton}>
-                            {isEditing ? 'Save' : 'Edit'}
+                            {isEditing ? translations[language].save : translations[language].edit}
                         </button>
+
+                        {isEditing && (
+                            <div style={styles.sidebar}>
+                                <h2>{translations[language].editTipsTitle}</h2>
+                                <ul>
+                                    <li>{translations[language].editTip1}</li>
+                                    <li>{translations[language].editTip2}</li>
+                                    <li>{translations[language].editTip3}</li>
+                                </ul>
+                            </div>
+                        )}
+                        </>
                     )}
                 </div>
             </div>
@@ -233,10 +287,21 @@ export default function ContactPage() {
             {/* Contact Us Section */}
             <div style={styles.contactUsContainer}>
                 <p style={styles.contactUsText}>
-                    Don't see your question answered here? Feel free to{' '}
-                    <a href="http://localhost:3000/contactPage" style={styles.contactLink}>contact us here</a>.
+                    {translations[language].contactUsText} 
+                    <a href="http://localhost:3000/contactPage" style={styles.contactLink}>
+                        {translations[language].contactLinkText}
+                    </a>.
                 </p>
             </div>
+
+            {/* Language Toggle */}
+            {session?.user?.admin && (
+                <div style={styles.languageToggleContainer}>
+                    <button onClick={toggleLanguage} style={styles.languageToggleButton}>
+                        {language === 'en' ? 'Español' : 'English'}
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
@@ -373,5 +438,16 @@ const styles: { [key: string]: CSSProperties } = {
     contactLink: {
         color: '#57bcd3',
         textDecoration: 'none',
+    },
+    languageToggleContainer: {
+        textAlign: 'center',
+        marginTop: '20px',
+    },
+    languageToggleButton: {
+        backgroundColor: '#57bcd3',
+        color: '#fff',
+        padding: '10px 20px',
+        borderRadius: '4px',
+        cursor: 'pointer',
     },
 };
