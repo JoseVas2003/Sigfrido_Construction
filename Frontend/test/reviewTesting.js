@@ -48,7 +48,7 @@ describe('Reviews Functionality Tests', function () {
       let driver = await new Builder().forBrowser('chrome').build();
       try {
         // Using any valid account; you can leave as is or update
-        await loginUser(driver, 'jimbocarry12@gmail.com', 'Testing123$');
+        await loginUser(driver, 'NewNon-Admin@account.com', 'NonAdmin12345$');
         await driver.get('http://localhost:3000/reviews');
         await driver.sleep(2000);
         let leaveReviewButton = await driver.findElement(By.css('.leave_review'));
