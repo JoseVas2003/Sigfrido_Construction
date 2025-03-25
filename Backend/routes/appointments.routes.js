@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getAppointments,
   getAppointment,
+  getAppointmentById,
   createAppointment,
   updateAppointment,
   deleteAppointment,
@@ -11,6 +12,7 @@ const router = express.Router();
 
 router.get("/", getAppointments);
 router.get("/:email", getAppointment);
+router.get("/id/:id", getAppointmentById);
 router.post("/", createAppointment);
 router.put("/:id", updateAppointment);
 router.delete("/:id", deleteAppointment);
