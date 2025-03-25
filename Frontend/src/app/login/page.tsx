@@ -1,16 +1,14 @@
 'use client'
+import { signIn, useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import '../Assets/css/login.modules.css';
 import '../Assets/css/resetSuccessPopup.css';
-import Navbar from '../navbar/navBar';
-import Link from 'next/link';
-import {clicksOut} from '../navbar/navBar'
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import {signIn} from 'next-auth/react';
-import {useSession} from 'next-auth/react';
+import Navbar, { clicksOut } from '../navbar/navBar';
 
 /* popup functions */
-export const openPopup = () =>{
+const openPopup = () =>{
     let popup = document.getElementById('popup')!;
 
     popup.style.display="flex";
@@ -25,11 +23,11 @@ const closePopup = () =>{
 export default function page(){
 
     const {data: session} = useSession();
-    const changePage = useRouter();
+     const changePage = useRouter();
 
-    if(session){
-        changePage.replace('/');
-    }
+     if(session){
+         changePage.replace('/');
+     }
 
     const [formData, setFormData] = useState({
         email: '',
@@ -76,7 +74,7 @@ export default function page(){
     const loginFormClientSideValidationEmail = () => {
         
         let emailErrorInputBorder = document.getElementById("emailInput");
-        let validEmail = /^[a-zA-z0-9-_]+@[a-zA-z]+\.[a-zA-z]+$/;
+        let validEmail = /^[a-zA-z0-9-_.]+@[a-zA-z]+\.[a-zA-z]+$/;
         
         emailErrorSetter("");
         setAccountError("");

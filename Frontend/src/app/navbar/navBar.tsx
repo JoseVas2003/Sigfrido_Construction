@@ -1,14 +1,12 @@
 'use client'
-import '../Assets/css/HeaderBar.modules.css';
+import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import Logo from '../Assets/headerBarImages/SeniorLogo.png';
-import Menue from '../Assets/headerBarImages/menuOpen.png';
-import Close from '../Assets/headerBarImages/menuClose.png';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import {signOut} from 'next-auth/react';
-import {useSession} from 'next-auth/react';
-import axios from 'axios';
+import '../Assets/css/HeaderBar.modules.css';
+import Logo from '../Assets/headerBarImages/SeniorLogo.png';
+import Close from '../Assets/headerBarImages/menuClose.png';
+import Menue from '../Assets/headerBarImages/menuOpen.png';
 
 
 const Navbar = () =>{
@@ -52,7 +50,7 @@ const Navbar = () =>{
                     </Link>
 
                     <Link href="../portfolio">
-                        <button type="button" className="menuePageButtons">Portfolio</button>
+                        <button type="button" className="menuePageButtons" id='portfolioButton'>Portfolio</button>
                     </Link>
 
                     <Link href="../meetTheOwner">
@@ -63,14 +61,14 @@ const Navbar = () =>{
                         <button type="button" className="menuePageButtons">Reviews</button>
                     </Link>
 
-                    {session?.user?.admin? (
-                        <Link href="../adminDashboard">
-                            <button type="button" className="menuePageButtons">Dashboard</button>
-                        </Link>
+                    {(session?.user as any)?.admin ? (
+                    <Link href="../adminDashboard">
+                        <button type="button" className="menuePageButtons">Dashboard</button>
+                    </Link>
                     ) : (
-                        <Link href="../clientDashboard">
-                            <button type="button" className="menuePageButtons">Dashboard</button>
-                        </Link>
+                    <Link href="../clientDashboard">
+                        <button type="button" className="menuePageButtons">Dashboard</button>
+                    </Link>
                     )}
 
                     {session? (

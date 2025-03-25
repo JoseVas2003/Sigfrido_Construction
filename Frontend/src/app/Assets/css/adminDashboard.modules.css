@@ -155,6 +155,19 @@
   border-radius: 5px;
 }
 
+/* Contact Form Section */
+.contactForms .contactForm-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+  background: #f9f9f9;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+
 /* Calendar Placeholder */
 .calendarWidget {
   text-align: center;
@@ -226,4 +239,10 @@ button:hover {
 
 .addProjectButton:hover {
   background-color: #555; /* Darker background color on hover */
+}
+.fc-event {
+  background-color: #3788d8 !important;
+  color: white !important;
+  border-radius: 5px;
+  padding: 3px;
 }

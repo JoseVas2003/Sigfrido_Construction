@@ -1,18 +1,21 @@
 'use client';
-import '../Assets/css/schedule.modules.css';
-import Navbar from '../navbar/navBar';
-import '../Assets/css/calendar.modules.css';
-import Calendar from '../calendar/calendar';
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import React, { useEffect, useState } from 'react';
+import '../Assets/css/calendar.modules.css';
+import '../Assets/css/schedule.modules.css';
+import Calendar from '../calendar/calendar';
+import Navbar from '../navbar/navBar';
 import Confirmation from './confirm';
-import {useSession} from 'next-auth/react';
 
 const placeholderUserId = '672c51b59ccd804fc4195ed0';
 
 interface Appointment {
+    _id: string;
     date: string;
     time: string;
+    name: string;
+    email: string;
 }
 export default function Page() {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -38,7 +41,7 @@ export default function Page() {
     const {data: session, status} = useSession();
     const email = session?.user?.email;
     const names = session?.user?.name;
-    const isAdmin = session?.user?.admin;
+    const isAdmin = (session?.user as any)?.admin;
     const [blockedDates, setBlockedDates] = useState<string[]>([]);  // Track blocked dates
     const [emailStatus, setEmailStatus] = useState<string | null>(null);
     const connection = 'http://localhost:3001/api/appointments/';
@@ -216,6 +219,7 @@ export default function Page() {
             resetForm();
             fetchAppointments();
         } catch (error) {
+            const err = error as any;
             console.error("Error scheduling appointment:", error);
             alert(`Error: ${error.response?.data?.message || error.message}`);
         }finally {
@@ -270,8 +274,9 @@ export default function Page() {
                     resetForm();
                     fetchAppointments(); 
                 } catch (error) {
+                    const err = error as any;
                     console.error("Error rescheduling appointment:", error);
-                    alert(`Error: ${error.response?.data?.message || error.message}`);
+                    alert(`Error: ${err.response?.data?.message || err.message}`);
                 }
             }
         );

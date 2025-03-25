@@ -236,7 +236,7 @@ export default function Reviews() {
                     key={review._id}
                     review={review}
                     userEmail={session?.user?.email ?? undefined}
-                    userIsAdmin={!!(session?.user as {admin: boolean}).admin}
+                    userIsAdmin={!!session?.user?.admin}
                     onDelete={handleDeleteReview}
                 />
                 ))}

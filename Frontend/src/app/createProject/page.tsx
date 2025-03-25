@@ -26,7 +26,7 @@ export default function CreateProjectPage() {
     const [costError, setCostError] = useState("");
     const [categoriesError, setCategoriesError] = useState("");
     const [imageError, setImageError] = useState("");
-
+    const [submitHovered, setSubmitHovered] = useState(false);
 
     // Ref for hidden file input
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -52,7 +52,7 @@ export default function CreateProjectPage() {
                 setError = setCostError;
                 break;
             case 'description':
-                maxLength = 100;
+                maxLength = 300;
                 setError = setDescriptionError;
                 break;
             default:
@@ -202,10 +202,10 @@ export default function CreateProjectPage() {
                     <form style={styles.form} onSubmit={handleSubmit}>
                         {/* Project Name */}
                         <div style={styles.inputGroup}>
-                            <label htmlFor='name'>Project Name:</label>
+                            <label htmlFor='projectName'>Project Name:</label>
                             <input
                                 type="text"
-                                id="name"
+                                id="projectName"
                                 name="name"
                                 style={{ ...styles.input, border: projectNameError ? '3px solid red' : '2px solid black',}}
                                 value={formData.name}
@@ -213,14 +213,14 @@ export default function CreateProjectPage() {
                                 onInput={() => setProjectNameError("")}
                             />
                             {projectNameError && (
-                                <p style={styles.errorText}>{projectNameError}</p>
+                                <p id="projectNameError" style={styles.errorText}>{projectNameError}</p>
                             )}
                         </div>
                         {/* Description Section */}
                         <div style={styles.inputGroup}>
-                            <label htmlFor="description">Description:</label>
+                            <label htmlFor="descriptionText">Description:</label>
                             <textarea
-                                id="description"
+                                id="descriptionText"
                                 name="description"
                                 style={{...styles.textarea, border: descriptionError ? '3px solid red' : '2px solid black'}}
                                 value={formData.description}
@@ -228,7 +228,7 @@ export default function CreateProjectPage() {
                                 onInput={() => setDescriptionError("")}
                             />
                             {descriptionError && (
-                                <p style={styles.errorText}>{descriptionError}</p>
+                                <p id="descriptionError" style={styles.errorText}>{descriptionError}</p>
                             )}                    
                         </div>
                         {/* Time Taken & Cost Sections */}
@@ -246,7 +246,7 @@ export default function CreateProjectPage() {
                                     onInput={() => setTimeTakenError("")}
                                 />
                                 {timeTakenError && (
-                                    <p style={styles.errorText}>{timeTakenError}</p>
+                                    <p id="timeTakenError" style={styles.errorText}>{timeTakenError}</p>
                                 )}
                             </div>                            
                             {/* Cost Section */}
@@ -262,7 +262,7 @@ export default function CreateProjectPage() {
                                     onInput={() => setCostError("")}
                                 />
                                 {costError && (
-                                    <p style={styles.errorText}>{costError}</p>
+                                    <p id="costError" style={styles.errorText}>{costError}</p>
                                 )}
                             </div>
                         </div>
@@ -275,6 +275,7 @@ export default function CreateProjectPage() {
                                 <label style={styles.checkboxLabel}>
                                 <input
                                     type="checkbox"
+                                    id="category-ADU"
                                     name="category"
                                     value="ADU"
                                     checked={formData.categories.includes('ADU')}
@@ -286,6 +287,7 @@ export default function CreateProjectPage() {
                                 <label style={styles.checkboxLabel}>
                                     <input
                                     type="checkbox"
+                                    id="category-bathrooms"
                                     name="category"
                                     value="Bathrooms"
                                     checked={formData.categories.includes('Bathrooms')}
@@ -297,6 +299,7 @@ export default function CreateProjectPage() {
                                 <label style={styles.checkboxLabel}>
                                     <input
                                     type="checkbox"
+                                    id="category-floors"
                                     name="category"
                                     value="Floors"
                                     checked={formData.categories.includes('Floors')}
@@ -308,6 +311,7 @@ export default function CreateProjectPage() {
                                 <label style={styles.checkboxLabel}>
                                 <input
                                     type="checkbox"
+                                    id="category-kitchen"
                                     name="category"
                                     value="Kitchen"
                                     checked={formData.categories.includes('Kitchen')}
@@ -319,6 +323,7 @@ export default function CreateProjectPage() {
                                 <label style={styles.checkboxLabel}>
                                 <input
                                     type="checkbox"
+                                    id="category-roofs"
                                     name="category"
                                     value="Roofs"
                                     checked={formData.categories.includes('Roofs')}
@@ -330,6 +335,7 @@ export default function CreateProjectPage() {
                                 <label style={styles.checkboxLabel}>
                                 <input
                                     type="checkbox"
+                                    id="category-rooms"
                                     name="category"
                                     value="Rooms"
                                     checked={formData.categories.includes('Rooms')}
@@ -340,7 +346,7 @@ export default function CreateProjectPage() {
                                 </label>
                             </div>
                             {categoriesError && (
-                                <p style={styles.errorText}>{categoriesError}</p>
+                                <p id="categoriesError" style={styles.errorText}>{categoriesError}</p>
                             )}
                         </div>
                         {/* Add an Image Section */}
@@ -359,6 +365,7 @@ export default function CreateProjectPage() {
                                 {/* Hidden file input */}
                                 <input
                                     type="file"
+                                    id="imageFile"
                                     ref={fileInputRef}
                                     style={{ display: 'none' }}
                                     accept=".heic,.jpg,.jpeg,.png"
@@ -366,12 +373,21 @@ export default function CreateProjectPage() {
                                 />
                             </div>
                             {imageError && (
-                                <p style={styles.errorText}>{imageError}</p>
+                                <p id="imageError" style={styles.errorText}>{imageError}</p>
                             )}                       
                         </div>
                     </div>
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                        <button type="submit" style={styles.button}>
+                        <button
+                            type="submit"
+                            style={{
+                                ...styles.button,
+                                backgroundColor: submitHovered ? '#1E2D3D' : styles.button.backgroundColor,
+                                color: submitHovered ? '#EBECE5' : styles.button.color,
+                            }}
+                            onMouseEnter={() => setSubmitHovered(true)}
+                            onMouseLeave={() => setSubmitHovered(false)}
+                        >
                             Create Project
                         </button>                
                     </div>
@@ -387,14 +403,14 @@ const styles: { [key: string]: CSSProperties } = {
         width: '100%',
         position: 'fixed',
         top: 0,
-        left: 0, // Ensures the Navbar takes up the full width
+        left: 0, 
         right: 0,
-        zIndex: 1000, // High z-index to overlay content
+        zIndex: 1000, 
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
         marginBottom: '20px',
     },
     formContainer: {
-        marginTop: '100px', // Adjust to ensure it's below the navbar
+        marginTop: '100px', 
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -403,7 +419,7 @@ const styles: { [key: string]: CSSProperties } = {
         zIndex: 1,
     },
     form: {
-        backgroundColor: '#ffffff', // White background
+        backgroundColor: '#ffffff',
         padding: '30px',
         borderRadius: '15px',
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
@@ -437,7 +453,6 @@ const styles: { [key: string]: CSSProperties } = {
     button: {
         padding: '10px 20px',
         borderRadius: '15px',
-        border: '2px solid black',
         backgroundColor: '#4FB6CE',
         cursor: 'pointer',
         fontWeight: 'bold',
