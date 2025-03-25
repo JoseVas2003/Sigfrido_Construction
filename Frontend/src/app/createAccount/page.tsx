@@ -233,7 +233,7 @@ export default function createUser(){
 
     emailErrorSetter("");
     let email = formData.email;
-    const connection = 'http://localhost:3001/api/users/';
+    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const authenticationURL = connection + (email);
 
     try{
@@ -354,7 +354,7 @@ export default function createUser(){
       console.log("Submitting form with data:", formData); // Debugging log
   
       try {
-        const response = await axios.post('http://localhost:3001/api/users', formData, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, formData, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -368,7 +368,7 @@ export default function createUser(){
 
       try{
 
-        await axios.post("http://localhost:3001/api/createAccountEmail/sendEmail", formData, {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/createAccountEmail/sendEmail`, formData, {
           headers: { "Content-Type": "application/json" },
         });
 

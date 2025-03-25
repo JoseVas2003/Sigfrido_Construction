@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 export interface Appointment {
   _id: string;
@@ -22,7 +22,7 @@ export default function AppointmentSelector({ onSelect, onClose }: AppointmentSe
   const [error, setError] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/api/appointments")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`)
       .then((response) => {
         // Filter appointments within ± two weeks from now
         const now = new Date();

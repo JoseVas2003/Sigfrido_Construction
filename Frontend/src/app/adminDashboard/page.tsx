@@ -1,15 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../navbar/navBar";
+import { useEffect, useState } from "react";
 import '../Assets/css/adminDashboard.modules.css';
-import Calendar from "../calendar/calendar";
+import Navbar from "../navbar/navBar";
 import AddProjectForm from "./addProjectForm";
-import AppointmentSelector, { Appointment as AppointmentType } from "./appointmentSelector";
+import AppointmentSelector from "./appointmentSelector";
 
 
-import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import FullCalendar from "@fullcalendar/react";
 
 
 
@@ -70,7 +69,7 @@ const [contactForms, setContactForms] = useState<ContactForm[]>([]);
 
 // Fetch reviews from MongoDB
 useEffect(() => {
-    axios.get("http://localhost:3001/api/reviews")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`)
         .then((response) => {
             setReviews(response.data);
         })
@@ -78,7 +77,7 @@ useEffect(() => {
 }, []);
 // Fetch appointments from MongoDB
 useEffect(() => {
-    axios.get("http://localhost:3001/api/appointments")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`)
         .then((response) => {
             setAppointments(response.data);
             setLoading(false);
@@ -90,7 +89,7 @@ useEffect(() => {
 
 // Delete a review
 const handleDeleteReview = (id: string) => {
-    axios.delete(`http://localhost:3001/api/reviews/${id}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`)
         .then(() => {
             setReviews(reviews.filter((review) => review._id !== id));
         })
@@ -98,7 +97,7 @@ const handleDeleteReview = (id: string) => {
 };
     // Fetch users from MongoDB
 useEffect(() => {
-    axios.get("http://localhost:3001/api/users/")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/`)
     .then((response) => {
         setUsers(response.data);
     })
@@ -112,7 +111,7 @@ useEffect(() => {
 
 // Delete a user
 const handleDeleteUser = (id: string) => {
-    axios.delete(`http://localhost:3001/api/users/${id}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`)
     .then(() => {
         setUsers(users.filter((user) => user._id != id));
     })
@@ -121,7 +120,7 @@ const handleDeleteUser = (id: string) => {
 
 // Fetch contact us forms from MongoDB
 useEffect(() => {
-    axios.get("http://localhost:3001/api/contactUs")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/contactUs`)
     .then((response) => {
         setContactForms(response.data);
     })
@@ -130,7 +129,7 @@ useEffect(() => {
 
 //Delete a contact form
 const handleDeleteContactForm = (id: string) => {
-    axios.delete(`http://localhost:3001/api/contactUs/${id}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/contactUs/${id}`)
     .then(() => {
         setContactForms(contactForms.filter((contactForm) => contactForm._id != id));
     })

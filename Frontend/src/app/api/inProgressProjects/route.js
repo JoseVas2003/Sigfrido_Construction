@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 // GET /api/inProgressProjects: Fetch all in-progress projects (public)
 export async function GET() {
 try {
-    const response = await axios.get('http://localhost:3001/api/inProgressProjects');
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/inProgressProjects`);
     return NextResponse.json(response.data, { status: response.status });
 } catch (error) {
     console.error("Error fetching in-progress projects:", error.response?.data || error.message);
@@ -32,7 +32,7 @@ const projectData = {
 
 try {
     const response = await axios.post(
-    'http://localhost:3001/api/inProgressProjects', 
+    `${process.env.NEXT_PUBLIC_API_URL}/api/inProgressProjects`, 
     projectData,
     { headers: { 'Content-Type': 'application/json' } }
     );

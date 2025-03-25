@@ -1,12 +1,11 @@
 "use client";
 
-import React, {CSSProperties, useState, useEffect, useRef} from 'react';
-import Navbar from '@/app/navbar/navBar';
-import galleryIcon from '@/app/createProject/galleryIcon.png'
-import Image from 'next/image';
-import {clicksOut} from '@/app/navbar/navBar'; 
+import galleryIcon from '@/app/createProject/galleryIcon.png';
+import Navbar, { clicksOut } from '@/app/navbar/navBar';
 import axios from 'axios';
-import {useRouter,useParams} from 'next/navigation';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 
 export default function EditProjectPage() {
   const router = useRouter();
@@ -34,7 +33,7 @@ export default function EditProjectPage() {
 
   useEffect(() => {
     if (!id) return;
-    axios.get(`http://localhost:3001/api/projects/${id}`)
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`)
       .then((response) => {
         const project = response.data;
         setFormData((prev) => ({
@@ -194,7 +193,7 @@ export default function EditProjectPage() {
       }
 
       // send PUT to update
-      const response = await axios.put(`http://localhost:3001/api/projects/${id}`, data, {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

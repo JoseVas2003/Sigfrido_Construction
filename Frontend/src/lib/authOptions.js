@@ -11,7 +11,7 @@ export const authOptions = {
           async authorize(credentials){
 
              const {email, password} = credentials;
-             const connection = 'http://localhost:3001/api/users/';
+             const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
              const authenticationURL = connection + (email);
 
              try{

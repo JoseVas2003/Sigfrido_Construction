@@ -44,7 +44,7 @@ export default function Page() {
     const isAdmin = (session?.user as any)?.admin;
     const [blockedDates, setBlockedDates] = useState<string[]>([]);  // Track blocked dates
     const [emailStatus, setEmailStatus] = useState<string | null>(null);
-    const connection = 'http://localhost:3001/api/appointments/';
+    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/appointments/`;
     const authenticationURL = connection + (email);
     const formatDateOnly = (dateStr: string) => new Date(dateStr).toISOString().split('T')[0];
 
@@ -207,11 +207,11 @@ export default function Page() {
                 message: formData.message,
             };
     
-            await axios.post("http://localhost:3001/api/appointments", appointmentData, {
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, appointmentData, {
                 headers: { "Content-Type": "application/json" },
             });
     
-            await axios.post("http://localhost:3001/api/emails/send", emailData, {
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/emails/send`, emailData, {
                 headers: { "Content-Type": "application/json" },
             });
     
@@ -243,7 +243,7 @@ export default function Page() {
             async () => {
                 close();
                 try {
-                    const response = await axios.get(`http://localhost:3001/api/appointments/id/${appointmentId}`);
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/id/${appointmentId}`);
                     const existingAppointment = response.data; 
     
                     const rescheduleEmailData = {
@@ -257,7 +257,7 @@ export default function Page() {
                       };
               
                       // Send reschedule email
-                      await axios.post("http://localhost:3001/api/emails/reschedule", rescheduleEmailData, {
+                      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/emails/reschedule`, rescheduleEmailData, {
                         headers: { "Content-Type": "application/json" },
                       });
 
@@ -270,7 +270,7 @@ export default function Page() {
                         message: formData.message || existingAppointment.message,
                       };
     
-                    await axios.put(`http://localhost:3001/api/appointments/${appointmentId}`, updatedAppointmentData, {
+                    await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${appointmentId}`, updatedAppointmentData, {
                         headers: { "Content-Type": "application/json" },
                     });
     
@@ -294,7 +294,7 @@ export default function Page() {
                 try {
                     setActionInProgressId(appointmentId);
 
-                    const response = await axios.get(`http://localhost:3001/api/appointments/id/${appointmentId}`);
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/id/${appointmentId}`);
                     const existingAppointment = response.data;
     
                     const formattedDate = new Date(existingAppointment.date).toLocaleDateString();
@@ -307,11 +307,11 @@ export default function Page() {
                         phone: existingAppointment.phone,
                     };
 
-                    await axios.post("http://localhost:3001/api/emails/cancel", cancelAppointmentData, {
+                    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/emails/cancel`, cancelAppointmentData, {
                         headers: { "Content-Type": "application/json" },
                     });
     
-                    await axios.delete(`http://localhost:3001/api/appointments/${appointmentId}`);
+                    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${appointmentId}`);
                     alert("Appointment canceled successfully.");
                     fetchAppointments();  
                 } catch (error: any) {
@@ -328,7 +328,7 @@ export default function Page() {
         if (selectedDate && selectedTime) {
             try {
                 setIsBlocking(true);
-                await axios.post("http://localhost:3001/api/appointments", {
+                await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, {
                     date: selectedDate.toISOString(),
                     time: selectedTime,
                     email: email,

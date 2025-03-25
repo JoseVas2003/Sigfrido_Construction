@@ -10,7 +10,7 @@ export async function GET() {
     }*/
 
     try {
-        const response = await axios.get('http://localhost:3001/api/contactUs');
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/contactUs`);
         return NextResponse.json(response.data, { status: response.status });
       } catch (error) {
         console.error("Error fetching contact us forms:", error.response?.data || error.message);
@@ -26,7 +26,7 @@ export async function POST(request) {
     const body = await request.json();
 
     try{
-        const response = await axios.post('http://localhost:3001/api/contactUs', body, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/contactUs`, body, {
             headers: { 'Content-Type': 'application/json'},
         });
         return NextResponse.json(response.data, { status: response.status });
