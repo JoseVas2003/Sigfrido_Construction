@@ -65,6 +65,7 @@ const [autofillData, setAutofillData] = useState({
     email: "",
 });
 const [users, setUsers] = useState<User[]>([]);
+const [contactForms, setContactForms] = useState<ContactForm[]>([]);
 
 
 // Fetch reviews from MongoDB
