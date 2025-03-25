@@ -24,7 +24,7 @@ export async function PUT(
 
     try {
         const response = await axios.put(
-        `http://localhost:3001/api/projects/${params.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${params.id}`,
         projectData,
         { headers: { 'Content-Type': 'application/json' } }
         );
@@ -47,7 +47,7 @@ export async function DELETE(
 
     try {
         const response = await axios.delete(
-        `http://localhost:3001/api/projects/${params.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${params.id}`,
         {
             headers: { 'Content-Type': 'application/json' },
             data: { admin: session.user.admin },

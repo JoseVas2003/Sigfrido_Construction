@@ -20,7 +20,7 @@ export default function PortfolioContent() {
   const [hoveredIcon, setHoveredIcon] = useState<"pencil" | "plus" | null>(null);
   
   useEffect(() => {
-    axios.get('http://localhost:3001/api/projects')
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`)
       .then((response) => {
         setProjects(response.data);
       })
@@ -47,7 +47,7 @@ export default function PortfolioContent() {
     
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3001/api/projects/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`);
       setProjects(prev => prev.filter(proj => proj._id !== id));
       setNotification("Project has been deleted!");
       setTimeout(() => {
@@ -156,7 +156,7 @@ export default function PortfolioContent() {
               category={proj.categories?.join(', ') || ''}
               time={proj.timeTaken}
               cost={proj.cost}                                
-              imageUrl={`http://localhost:3001/api/projects/${proj._id}/image`}
+              imageUrl={`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${proj._id}/image`}
               editMode={editMode}
               onDelete={handleDelete}                            
             />

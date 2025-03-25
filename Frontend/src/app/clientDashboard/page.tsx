@@ -1,12 +1,12 @@
 'use client'
 
-import Image from 'next/image';
-import Navbar from "../navbar/navBar";
-import "../Assets/css/ClientDashboard.modules.css"
-import Link from "next/link";
 import axios from 'axios';
-import {useSession} from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import Link from "next/link";
 import { useEffect, useState } from 'react';
+import "../Assets/css/ClientDashboard.modules.css";
+import Navbar from "../navbar/navBar";
 
 // Sidebar images
 import Message from '../Assets/clientDashboardIcons/Message.png';
@@ -15,14 +15,14 @@ import Settings from '../Assets/clientDashboardIcons/Setting_line_light@3x.png';
 
 // Static images
 import Bathroom from '../Assets/clientStaticImages/Bathroom-static.jpg';
-import Bedroom from '../Assets/clientStaticImages/Bedroom-Static.jpg'
-import Floor from '../Assets/clientStaticImages/Floor-static.jpg'
+import Bedroom from '../Assets/clientStaticImages/Bedroom-Static.jpg';
+import InActiveProject from '../Assets/clientStaticImages/ConstructionHat-static.jpg';
+import Floor from '../Assets/clientStaticImages/Floor-static.jpg';
 import House from '../Assets/clientStaticImages/House-static.jpg';
 import Kitchen from '../Assets/clientStaticImages/Kitchen-static.jpg';
-import LivingRoom from '../Assets/clientStaticImages/LivingRoom-Static.jpg'
-import Roof from '../Assets/clientStaticImages/Roof-static.jpg'
-import Shed from '../Assets/clientStaticImages/Shed-static.jpg'
-import InActiveProject from '../Assets/clientStaticImages/ConstructionHat-static.jpg'
+import LivingRoom from '../Assets/clientStaticImages/LivingRoom-Static.jpg';
+import Roof from '../Assets/clientStaticImages/Roof-static.jpg';
+import Shed from '../Assets/clientStaticImages/Shed-static.jpg';
 
 interface Projects {
   _id: string;
@@ -49,7 +49,7 @@ export default function page(){
     (async () => {
       try {
         console.log(email);
-        const response = await axios.get(`http://localhost:3001/api/inProgressProjects/${email}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/inProgressProjects/${email}`);
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching user:", error);

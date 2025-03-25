@@ -31,7 +31,7 @@ export async function DELETE(request, { params }) {
     }
 
     try {
-        const response = await axios.delete(`http://localhost:3001/api/contactUs/${params.id}`, {
+        const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/contactUs/${params.id}`, {
             headers: { 'Content-Type': 'application/json' }, 
             data: {
                 email: session.user.email,

@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent } from "react";
-import Navbar from "../navbar/navBar";
-import "../Assets/css/Reviews.modules.css";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import React, { FormEvent, useEffect, useState } from "react";
+import "../Assets/css/Reviews.modules.css";
+import Navbar from "../navbar/navBar";
 import ReviewCard from "./ReviewCard";
 import ReviewModalForm from "./ReviewModalForm";
 
@@ -145,7 +145,7 @@ export default function Reviews() {
             formData.append("image", newReview.image);
         }
 
-        const response = await axios.post("http://localhost:3001/api/reviews", formData);
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`, formData);
         setReviews((prev) => [...prev, response.data]);
 
         // Clear form and close modal
@@ -160,7 +160,7 @@ export default function Reviews() {
   // Delete a review
     const handleDeleteReview = async (id: string) => {
         try {
-            await axios.delete(`http://localhost:3001/api/reviews/${id}`);
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`);
             setReviews((prev) => prev.filter((review) => review._id !== id));
         } catch (error) {
             console.error("❌ Error deleting review:", error);

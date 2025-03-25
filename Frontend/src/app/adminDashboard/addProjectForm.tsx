@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 interface AddProjectFormProps {
   onProjectAdded?: (project: any) => void;
@@ -58,7 +58,7 @@ export default function AddProjectForm({ onProjectAdded, initialCustomerName = "
     }
 
     try {
-      const response = await axios.post("http://localhost:3001/api/inProgressProjects", data, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/inProgressProjects`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       onProjectAdded && onProjectAdded(response.data);

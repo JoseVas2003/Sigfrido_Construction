@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 // GET /api/projects: Fetch all projects (public)
 export async function GET() {
     try {
-        const response = await axios.get('http://localhost:3001/api/projects');
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`);
         return NextResponse.json(response.data, { status: response.status });
     } catch (error) {
         console.error("Error fetching projects:", error.response?.data || error.message);
@@ -33,7 +33,7 @@ export async function POST(request) {
 
     try {
         const response = await axios.post(
-        'http://localhost:3001/api/projects', 
+        `${process.env.NEXT_PUBLIC_API_URL}/api/projects`, 
         projectData,
         { headers: { 'Content-Type': 'application/json' } }
         );

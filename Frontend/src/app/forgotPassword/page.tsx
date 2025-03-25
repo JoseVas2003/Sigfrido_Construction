@@ -84,7 +84,7 @@ export default function page(){
     
         emailErrorSetter("");
         let email = formData.email;
-        const connection = 'http://localhost:3001/api/users/';
+        const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
         const authenticationURL = connection + (email);
     
         try{
@@ -119,7 +119,7 @@ export default function page(){
             var sendButton = document.getElementById("openPopup") as HTMLButtonElement;
             sendButton!.disabled = true;
             let email = formData.email;
-            const connection = 'http://localhost:3001/api/users/';
+            const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
             const resetPassordURL = connection + (email);
     
             let userToken = crypto.randomBytes(16).toString('hex');
@@ -134,7 +134,7 @@ export default function page(){
                 });
     
     
-                await axios.post("http://localhost:3001/api/forgotPasswordEmail/sendLink", formData, {
+                await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/forgotPasswordEmail/sendLink`, formData, {
                     headers: { "Content-Type": "application/json" },
                 });
 

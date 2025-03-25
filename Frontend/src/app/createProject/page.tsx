@@ -1,12 +1,11 @@
 "use client";
 
-import React, { CSSProperties, useState, useRef} from 'react';
-import Navbar from '../navbar/navBar';
-import galleryIcon from '../createProject/galleryIcon.png'
+import axios from "axios";
 import Image from 'next/image';
-import {clicksOut} from '../navbar/navBar'
-import axios from "axios"
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import React, { CSSProperties, useRef, useState } from 'react';
+import galleryIcon from '../createProject/galleryIcon.png';
+import Navbar, { clicksOut } from '../navbar/navBar';
 
 export default function CreateProjectPage() {
     const [formData, setFormData] = useState({
@@ -181,7 +180,7 @@ export default function CreateProjectPage() {
                 data.append("image", formData.image);
             }
 
-            const response = await axios.post('http://localhost:3001/api/projects', data);
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`, data);
             router.push("/portfolio?message=" + encodeURIComponent("Project created successfully!"));
             //router.push('/portfolio');
         } catch (error: any) {

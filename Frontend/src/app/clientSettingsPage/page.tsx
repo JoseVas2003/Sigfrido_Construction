@@ -1,17 +1,16 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import {useSession} from 'next-auth/react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import {signOut} from 'next-auth/react';
 import bcrypt from 'bcryptjs';
+import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
-import Navbar from "../navbar/navBar";
-import "../Assets/css/ClientDashboard.modules.css"
 import Link from "next/link";
+import "../Assets/css/ClientDashboard.modules.css";
 import "../Assets/css/ClientDashboardProfile.modules.css";
+import Navbar from "../navbar/navBar";
 
 // Sidebar images
 import Message from '../Assets/clientDashboardIcons/Message.png';
@@ -134,7 +133,7 @@ export default function page(){
       return false;
     }
 
-    const connection = 'http://localhost:3001/api/users/';
+    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const userURL = connection + (email);
 
     try {
@@ -164,7 +163,7 @@ export default function page(){
 
   const handleConfirmPasswordChange = async () => {
     if (await validatePasswordChange()) {
-      const connection = 'http://localhost:3001/api/users/';
+      const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
       const resetPasswordURL = connection + (email);
       updatedPassword.password = newPassword;
 
@@ -222,7 +221,7 @@ export default function page(){
       return false;
     }
 
-    const connection = 'http://localhost:3001/api/users/';
+    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const userURL = connection + (email);
 
     try {
@@ -251,7 +250,7 @@ export default function page(){
 
   const handleConfirmPhoneChange = async () => {
     if (await validatePhoneChange()){
-      const connection = 'http://localhost:3001/api/users/';
+      const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
       const resetPhoneURL = connection + (email);
       updatedPhone.phone = newPhone;
 
@@ -271,7 +270,7 @@ export default function page(){
 
   const router = useRouter();
   const handleConfirmDelete = async() => {
-    const connection = 'http://localhost:3001/api/users/';
+    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const userURL = connection + (email);
     let userID = '';
 
@@ -301,7 +300,7 @@ export default function page(){
       return false;
     }
 
-    const connections = 'http://localhost:3001/api/users/';
+    const connections = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const usersURL = connections + (userID);
 
     try {
@@ -325,7 +324,7 @@ export default function page(){
       // Fetching user info from server
       const fetchUserInfo = async () => {
         try {
-          const connection = 'http://localhost:3001/api/users/';
+          const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
           const userDatabaseURL = `${connection}${email}`;
   
           const { data } = await axios.get(userDatabaseURL, {

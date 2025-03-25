@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 // Fetch all reviews
 export async function GET() {
   try {
-    const response = await axios.get('http://localhost:3001/api/reviews');
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`);
     return NextResponse.json(response.data, { status: response.status });
   } catch (error) {
     console.error("Error fetching reviews:", error.response?.data || error.message);
@@ -116,7 +116,7 @@ export async function POST(request) {
   nodeFormData.append("email", session.user.email);
 
   try {
-    const response = await axios.post("http://localhost:3001/api/reviews", nodeFormData, {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`, nodeFormData, {
       withCredentials: true,
       headers: nodeFormData.getHeaders(), // Sets correct multipart/form-data headers
     });    

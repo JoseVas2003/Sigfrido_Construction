@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import type { Review } from "./page"; 
+import type { Review } from "./page";
 
 interface ReviewCardProps {
     review: Review;
@@ -41,7 +40,7 @@ export default function ReviewCard({
             {/* If an image exists, show it from Express route */}
             {review.image && review._id && (
                 <img
-                src={`http://localhost:3001/api/reviews/${review._id}/image`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${review._id}/image`}
                 alt={review.title}
                 style={{ width: "150px", height: "auto" }}
                 />
