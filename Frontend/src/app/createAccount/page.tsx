@@ -1,13 +1,12 @@
 'use client'
-import '../Assets/css/createAccount.modules.css';
-import Navbar from '../navbar/navBar';
 import axios from 'axios';
-import { useState } from 'react';
-import Link from 'next/link';
-import {clicksOut} from '../navbar/navBar'
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import bcrypt from 'bcryptjs';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import '../Assets/css/createAccount.modules.css';
+import Navbar, { clicksOut } from '../navbar/navBar';
 
 export default function createUser(){
 
@@ -253,10 +252,10 @@ export default function createUser(){
       return true;
      }
 
-    }catch(error){
-     const err = error;
-     console.error("Error response:", err.response?.data || err.message);
-    }
+    } catch (error: any) {
+      console.error("Error response:", error.response?.data || error.message);
+      alert(`Error: ${error.response?.data?.message || error.message}`);
+    }   
   }
 
   const createAccountFormClientSideValidationPassword = () => {

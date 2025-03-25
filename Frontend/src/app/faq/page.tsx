@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from 'next-auth/react';
-import React, { useState, CSSProperties, ChangeEvent, DragEvent } from 'react';
+import { CSSProperties, ChangeEvent, DragEvent, useState } from 'react';
 import Navbar from '../navbar/navBar';
 
 export default function faqPage() {
@@ -254,8 +254,7 @@ export default function faqPage() {
                             {translations[language].addSection}
                         </button>
                     )}
-
-                    {session?.user?.admin && (
+                    {(session?.user as any)?.admin && (
                         <button onClick={handleEditToggle} style={styles.editButton}>
                             {isEditing ? translations[language].save : translations[language].edit}
                         </button>

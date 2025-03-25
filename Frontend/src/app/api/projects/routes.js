@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { authOptions } from "@/lib/authOptions";
 import axios from 'axios';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]/route'; // adjust path as needed
+import { NextResponse } from 'next/server';
 
 // GET /api/projects: Fetch all projects (public)
 export async function GET() {
