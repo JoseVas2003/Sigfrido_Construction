@@ -219,14 +219,18 @@ export default function Page() {
             resetForm();
             fetchAppointments();
         } catch (error) {
-            const err = error as any;
             console.error("Error scheduling appointment:", error);
-            alert(`Error: ${error.response?.data?.message || error.message}`);
-        }finally {
+            if (axios.isAxiosError(error)) {
+                alert(`Error: ${error.response?.data?.message || error.message}`);
+            } else if (error instanceof Error) {
+                alert(`Error: ${error.message}`);
+            } else {
+                alert("An unknown error occurred.");
+            }
+        } finally {
             setIsSubmitting(false);  
         }
     };
-    
         
     const handleReschedule = (appointmentId: string) => {
         if (!selectedDate || !selectedTime) {
@@ -341,14 +345,20 @@ export default function Page() {
                 fetchAppointments();
             } catch (error) {
                 console.error("Error blocking time slot:", error);
-                alert(`Error blocking time: ${error?.response?.data?.message || error.message}`);
-            }finally {
+                if (axios.isAxiosError(error)) {
+                    alert(`Error blocking time: ${error.response?.data?.message || error.message}`);
+                } else if (error instanceof Error) {
+                    alert(`Error blocking time: ${error.message}`);
+                } else {
+                    alert("An unknown error occurred while blocking the time slot.");
+                }
+            } finally {
                 setIsBlocking(false); 
             }
         } else {
             alert("Please select both a date and time to block.");
         }
-    };    
+    };
 
     const filteredAppointments = appointments.filter((appt) => {
         const dateStr = formatDateOnly(appt.date);  // Properly formatted date
