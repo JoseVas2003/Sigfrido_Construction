@@ -84,9 +84,12 @@ export async function GET() {
 
 export async function POST(request) {
   const session = await getServerSession(authOptions);
+  console.log("Session:", session);
+
   if (!session) {
     return NextResponse.json({ message: "Must be logged in" }, { status: 401 });
   }
+  
 
   // Get the Web API FormData
   const webFormData = await request.formData();
@@ -114,8 +117,9 @@ export async function POST(request) {
 
   try {
     const response = await axios.post("http://localhost:3001/api/reviews", nodeFormData, {
+      withCredentials: true,
       headers: nodeFormData.getHeaders(), // Sets correct multipart/form-data headers
-    });
+    });    
     return NextResponse.json(response.data, { status: response.status });
   } catch (error) {
     console.error("Error creating review:", error.response?.data || error.message);

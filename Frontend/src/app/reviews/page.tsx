@@ -31,6 +31,10 @@ interface NewReview {
 
 export default function Reviews() {
     const { data: session } = useSession();
+
+    useEffect(() => {
+        console.log("Session in reviews page:", session);
+      }, [session]);
     const router = useRouter();
 
     // State
@@ -141,7 +145,7 @@ export default function Reviews() {
             formData.append("image", newReview.image);
         }
 
-        const response = await axios.post("/api/reviews", formData);
+        const response = await axios.post("http://localhost:3001/api/reviews", formData);
         setReviews((prev) => [...prev, response.data]);
 
         // Clear form and close modal
@@ -156,7 +160,7 @@ export default function Reviews() {
   // Delete a review
     const handleDeleteReview = async (id: string) => {
         try {
-            await axios.delete(`/api/reviews/${id}`);
+            await axios.delete(`http://localhost:3001/api/reviews/${id}`);
             setReviews((prev) => prev.filter((review) => review._id !== id));
         } catch (error) {
             console.error("❌ Error deleting review:", error);

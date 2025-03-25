@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/authOptions";
 import axios from 'axios';
+import { Session } from "inspector/promises";
 import { getServerSession } from 'next-auth/next';
 import { NextResponse } from 'next/server';
 
@@ -10,6 +11,7 @@ export async function DELETE(
   { params }
 ) {
   const session = await getServerSession(authOptions);
+  console.log("TYRING TO DELETE, SESSION: " + session);
   if (!session) {
     return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
   }
