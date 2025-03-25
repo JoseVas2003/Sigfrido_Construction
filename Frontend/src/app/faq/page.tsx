@@ -46,7 +46,7 @@ export default function faqPage() {
             editTipsTitle: 'Consejos de Edición',
             editTip1: 'Haz clic en una pregunta o respuesta para editar.',
             editTip2: 'Haz clic en el botón "Guardar" para guardar los cambios.',
-            editTip3: 'Puedes añadir, eliminar y cambiar secciones y preguntas.',
+            editTip3: 'Puedes añadir, eliminar y cambiar secciones y preguntas. ',
         },
     };
 
