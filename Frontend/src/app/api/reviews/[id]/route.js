@@ -10,13 +10,14 @@ export async function DELETE(
   { params }
 ) {
   const session = await getServerSession(authOptions);
+  console.log("TYRING TO DELETE, SESSION: " + session);
   if (!session) {
     return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
   }
 
   try {
     // Forward the DELETE request to backend.
-    const response = await axios.delete(`http://localhost:3001/api/reviews/${params.id}`, {
+    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${params.id}`, {
       headers: { 'Content-Type': 'application/json' },
       data: {
         email: session.user.email,
@@ -57,7 +58,7 @@ export async function PUT(
   };
 
   try {
-    const response = await axios.put(`http://localhost:3001/api/reviews/${params.id}`, reviewData, {
+    const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${params.id}`, reviewData, {
       headers: { 'Content-Type': 'application/json' },
     });
     return NextResponse.json(response.data, { status: response.status });

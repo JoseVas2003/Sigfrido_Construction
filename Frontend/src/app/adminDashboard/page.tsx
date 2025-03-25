@@ -1,15 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../navbar/navBar";
+import { useEffect, useState } from "react";
 import '../Assets/css/adminDashboard.modules.css';
-import Calendar from "../calendar/calendar";
+import Navbar from "../navbar/navBar";
 import AddProjectForm from "./addProjectForm";
-import AppointmentSelector, { Appointment as AppointmentType } from "./appointmentSelector";
+import AppointmentSelector from "./appointmentSelector";
 
 
-import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import FullCalendar from "@fullcalendar/react";
 
 
 
@@ -42,6 +41,17 @@ admin: string;
 createdAt: string;
 }
 
+interface ContactForm {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    subject: string;
+    message: string;
+    createdAt: string;
+}
+
 
 export default function AdminDashboard() {
 const [reviews, setReviews] = useState<Review[]>([]);
@@ -54,11 +64,12 @@ const [autofillData, setAutofillData] = useState({
     email: "",
 });
 const [users, setUsers] = useState<User[]>([]);
+const [contactForms, setContactForms] = useState<ContactForm[]>([]);
 
 
 // Fetch reviews from MongoDB
 useEffect(() => {
-    axios.get("http://localhost:3001/api/reviews")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`)
         .then((response) => {
             setReviews(response.data);
         })
@@ -66,7 +77,7 @@ useEffect(() => {
 }, []);
 // Fetch appointments from MongoDB
 useEffect(() => {
-    axios.get("http://localhost:3001/api/appointments")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`)
         .then((response) => {
             setAppointments(response.data);
             setLoading(false);
@@ -78,7 +89,7 @@ useEffect(() => {
 
 // Delete a review
 const handleDeleteReview = (id: string) => {
-    axios.delete(`http://localhost:3001/api/reviews/${id}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`)
         .then(() => {
             setReviews(reviews.filter((review) => review._id !== id));
         })
@@ -86,7 +97,7 @@ const handleDeleteReview = (id: string) => {
 };
     // Fetch users from MongoDB
 useEffect(() => {
-    axios.get("http://localhost:3001/api/users/")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/`)
     .then((response) => {
         setUsers(response.data);
     })
@@ -100,11 +111,29 @@ useEffect(() => {
 
 // Delete a user
 const handleDeleteUser = (id: string) => {
-    axios.delete(`http://localhost:3001/api/users/${id}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`)
     .then(() => {
         setUsers(users.filter((user) => user._id != id));
     })
     .catch((error) => console.error("Error deleting user:", error));
+};
+
+// Fetch contact us forms from MongoDB
+useEffect(() => {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/contactUs`)
+    .then((response) => {
+        setContactForms(response.data);
+    })
+    .catch((error) => console.error("Error fetching contact forms:", error));
+}, []);
+
+//Delete a contact form
+const handleDeleteContactForm = (id: string) => {
+    axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/contactUs/${id}`)
+    .then(() => {
+        setContactForms(contactForms.filter((contactForm) => contactForm._id != id));
+    })
+    .catch((error) => console.error("Error deleting contact form:", error));
 };
 
 const handleProjectAdded = (project: any) => {
@@ -376,7 +405,7 @@ return (
             </div>
    
             {/* Users Section */}
-            <div className="sectionWrapper">
+            <div className="sectionWrapper" id="usersSection">
                 <section className="users">
                 <h2 className="sectionHeader">Users</h2>
                 {users.length > 0 ? (
@@ -398,7 +427,7 @@ return (
                                     {new Date(user.createdAt).toLocaleString()}
                                 </em>
                             </p>
-                            <button onClick={() => handleDeleteUser(user._id)}>
+                            <button onClick={() => handleDeleteUser(user._id)} id={user.email}> {/* Specified id for testing */}
                                 Delete
                             </button>
                         </div>
@@ -408,6 +437,45 @@ return (
                 )}
                     </section>
                 </div>
+                
+                {/* Contact Forms Section */}
+                <div className="sectionWrapper" id="contactFormsSection">
+                    <section className="contactForms">
+                    <h2 className="sectionHeader">Contact Us Forms</h2>
+                    {contactForms.length > 0 ? (
+                        contactForms.map((contactForm) => (
+                        <div key={contactForm._id} className="contactForm-card">
+                            <p>
+                            <strong>{contactForm.firstName}</strong>{" "}
+                            <strong>{contactForm.lastName}</strong>
+                            </p>
+                            <p>{contactForm.email}</p>
+                                <p>{contactForm.phone}</p>
+                                    <p>
+                                        {"Subject: "}
+                                        <em>{contactForm.subject}</em>
+                                    </p>
+                                    <p>
+                                        {"Message: "}
+                                        <em>{contactForm.message}</em>
+                                    </p>
+                                <p>
+                                    {"Created at: "}
+                                    <em>
+                                        {new Date(contactForm.createdAt).toLocaleString()}
+                                    </em>
+                                </p>
+                                <button onClick={() => handleDeleteContactForm(contactForm._id)} id={contactForm.email + contactForm.subject}> {/*id specified for testing purposes*/}
+                                    Delete
+                                </button>
+                            </div>
+                            ))
+                    ) : (
+                        <p>No forms available.</p>
+                    )}
+                        </section>
+                    </div>
+                
             </div>
         </div>
     </div>

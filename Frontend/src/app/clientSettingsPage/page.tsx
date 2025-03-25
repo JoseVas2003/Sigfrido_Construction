@@ -1,22 +1,21 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import {useSession} from 'next-auth/react';
 import axios from 'axios';
+import bcrypt from 'bcryptjs';
+import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import {signOut} from 'next-auth/react';
+import { useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
-import Navbar from "../navbar/navBar";
-import "../Assets/css/ClientDashboard.modules.css"
 import Link from "next/link";
+import "../Assets/css/ClientDashboard.modules.css";
 import "../Assets/css/ClientDashboardProfile.modules.css";
+import Navbar from "../navbar/navBar";
 
 // Sidebar images
 import Message from '../Assets/clientDashboardIcons/Message.png';
 import Question from '../Assets/clientDashboardIcons/Question.png';
 import Settings from '../Assets/clientDashboardIcons/Setting_line_light@3x.png';
-import Signout from '../Assets/clientDashboardIcons/Sign_out_squre.png';
 
 // Static image
 import Construction from '../Assets/clientStaticImages/Construction-static.jpg';
@@ -134,7 +133,7 @@ export default function page(){
       return false;
     }
 
-    const connection = 'http://localhost:3001/api/users/';
+    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const userURL = connection + (email);
 
     try {
@@ -146,8 +145,9 @@ export default function page(){
       });
 
       let userCurrent = user.data.password;
+      const matches = await bcrypt.compare(currentPassword,user.data.password);
 
-      if (userCurrent != currentPassword) {
+      if (!matches) {
         setPasswordError("Current password is incorrect.");
         setPasswordBorder(true);
         return false;
@@ -163,9 +163,13 @@ export default function page(){
 
   const handleConfirmPasswordChange = async () => {
     if (await validatePasswordChange()) {
-      const connection = 'http://localhost:3001/api/users/';
+      const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
       const resetPasswordURL = connection + (email);
       updatedPassword.password = newPassword;
+
+      const salt = await bcrypt.genSalt();
+      const passwordHash = await bcrypt.hash(updatedPassword.password,salt);
+      updatedPassword.password = passwordHash;
 
       try {
         await axios.put(resetPasswordURL, updatedPassword, {
@@ -185,11 +189,25 @@ export default function page(){
     setPhoneError('');
     setPhoneBorder(false);
 
+    const phoneNumberRegex = /^[0-9]+$/;
+
     if (!currentPhone || !newPhone || !confirmNewPhone) {
       setPhoneError("All fields are required.");
       setPhoneBorder(true);
       return false;
     }
+
+    if (!phoneNumberRegex.test(currentPhone) || !phoneNumberRegex.test(newPhone) || !phoneNumberRegex.test(confirmNewPhone)) {
+      setPhoneError("Phone numbers can only contain digits.");
+      setPhoneBorder(true);
+      return false;
+    }
+
+    if (!/^\d{10}$/.test(newPhone) || !/^\d{10}$/.test(confirmNewPhone) || !/^\d{10}$/.test(currentPhone)) {
+      setPhoneError("Phone number must be exactly 10 digits.");
+      setPhoneBorder(true);
+      return false;
+    }    
 
     if (newPhone !== confirmNewPhone) {
       setPhoneError("New phone number does not match.");
@@ -197,7 +215,13 @@ export default function page(){
       return false;
     }
 
-    const connection = 'http://localhost:3001/api/users/';
+    if (currentPhone == newPhone) {
+      setPhoneError("This phone number is already your current.");
+      setPhoneBorder(true);
+      return false;
+    }
+
+    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const userURL = connection + (email);
 
     try {
@@ -226,7 +250,7 @@ export default function page(){
 
   const handleConfirmPhoneChange = async () => {
     if (await validatePhoneChange()){
-      const connection = 'http://localhost:3001/api/users/';
+      const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
       const resetPhoneURL = connection + (email);
       updatedPhone.phone = newPhone;
 
@@ -244,9 +268,9 @@ export default function page(){
     setTimeout(() => setShowPhoneSuccess(false), 3000);
   };
 
+  const router = useRouter();
   const handleConfirmDelete = async() => {
-    const router = useRouter();
-    const connection = 'http://localhost:3001/api/users/';
+    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const userURL = connection + (email);
     let userID = '';
 
@@ -261,7 +285,9 @@ export default function page(){
       let userCurrent = user.data.password;
       userID = user.data._id;
 
-      if (userCurrent != oldPasswordDelete) {
+      const matches = await bcrypt.compare(oldPasswordDelete,user.data.password);
+
+      if (!matches) {
         setPasswordError("Current password is incorrect.");
         setPasswordBorder(true);
         return false;
@@ -274,7 +300,7 @@ export default function page(){
       return false;
     }
 
-    const connections = 'http://localhost:3001/api/users/';
+    const connections = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const usersURL = connections + (userID);
 
     try {
@@ -298,7 +324,7 @@ export default function page(){
       // Fetching user info from server
       const fetchUserInfo = async () => {
         try {
-          const connection = 'http://localhost:3001/api/users/';
+          const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
           const userDatabaseURL = `${connection}${email}`;
   
           const { data } = await axios.get(userDatabaseURL, {
@@ -380,10 +406,6 @@ export default function page(){
               <Image src={Settings} alt="Settings Icon" height={25} width={25} />
               Settings
             </Link>
-            <Link href="../">
-              <Image src={Signout} alt="Logout Icon" height={25} width={25} />
-              Logout
-            </Link>
           </div>
         </div>
 
@@ -402,7 +424,7 @@ export default function page(){
               <div className="SettingsBox" onClick={handleChangePassword}>
               <strong>Change Password</strong>
               </div>
-              <div className="SettingsBox" onClick={handleChangePhone}> <strong>Change Phone Number</strong> </div>
+              <div className="SettingsBox" id='phoneChange' onClick={handleChangePhone}> <strong>Change Phone Number</strong> </div>
               <div className="SettingsBox" onClick={handleDeleteAccount}> <strong>Delete Account</strong> </div>
             </div>
           </div>
@@ -454,14 +476,14 @@ export default function page(){
         </div>
       )}
 
-
       {/* Phone number popup */}
       {showPhonePopup && (
         <div className="PopupOverlay">
           <div ref={phonePopupRef} className="PopupBox">
             <h2 className="PopupTitle">Enter Old Phone Number</h2>
             <input
-              type="phone"
+              id="oldPhoneInput"
+              type="tel"
               placeholder="Enter old phone number"
               value={currentPhone}
               onChange={(e) =>
@@ -471,7 +493,8 @@ export default function page(){
 
             <h2 className="PopupTitle">Enter New Phone Number</h2>
             <input 
-              type="phone"
+              id="newPhoneInput"
+              type="tel"
               placeholder="Enter new phone number"
               value={newPhone}
               onChange={(e) =>
@@ -481,7 +504,8 @@ export default function page(){
 
             <h2 className="PopupTitle">Confirm New Phone Number</h2>
             <input 
-              type="phone"
+              id="confirmNewPhoneInput"
+              type="tel"
               placeholder="Confirm new phone number"
               value={confirmNewPhone}
               onChange={(e) =>
@@ -489,9 +513,9 @@ export default function page(){
               style={{ border: phoneBorder ? "1px solid red" : "" }} 
             />
 
-            {phoneError && <p className="error-text">{phoneError}</p>}
+            {phoneError && <p id='phoneError' className="error-text">{phoneError}</p>}
 
-            <button className="PopupButton" onClick={handleConfirmPhoneChange}>Confirm</button>
+            <button className="PopupButton" id='confirmNewPhoneButton' onClick={handleConfirmPhoneChange}>Confirm</button>
           </div>
         </div>
       )}
@@ -531,7 +555,7 @@ export default function page(){
       {/* Success message for Phone Number Change */}
       {showPhoneSuccess && (
         <div className="SuccessPopupOverlay">
-          <div className="SuccessPopupBox">
+          <div id='phoneChangeSuccessPopup' className="SuccessPopupBox">
             <h2 className="SuccessMessage" style={{ fontWeight: 'bold' }}>
               Phone Number Has Been Changed Successfully!
             </h2>

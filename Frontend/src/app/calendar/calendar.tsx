@@ -52,6 +52,14 @@ const Calendar: React.FC<CalendarProps> = ({ onDateChange }) => {
         );
     };
 
+    const isPastDate = (date: Date) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const checkDate = new Date(date);
+        checkDate.setHours(0, 0, 0, 0);
+        return checkDate < today;
+    };
+
     return (
         <div className="container">
             <div className="calendarContainer">
@@ -66,20 +74,30 @@ const Calendar: React.FC<CalendarProps> = ({ onDateChange }) => {
                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
                         <div key={index} className="weekdayLabel">{day}</div>
                     ))}
-                    {generateCalendarDays().map((date, index) => (
-                        <div
-                            key={index}
-                            className={`calendarDay ${
-                                date ? 
-                                (isToday(date) ? 'currentDay' : '') +
-                                (selectedDate && date.getTime() === selectedDate.getTime() ? ' selectedDay' : '') 
-                                : ''
-                            }`}
-                            onClick={() => date && handleDateClick(date)}
-                        >
-                            {date ? date.getDate() : ''}
-                        </div>
-                    ))}
+                    {generateCalendarDays().map((date, index) => {
+                        const isPast = date ? isPastDate(date) : false;
+                        const isSelected = selectedDate && date && date.getTime() === selectedDate.getTime();
+
+                        return (
+                            <div
+                                key={index}
+                                className={`calendarDay ${
+                                    date ? 
+                                        (isToday(date) ? 'currentDay ' : '') +
+                                        (isSelected ? 'selectedDay ' : '') +
+                                        (isPast ? 'disabledDay' : '')
+                                        : ''
+                                }`}
+                                onClick={() => {
+                                    if (date && !isPast) {
+                                        handleDateClick(date);
+                                    }
+                                }}
+                            >
+                                {date ? date.getDate() : ''}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

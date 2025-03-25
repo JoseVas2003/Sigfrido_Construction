@@ -129,7 +129,7 @@ export default function page({params}: any){
         if(resetPasswordtFormClientSideValidationPassword() && resetPasswordFormClientSideValidationConfirmPassword() 
         && usersToken != "")
         {
-            const connection = 'http://localhost:3001/api/resetPassword/';
+            const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/resetPassword/`;
             const resetPassordURL = connection + (usersToken);
             formData.token = "";
     

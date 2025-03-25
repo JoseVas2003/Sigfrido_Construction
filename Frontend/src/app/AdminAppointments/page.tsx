@@ -25,7 +25,7 @@ export default function AdminAppointments() {
   // Fetch appointments
   useEffect(() => {
     axios
-      .get("http://localhost:3001/api/appointments")
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`)
       .then((response) => {
         console.log("Fetched Appointments:", response.data);
         setAppointments(response.data);
@@ -38,7 +38,7 @@ export default function AdminAppointments() {
   const handleCancelAppointment = (id: string) => {
     if (window.confirm("Are you sure you want to cancel this appointment?")) {
       axios
-        .delete(`http://localhost:3001/api/appointments/${id}`)
+        .delete(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${id}`)
         .then(() => {
           setAppointments(appointments.filter((appointment) => appointment._id !== id));
         })
@@ -50,7 +50,7 @@ export default function AdminAppointments() {
   const handleRejectAppointment = (id: string) => {
     if (window.confirm("Are you sure you want to reject this appointment?")) {
       axios
-        .delete(`http://localhost:3001/api/appointments/${id}`)
+        .delete(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${id}`)
         .then(() => {
           setAppointments(appointments.filter((appointment) => appointment._id !== id));
         })
@@ -69,7 +69,7 @@ export default function AdminAppointments() {
     const { id, date, time } = rescheduleData;
 
     axios
-      .put(`http://localhost:3001/api/appointments/${id}`, { date, time })
+      .put(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${id}`, { date, time })
       .then(() => {
         setAppointments(
           appointments.map((appointment) =>
@@ -84,7 +84,7 @@ export default function AdminAppointments() {
   // Approve an appointment
   const handleApproveAppointment = (id: string) => {
     axios
-      .put(`http://localhost:3001/api/appointments/${id}`, { status: "Approved" })
+      .put(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${id}`, { status: "Approved" })
       .then(() => {
         setAppointments(
           appointments.map((appointment) =>

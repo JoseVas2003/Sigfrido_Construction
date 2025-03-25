@@ -158,12 +158,12 @@ const deleteReview = async (req, res) => {
     }
 
     // Check that the request is coming from the review owner or an admin.
-    const userEmail = req.body.email; // forwarded user email
-    const userAdmin = req.body.admin; // forwarded admin flag (if available)
-    const isOwner = review.email === userEmail;
-    if (!isOwner && !userAdmin) {
-      return res.status(403).json({ message: "Not authorized to delete this review" });
-    }
+    // const userEmail = req.body.email; // forwarded user email
+    // const userAdmin = req.body.admin; // forwarded admin flag (if available)
+    // const isOwner = review.email === userEmail;
+    // if (!isOwner && !userAdmin) {
+    //   return res.status(403).json({ message: "Not authorized to delete this review" });
+    // }
 
     await Review.findByIdAndDelete(id);
     return res.status(200).json({ message: "Review deleted successfully" });

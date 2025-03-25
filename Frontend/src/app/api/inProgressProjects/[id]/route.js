@@ -21,7 +21,7 @@ const projectData = {
 
 try {
     const response = await axios.put(
-    `http://localhost:3001/api/inProgressProjects/${params.id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/inProgressProjects/${params.id}`,
     projectData,
     { headers: { 'Content-Type': 'application/json' } }
     );
@@ -43,7 +43,7 @@ if (!session || !session.user.admin) {
 }
 
 try {
-    const response = await axios.delete(`http://localhost:3001/api/inProgressProjects/${params.id}`, {
+    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/inProgressProjects/${params.id}`, {
     headers: { 'Content-Type': 'application/json' },
     // Pass admin flag in case your Express backend uses it for verification.
     data: { admin: session.user.admin },

@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../navbar/navBar";
+import { useEffect, useState } from "react";
 import "../Assets/css/adminReviews.modules.css"; // New CSS file
+import Navbar from "../navbar/navBar";
 
 interface Review {
     _id: string;
@@ -19,7 +19,7 @@ export default function AdminReviews() {
 
     // Fetch reviews
     useEffect(() => {
-        axios.get("http://localhost:3000/api/reviews")
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`)
             .then((response) => {
                 setReviews(response.data);
                 setLoading(false);
@@ -29,7 +29,7 @@ export default function AdminReviews() {
 
     // Delete a review
     const handleDeleteReview = (id: string) => {
-        axios.delete(`http://localhost:3000/api/reviews/${id}`)
+        axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`)
             .then(() => {
                 setReviews(reviews.filter((review) => review._id !== id));
             })

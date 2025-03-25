@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
 import axios from "axios";
-import '../Assets/css/adminProjects.modules.css'; 
+import { useEffect, useState } from "react";
+import '../Assets/css/adminProjects.modules.css';
 
 interface Project {
   _id: string;
@@ -25,7 +25,7 @@ const AdminProjects = () => {
   //  Fetch Projects
   const fetchProjects = async () => {
     try {
-      const response = await axios.get<Project[]>("http://localhost:3001/api/inProgressProjects");
+      const response = await axios.get<Project[]>(`${process.env.NEXT_PUBLIC_API_URL}/api/inProgressProjects`);
       setProjects(response.data);
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -47,7 +47,7 @@ const AdminProjects = () => {
   //  Save Updated Project to Backend
   const handleSave = async (id: string) => {
     try {
-      await axios.put(`http://localhost:3001/api/inProgressProjects/${id}`, updatedProject);
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/inProgressProjects/${id}`, updatedProject);
       fetchProjects();
       setEditing(null);
     } catch (error) {
