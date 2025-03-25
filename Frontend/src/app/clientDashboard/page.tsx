@@ -4,32 +4,59 @@ import Image from 'next/image';
 import Navbar from "../navbar/navBar";
 import "../Assets/css/ClientDashboard.modules.css"
 import Link from "next/link";
+import axios from 'axios';
+import {useSession} from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 // Sidebar images
 import Message from '../Assets/clientDashboardIcons/Message.png';
 import Question from '../Assets/clientDashboardIcons/Question.png';
 import Settings from '../Assets/clientDashboardIcons/Setting_line_light@3x.png';
-import Signout from '../Assets/clientDashboardIcons/Sign_out_squre.png';
 
 // Static images
 import Bathroom from '../Assets/clientStaticImages/Bathroom-static.jpg';
+import Bedroom from '../Assets/clientStaticImages/Bedroom-Static.jpg'
+import Floor from '../Assets/clientStaticImages/Floor-static.jpg'
 import House from '../Assets/clientStaticImages/House-static.jpg';
 import Kitchen from '../Assets/clientStaticImages/Kitchen-static.jpg';
+import LivingRoom from '../Assets/clientStaticImages/LivingRoom-Static.jpg'
+import Roof from '../Assets/clientStaticImages/Roof-static.jpg'
+import Shed from '../Assets/clientStaticImages/Shed-static.jpg'
+import InActiveProject from '../Assets/clientStaticImages/ConstructionHat-static.jpg'
 
-import {useSession} from 'next-auth/react';
+interface Projects {
+  _id: string;
+  customerName: string;
+  email: string;
+  projectType: string;
+  dateStarted: string;
+  estimatedCost: number;
+  expectedCompletion: string;
+  quote: object;
+  createdAt: string;
+} 
 
 export default function page(){
-  // Array for list
-  const projects = [
-      { type: 'Bathroom', dateStarted: '2025-01-10', cost: 1500, expectedCompletion: '2025-02-10' },
-      { type: 'House', dateStarted: '2025-01-15', cost: 3500, expectedCompletion: '2025-03-01' },
-      { type: 'Kitchen', dateStarted: '2025-01-12', cost: 2000, expectedCompletion: '2025-02-25' },
-    ];
-
-
   const {data: session, status} = useSession();
   const names = session?.user?.name;
   const initial = names?.charAt(0);
+  const email = session?.user?.email;
+
+  const [projects, setProjects] = useState<Projects[]>([]);
+  
+  useEffect(() => {
+    if (!email) return;
+    (async () => {
+      try {
+        console.log(email);
+        const response = await axios.get(`http://localhost:3001/api/inProgressProjects/${email}`);
+        setProjects(response.data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    })();
+  }, [email]);
+  
   return (
     <div>
       {/* Top navbar */}
@@ -51,37 +78,55 @@ export default function page(){
               <Image src={Message} alt="Message Icon" height={25} width={25} />
               Contact Us
             </Link>
-            <Link href="../clientSettingsPage">
+            <Link href="../clientSettingsPage" id='clientSettingsButton'>
               <Image src={Settings} alt="Settings Icon" height={25} width={25} />
               Settings
-            </Link>
-            <Link href="../home">
-              <Image src={Signout} alt="Logout Icon" height={20} width={20} />
-              Logout
             </Link>
           </div>
         </div>
 
         {/* Body next to profile bar */}
         <div className="Body">
-          <h1 className="UpcomingText">Upcoming Contracts</h1>
+          <h1 className="BodyTitles">Upcoming Contracts</h1>
           <div className="ImageRow">
-            {projects.map((project, index) => {
-              const projectImages = [Bathroom, House, Kitchen]; // Store images in an array
+            {[...projects
+              .sort((a, b) => new Date(a.expectedCompletion).getTime() - new Date(b.expectedCompletion).getTime())
+              .slice(0, 3), 
+              ...Array(Math.max(0, 3 - projects.length)).fill(null)]
+            .map((project, index) => {
+              let projectImage = InActiveProject;
+              let projectType = "";
+              let expectedCompletion = "";
+
+              if (project) {
+                if (project.projectType === "Bathroom") projectImage = Bathroom;
+                else if (project.projectType === "Bedroom") projectImage = Bedroom;
+                else if (project.projectType === "Floor") projectImage = Floor;
+                else if (project.projectType === "House") projectImage = House;
+                else if (project.projectType === "Kitchen") projectImage = Kitchen;
+                else if (project.projectType === "Living Room") projectImage = LivingRoom;
+                else if (project.projectType === "Roof") projectImage = Roof;
+                else if (project.projectType === "ADU") projectImage = Shed;
+
+                projectType = project.projectType;
+                expectedCompletion = new Date(project.expectedCompletion).toLocaleDateString();
+              }
+
               return (
-                <div className="ProjectItem" key={index}>
-                  <Image src={projectImages[index]} 
-                    alt={project.type} 
-                    className="ProjectImage" />
+                <div className={`ProjectItem ${project ? "" : "InactiveProject"}`} key={project ? project._id : `inactive-${index}`}>
+                <Image src={projectImage} alt={projectType || 'Inactive Project'} className="ProjectImage" />
+                {project && (
                   <div className="ProjectOverlay">
-                    <p className="OverlayText">Expected Date: {new Date(project.expectedCompletion).toLocaleDateString()}</p>
-                </div>
-                <p className="ProjectName">{project.type}</p>
+                    <p className="OverlayText">Expected Date: {expectedCompletion}</p>
+                  </div>
+                )}
+                {project && <p className="ProjectName">{projectType}</p>}
                 </div>
               );
             })}
           </div>
-
+          <hr className="SeparatorLine" />
+          <h1 className='BodyTitles'>Contract History</h1>
           {/* Project list */}
           <div className="GridList">
             <div className="GridItem GridItemHeader">Type</div>
@@ -89,11 +134,11 @@ export default function page(){
             <div className="GridItem GridItemHeader">Cost</div>
             <div className="GridItem GridItemHeader">Expected Completion</div>
 
-            {projects.map((project, index) => (
+            {projects.map((project) => (
               <>
-              <div className="GridItem">{project.type}</div>
+              <div className="GridItem">{project.projectType}</div>
               <div className="GridItem">{new Date(project.dateStarted).toLocaleDateString()}</div>
-              <div className="GridItem">${project.cost}</div>
+              <div className="GridItem">${project.estimatedCost}</div>
               <div className="GridItem">{new Date(project.expectedCompletion).toLocaleDateString()}</div>
               </>
             ))}
