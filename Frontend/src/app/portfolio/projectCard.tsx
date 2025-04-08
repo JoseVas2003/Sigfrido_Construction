@@ -8,7 +8,7 @@ interface ProjectCardProps {
   category: string;
   time: string;
   cost: string;
-  imageUrl: string;
+  imageUrls: string[];  
   editMode: boolean;
   onDelete: (id: string) => void;
 }
@@ -20,11 +20,23 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   category,
   time,
   cost,
-  imageUrl,
+  imageUrls,
   editMode,
   onDelete
 }) => {
   const [hovered, setHovered] = useState<'delete' | 'edit' | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const handleNext = () => {
+    if (imageUrls.length > 0) {
+      setCurrentIndex((prev) => (prev + 1) % imageUrls.length);
+    }
+  };
+
+  const handlePrev = () => {
+    if (imageUrls.length > 0) {
+      setCurrentIndex((prev) => (prev - 1 + imageUrls.length) % imageUrls.length);
+    }
+  };
   return (
     <div style={styles.cardContainer} data-testid="project-card">
       {/* Project Title */}
@@ -32,13 +44,44 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
       {/* Content Area */}
       <div style={styles.contentArea}>
-        {/* Image */}
+        {/* Images */}
+        {imageUrls && imageUrls.length > 0 ? (
+          <div style={styles.imageCarouselContainer}>
+
         <img
-          src={imageUrl}
+          src={imageUrls[currentIndex]}
           alt={title}
           style={styles.image}
 
-          />
+        />
+        {/* Simple arrows or buttons */}
+        {imageUrls.length > 1 && (
+          <>
+            <button 
+              style={{ 
+                ...styles.arrowButton, 
+                left: '5px', 
+              }} 
+              onClick={handlePrev}
+            >
+              ←
+            </button>
+            <button 
+              style={{ 
+                ...styles.arrowButton, 
+                right: '5px', 
+              }} 
+              onClick={handleNext}
+            >
+              →
+            </button>
+          </>
+        )}
+      </div>
+    ) : (          
+      // fallback if no images
+      <div style={styles.noImagePlaceholder}>No Images</div>
+    )}
         {/* Text Details */}
         <div style={styles.textContainer}>
           <p style={styles.descriptionTitle}>Description:</p>
@@ -124,7 +167,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 onMouseLeave={() => setHovered(null)}
                 data-testid="edit-project-button"
               >
-                Edit Project
+                Editar Proyecto
             </button>
           </Link>
         </div>
@@ -154,6 +197,10 @@ const styles: { [key: string]: CSSProperties } = {
     display: 'flex',
     alignItems: 'flex-start',
   },
+  imageCarouselContainer: {
+    position: 'relative',
+    marginRight: '20px',
+  },
   image: {
     width: '400px',
     height: '300px',
@@ -161,8 +208,23 @@ const styles: { [key: string]: CSSProperties } = {
     marginRight: '20px',
     borderRadius: '4px',
   },
+  arrowButton: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    cursor: 'pointer',
+  },
   textContainer: {
     flex: 1,
+  },
+
+  noImagePlaceholder: {
+    width: '400px',
+    height: '300px',
+    backgroundColor: '#ccc',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   descriptionTitle: {
     fontWeight: 'bold',
