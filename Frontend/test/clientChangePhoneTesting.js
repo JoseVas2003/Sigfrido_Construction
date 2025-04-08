@@ -69,7 +69,7 @@ describe('Client Change Phone Functionality', async function() {
       await driver.sleep(3000)
       await driver.navigate().refresh();
       await driver.sleep(3000)
-      assert.strictEqual(phoneSuccessPopup, 'Phone Number Has Been Changed Successfully!', 'Test FAILED, Error Not Caught');
+      assert.strictEqual(phoneSuccessPopup, 'Phone Number Has Been Changed Successfully!', 'Test FAILED, Error Caught');
 
     } finally{
       await driver.quit()
