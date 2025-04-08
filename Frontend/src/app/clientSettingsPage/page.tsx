@@ -274,7 +274,13 @@ export default function page(){
   };
 
   const handleConfirmDelete = async() => {
-    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
+    if (!oldPasswordDelete) {
+      setPasswordError("Field is required.");
+      setPasswordBorder(true);
+      return false;
+    }
+
+    const connection = 'http://localhost:3001/api/users/';
     const userURL = connection + (email);
     let userID = '';
 
