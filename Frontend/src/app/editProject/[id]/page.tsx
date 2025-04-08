@@ -18,7 +18,7 @@ export default function EditProjectPage() {
     timeTaken: '',
     cost: '',
     categories: [] as string[],
-    image: null as File | null,
+    images: [] as File[],  
   });
 
   const [projectNameError, setProjectNameError] = useState("");
@@ -80,7 +80,7 @@ export default function EditProjectPage() {
         // If input length exceeds the custom limit, truncate and set error message
         if (value.length > maxLength) {
             inputValue = value.substring(0, maxLength);
-            setError?.(`${maxLength} character max limit reached`);
+            setError?.(`Ha llegado al límite de ${maxLength} caracteres.`);
         } else {
             // Clear the error if within limit
             setError?.("");
@@ -116,58 +116,77 @@ export default function EditProjectPage() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageError("");
-      const validTypes = ["image/heic", "image/png", "image/jpeg"];
+    const files = e.target.files;
+    if (!files) return;
+
+    let selectedFiles = Array.from(files);
+
+    // Limit to 5
+    if (selectedFiles.length > 5) {
+      setImageError("Solo se permiten un máximo de 5 imágenes.");
+      selectedFiles = selectedFiles.slice(0, 5);
+    }
+
+    // Validate each file's type/size
+    const validTypes = ["image/heic", "image/png", "image/jpeg"];
+    for (const file of selectedFiles) {
       if (!validTypes.includes(file.type)) {
-        setImageError("Only HEIC, PNG and JPEG images are allowed.");
+        setImageError("Solo se permiten imágenes en formato HEIC, PNG o JPEG.");
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
-        setImageError("Image must be less than 10MB.");
+        setImageError("La imagen debe tener un tamaño inferior a 10 MB.");
         return;
       }
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        image: file,
-      }));
     }
+
+    // Clear prior image error
+    setImageError("");
+
+    // Overwrite the existing "images" state with the newly selected files
+    setFormData((prev) => ({
+      ...prev,
+      images: selectedFiles,
+    }));
   };
 
   const validateForm = (): boolean => {
     let valid = true;
     if (!formData.name.trim()) {
-      setProjectNameError("Project Name cannot be empty.");
+      setProjectNameError("El nombre del proyecto no puede estar vacío.");
       valid = false;
     }
     if (!formData.description.trim()) {
-      setDescriptionError("Description cannot be empty.");
+      setDescriptionError("La descripción no puede estar vacía.");
       valid = false;
     }
     if (!formData.timeTaken.trim()) {
-      setTimeTakenError("Time Taken cannot be empty.");
+      setTimeTakenError("La duración no puede estar vacía.");
       valid = false;
     }
     if (!formData.cost.trim()) {
-      setCostError("Cost cannot be empty.");
+      setCostError("El costo no puede estar vacío.");
       valid = false;
     }
     if (formData.categories.length === 0) {
-      setCategoriesError("Please select at least one project category.");
+      setCategoriesError("Selecciona al menos una categoría para el proyecto.");
       valid = false;
     }
 
     // If a new image is provided, validate it. If not, we can keep existing one.
-    if (formData.image) {
+    if (formData.images.length > 0) {
       const validTypes = ["image/heic", "image/png", "image/jpeg"];
-      if (!validTypes.includes(formData.image.type)) {
-        setImageError("Only HEIC, PNG and JPEG images are allowed.");
-        valid = false;
-      }
-      if (formData.image.size > 10 * 1024 * 1024) {
-        setImageError("Image must be less than 10MB.");
-        valid = false;
+      for (const file of formData.images) {
+        if (!validTypes.includes(file.type)) {
+          setImageError("Solo se permiten imágenes en formato HEIC, PNG o JPEG.");
+          valid = false;
+          break;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          setImageError("La imagen debe tener un tamaño inferior a 10 MB.");
+          valid = false;
+          break;
+        }
       }
     }
     return valid;
@@ -188,17 +207,18 @@ export default function EditProjectPage() {
       data.append("cost", formData.cost);
       formData.categories.forEach((cat) => data.append("categories", cat));
 
-      if (formData.image) {
-        data.append("image", formData.image);
+      if (formData.images.length > 0) {
+        for (const file of formData.images) {
+          data.append("images", file); // must match upload.array("images", 5)
+        }
       }
-
       // send PUT to update
-      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`, data, {
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      router.push("/portfolio?message=" + encodeURIComponent("Project updated successfully!"));
+      router.push("/portfolio?message=" + encodeURIComponent("¡El proyecto se actualizó correctamente!"));
 
     } catch (error: any) {
       console.error('Error updating project:', error?.response?.data || error.message);
@@ -218,7 +238,7 @@ export default function EditProjectPage() {
           <form style={styles.form} onSubmit={handleSubmit}>            
             {/* Project Name */}
             <div style={styles.inputGroup}>
-              <label htmlFor='projectName'>Project Name:</label>
+              <label htmlFor='projectName'>Nombre del Proyecto:</label>
               <input
                 type="text"
                 id="projectName"
@@ -237,7 +257,7 @@ export default function EditProjectPage() {
 
             {/* Description */}
             <div style={styles.inputGroup}>
-              <label htmlFor="descriptionText">Description:</label>
+              <label htmlFor="descriptionText">Descripción:</label>
               <textarea
                 id="descriptionText"
                 name="description"
@@ -256,7 +276,7 @@ export default function EditProjectPage() {
             {/* Time and Cost */}
             <div style={styles.row}>
               <div style={styles.halfInputGroup}>
-                <label htmlFor='timeTaken'>Time Taken:</label>
+                <label htmlFor='timeTaken'>Duración:</label>
                 <input
                   type="text"
                   id="timeTaken"
@@ -273,7 +293,7 @@ export default function EditProjectPage() {
                 )}
               </div>
               <div style={styles.halfInputGroup}>
-                <label htmlFor='cost'>Cost:</label>
+                <label htmlFor='cost'>Costo:</label>
                 <input
                   type="text"
                   id="cost"
@@ -295,7 +315,7 @@ export default function EditProjectPage() {
             <div style={styles.row}>
               {/* Categories */}
               <div style={styles.halfInputGroup}>
-                <label style={styles.label}>Project Category:</label>
+                <label style={styles.label}>Categoría(s) del Proyecto:</label>
                 <div style={styles.checkboxGroup}>
                   <label style={styles.checkboxLabel}>
                     <input
@@ -319,7 +339,7 @@ export default function EditProjectPage() {
                       onChange={handleCheckboxChange}
                       style={styles.checkbox}
                     />
-                    Bathrooms
+                    Baños
                   </label>
                   <label style={styles.checkboxLabel}>
                     <input
@@ -331,19 +351,19 @@ export default function EditProjectPage() {
                       onChange={handleCheckboxChange}
                       style={styles.checkbox}
                     />
-                    Floors
+                    Pisos
                   </label>
                   <label style={styles.checkboxLabel}>
                     <input
                       type="checkbox"
-                      id="category-kitchen"
+                      id="category-kitchens"
                       name="category"
-                      value="Kitchen"
-                      checked={formData.categories.includes('Kitchen')}
+                      value="Kitchens"
+                      checked={formData.categories.includes('Kitchens')}
                       onChange={handleCheckboxChange}
                       style={styles.checkbox}
                     />
-                    Kitchen
+                    Cocinas
                   </label>
                   <label style={styles.checkboxLabel}>
                     <input
@@ -355,7 +375,7 @@ export default function EditProjectPage() {
                       onChange={handleCheckboxChange}
                       style={styles.checkbox}
                     />
-                    Roofs
+                    Techos
                   </label>
                   <label style={styles.checkboxLabel}>
                     <input
@@ -367,7 +387,19 @@ export default function EditProjectPage() {
                       onChange={handleCheckboxChange}
                       style={styles.checkbox}
                     />
-                    Rooms
+                    Cuartos
+                  </label>
+                  <label style={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      id="category-pavement"
+                      name="category"
+                      value="Pavement"
+                      checked={formData.categories.includes('Pavement')}
+                      onChange={handleCheckboxChange}
+                      style={styles.checkbox}
+                    />
+                    Pavimento
                   </label>
                 </div>
                 {categoriesError && (
@@ -377,7 +409,7 @@ export default function EditProjectPage() {
 
               {/* Image Upload */}
               <div style={styles.halfInputGroup}>
-                <label style={styles.label}>Change Image (optional):</label>           
+                <label style={styles.label}>Cambiar Imágenes (Opcional, máx 5):</label>           
                 <div style={styles.imageContainer}>
                   <Image
                     src={galleryIcon}
@@ -395,6 +427,7 @@ export default function EditProjectPage() {
                     ref={fileInputRef}
                     style={{ display: 'none' }}
                     accept=".heic,.jpg,.jpeg,.png"
+                    multiple
                     onChange={handleFileChange}
                   />
                 </div>
@@ -416,7 +449,7 @@ export default function EditProjectPage() {
                 onMouseEnter={() => setSubmitHovered(true)}
                 onMouseLeave={() => setSubmitHovered(false)}
               >
-                Save Changes
+                Guardar Cambios
               </button>   
             </div>
           </form>
