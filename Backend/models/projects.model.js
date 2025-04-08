@@ -19,10 +19,12 @@ const ProjectSchema = new mongoose.Schema(
             type: [String],
             default: [],
         },
-        image: {
-            data: Buffer,
-            contentType: String,
-        },
+        images: [
+            {
+              data: Buffer,
+              contentType: String,
+            }
+        ],
     },
     {
         timestamps: true,

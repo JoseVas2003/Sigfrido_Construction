@@ -14,7 +14,7 @@ export default function CreateProjectPage() {
         timeTaken: '',
         cost: '',
         categories: [] as string[], 
-        image: null as File | null,
+        images: [] as File[],
     });
     const router = useRouter();
 
@@ -61,7 +61,7 @@ export default function CreateProjectPage() {
         // If the length exceeds the character limit, then truncate and set error message
         if (value.length > maxLength) {
             inputValue = value.substring(0, maxLength);
-            setError?.(`${maxLength} character max limit reached`);
+            setError?.(`Ha llegado al límite de ${maxLength} caracteres.`);
         } else {
             // Clear the error if within limit
             setError?.("");
@@ -99,62 +99,84 @@ export default function CreateProjectPage() {
     };
     
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setImageError("");
-            const validTypes = ["image/heic", "image/png", "image/jpeg"];
-            if (!validTypes.includes(file.type)) {
-                setImageError("Only HEIC, PNG and JPEG images are allowed.");
-                return;
-            }
-            if (file.size > 10 * 1024 * 1024) {
-                setImageError("Image must be less than 10MB.");
-                return;
-            }
-            setFormData((prevFormData) => ({
-                ...prevFormData,
-                image: file,
-            }));
+
+        const files = e.target.files;
+        if (!files) return;
+
+        // Convert FileList to an array
+        let selectedFiles = Array.from(files);
+
+
+      // If user selects more than 5 total, you might show an error or slice the array
+      if (selectedFiles.length > 5) {
+        setImageError("Solo se permiten un máximo de 5 imágenes.");
+        selectedFiles = selectedFiles.slice(0, 5);
+      }
+
+      // Validate each file's type/size
+      const validTypes = ["image/heic", "image/png", "image/jpeg"];
+      for (const file of selectedFiles) {
+        if (!validTypes.includes(file.type)) {
+          setImageError("Solo se permiten imágenes en formato HEIC, PNG o JPEG.");
+          return;
         }
+        if (file.size > 10 * 1024 * 1024) {
+          setImageError("La imagen debe tener un tamaño inferior a 10 MB.");
+          return;
+        }
+      }
+
+      // Clear any prior error
+      setImageError("");
+
+      // Put them into your state
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        images: selectedFiles, // Overwrite any previously chosen
+      }));
     };
 
     // Validate the form fields before submitting
     const validateForm = (): boolean => {
         let valid = true;
         if (!formData.name.trim()) {
-            setProjectNameError("Project Name cannot be empty.");
+            setProjectNameError("El nombre del proyecto no puede estar vacío.");
             valid = false;
         }
         if (!formData.description.trim()) {
-            setDescriptionError("Description cannot be empty.");
+            setDescriptionError("La descripción no puede estar vacía.");
             valid = false;
         }
         if (!formData.timeTaken.trim()) {
-            setTimeTakenError("Time Taken cannot be empty.");
+            setTimeTakenError("La duración no puede estar vacía.");
             valid = false;
         }
         if (!formData.cost.trim()) {
-            setCostError("Cost cannot be empty.");
+            setCostError("El costo no puede estar vacío.");
             valid = false;
         }
         if (formData.categories.length === 0) {
-            setCategoriesError("Please select at least one project category.");
+            setCategoriesError("Selecciona al menos una categoría para el proyecto.");
             valid = false;
         }
-        if (!formData.image) {
-            setImageError("Please upload an image.");
+        if (formData.images.length === 0) {
+            setImageError("Por favor, sube al menos una imagen.");
             valid = false;
-        } else {
+          } else {
             const validTypes = ["image/heic", "image/png", "image/jpeg"];
-            if (!validTypes.includes(formData.image.type)) {
-                setImageError("Only HEIC, PNG and JPEG images are allowed.");
+            for (const file of formData.images) {
+              if (!validTypes.includes(file.type)) {
+                setImageError("Solo se permiten imágenes en formato HEIC, PNG o JPEG.");
                 valid = false;
-            }
-            if (formData.image.size > 10 * 1024 * 1024) {
-                setImageError("Image must be less than 10MB.");
+                break; // if invalid, break out
+              }
+              if (file.size > 10 * 1024 * 1024) {
+                setImageError("La imagen debe tener un tamaño inferior a 10 MB.");
                 valid = false;
+                break;
+              }
             }
-        }
+          }
         return valid;
     };
 
@@ -176,12 +198,12 @@ export default function CreateProjectPage() {
             formData.categories.forEach((cat) => data.append("categories", cat));
             
             // Append file if it exists
-            if (formData.image) {
-                data.append("image", formData.image);
+            for (const file of formData.images) {
+                data.append("images", file); // must match "images" in multer.array("images", 5)
             }
 
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`, data);
-            router.push("/portfolio?message=" + encodeURIComponent("Project created successfully!"));
+            router.push("/portfolio?message=" + encodeURIComponent("¡El proyecto se creó correctamente!"));
             //router.push('/portfolio');
         } catch (error: any) {
             console.error('Error response:', error.response?.data || error.message);
@@ -201,7 +223,7 @@ export default function CreateProjectPage() {
                     <form style={styles.form} onSubmit={handleSubmit}>
                         {/* Project Name */}
                         <div style={styles.inputGroup}>
-                            <label htmlFor='projectName'>Project Name:</label>
+                            <label htmlFor='projectName'>Nombre del Proyecto:</label>
                             <input
                                 type="text"
                                 id="projectName"
@@ -217,7 +239,7 @@ export default function CreateProjectPage() {
                         </div>
                         {/* Description Section */}
                         <div style={styles.inputGroup}>
-                            <label htmlFor="descriptionText">Description:</label>
+                            <label htmlFor="descriptionText">Descripción:</label>
                             <textarea
                                 id="descriptionText"
                                 name="description"
@@ -234,7 +256,7 @@ export default function CreateProjectPage() {
                         {/* Time Taken Section */}
                         <div style={styles.row}>
                             <div style={styles.halfInputGroup}>
-                                <label htmlFor='timeTaken'>Time Taken:</label>
+                                <label htmlFor='timeTaken'>Duración:</label>
                                 <input
                                     type="text"
                                     id="timeTaken"
@@ -250,7 +272,7 @@ export default function CreateProjectPage() {
                             </div>                            
                             {/* Cost Section */}
                             <div style={styles.halfInputGroup}>
-                                <label htmlFor='cost'>Cost:</label>
+                                <label htmlFor='cost'>Costo:</label>
                                 <input
                                     type="text"
                                     id="cost"
@@ -269,7 +291,7 @@ export default function CreateProjectPage() {
                     <div style={styles.row}>
                         {/* Project Category Section */}
                         <div style={styles.halfInputGroup}>
-                            <label style={styles.label}>Project Category:</label>
+                            <label style={styles.label}>Categoría(s) del Proyecto:</label>
                             <div style={styles.checkboxGroup}>
                                 <label style={styles.checkboxLabel}>
                                 <input
@@ -293,7 +315,7 @@ export default function CreateProjectPage() {
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                     />
-                                    Bathrooms
+                                    Baños
                                 </label>
                                 <label style={styles.checkboxLabel}>
                                     <input
@@ -305,19 +327,19 @@ export default function CreateProjectPage() {
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                     />
-                                    Floors
+                                    Pisos
                                 </label>
                                 <label style={styles.checkboxLabel}>
                                 <input
                                     type="checkbox"
-                                    id="category-kitchen"
+                                    id="category-kitchens"
                                     name="category"
-                                    value="Kitchen"
-                                    checked={formData.categories.includes('Kitchen')}
+                                    value="Kitchens"
+                                    checked={formData.categories.includes('Kitchens')}
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                 />
-                                    Kitchen
+                                    Cocinas
                                 </label>
                                 <label style={styles.checkboxLabel}>
                                 <input
@@ -329,7 +351,7 @@ export default function CreateProjectPage() {
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                 />
-                                    Roofs
+                                    Techos
                                 </label>
                                 <label style={styles.checkboxLabel}>
                                 <input
@@ -341,7 +363,19 @@ export default function CreateProjectPage() {
                                     onChange={handleCheckboxChange}
                                     style={styles.checkbox}
                                 />
-                                    Rooms
+                                    Cuartos
+                                </label>
+                                <label style={styles.checkboxLabel}>
+                                <input
+                                    type="checkbox"
+                                    id="category-pavement"
+                                    name="category"
+                                    value="Pavement"
+                                    checked={formData.categories.includes('Pavement')}
+                                    onChange={handleCheckboxChange}
+                                    style={styles.checkbox}
+                                />
+                                    Pavimento
                                 </label>
                             </div>
                             {categoriesError && (
@@ -350,7 +384,7 @@ export default function CreateProjectPage() {
                         </div>
                         {/* Add an Image Section */}
                         <div style={styles.halfInputGroup}>
-                            <label style={styles.label}>Add an Image:</label>
+                            <label style={styles.label}>Agrega Imágenes (hasta 5):</label>
                             <div style={styles.imageContainer}>
                                 <Image
                                     src={galleryIcon}
@@ -368,6 +402,7 @@ export default function CreateProjectPage() {
                                     ref={fileInputRef}
                                     style={{ display: 'none' }}
                                     accept=".heic,.jpg,.jpeg,.png"
+                                    multiple
                                     onChange={handleFileChange}
                                 />
                             </div>
@@ -387,7 +422,7 @@ export default function CreateProjectPage() {
                             onMouseEnter={() => setSubmitHovered(true)}
                             onMouseLeave={() => setSubmitHovered(false)}
                         >
-                            Create Project
+                            Crear Proyecto
                         </button>                
                     </div>
                     </form>

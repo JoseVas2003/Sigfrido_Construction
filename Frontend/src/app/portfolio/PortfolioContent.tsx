@@ -19,6 +19,7 @@ export default function PortfolioContent() {
   const [notification, setNotification] = useState("");
   const [hoveredIcon, setHoveredIcon] = useState<"pencil" | "plus" | null>(null);
   
+  
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`)
       .then((response) => {
@@ -49,7 +50,7 @@ export default function PortfolioContent() {
     try {
       await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`);
       setProjects(prev => prev.filter(proj => proj._id !== id));
-      setNotification("Project has been deleted!");
+      setNotification("¡Proyecto eliminado!");
       setTimeout(() => {
         setNotification("");
       }, 5000);          
@@ -67,7 +68,7 @@ export default function PortfolioContent() {
     if (!proj.categories) return false;
     return proj.categories.some((cat: string) => cat.toLowerCase() === selectedFilter.toLowerCase());
   });
-
+    
   return (
     <div>
       <div style={styles.Navbar}>
@@ -75,7 +76,7 @@ export default function PortfolioContent() {
       </div>
       <div onClick={() => { clicksOut(); }}>
         <div style={styles.headerContainer}>
-          {((session?.user as any)?.admin) && (
+        {((session?.user as any)?.admin) && (
             <div
               id='editButton'
               style={{
@@ -122,7 +123,7 @@ export default function PortfolioContent() {
                 </span>
               </div>
             </Link>
-          )}
+           )}
           <div style={styles.filterContainer}>
             <label htmlFor="filter" id='filterButton' style={styles.label}>Filter:</label>
             <select
@@ -135,7 +136,8 @@ export default function PortfolioContent() {
               <option id="category-ADU" value="ADU">ADU</option>
               <option id="category-Bathrooms" value="Bathrooms">Bathrooms</option>
               <option id="category-Floors" value="Floors">Floors</option>
-              <option id="category-Kitchen" value="Kitchen">Kitchen</option>
+              <option id="category-Kitchens" value="Kitchens">Kitchens</option>
+              <option id="category-Pavement" value="Pavement">Pavement</option>
               <option id="category-Roofs" value="Roofs">Roofs</option>
               <option id="category-Rooms" value="Rooms">Rooms</option>
             </select>
@@ -148,19 +150,26 @@ export default function PortfolioContent() {
           </div>
         )}
         <div style={styles.projectCardContainer}>
-          {filteredProjects.map((proj) => (
-            <ProjectCard
-              id={proj._id}
-              title={proj.name}                               
-              description={proj.description}
-              category={proj.categories?.join(', ') || ''}
-              time={proj.timeTaken}
-              cost={proj.cost}                                
-              imageUrl={`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${proj._id}/image`}
-              editMode={editMode}
-              onDelete={handleDelete}                            
-            />
-          ))}
+          {filteredProjects.map((proj) => {
+            const imageUrls = (proj.images || []).map((img: any, idx: number) => 
+              `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${proj._id}/images/${idx}`
+            );
+
+            return (
+              <ProjectCard
+                key={proj._id}
+                id={proj._id}
+                title={proj.name}
+                description={proj.description}
+                category={proj.categories?.join(', ') || ''}
+                time={proj.timeTaken}
+                cost={proj.cost}
+                imageUrls={imageUrls}
+                editMode={editMode}
+                onDelete={handleDelete}
+              />
+            );
+          })}
         </div>
       </div>
     </div>
