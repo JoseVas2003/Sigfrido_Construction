@@ -1,14 +1,11 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const QuestionSchema = new mongoose.Schema({
-    question: { type: String, required: true },
-    answer: { type: String, required: true }
-});
+const faqItemSchema = new mongoose.Schema({
+    type: { type: String, enum: ['title', 'qa'], required: true },
+    text: String,      // For titles
+    question: String,  // For QA
+    answer: String,    // For QA
+}, { timestamps: true });
 
-const SectionSchema = new mongoose.Schema({
-    section: { type: String, required: true },
-    questions: [QuestionSchema]
-});
-
-const Faq = mongoose.model('Faq', SectionSchema);
-module.exports = Faq;
+const FaqItem = mongoose.model("faq", faqItemSchema);
+module.exports = FaqItem;
