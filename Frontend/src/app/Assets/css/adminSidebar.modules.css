@@ -1,7 +1,8 @@
 /* Sidebar container */
 .sidebar {
+    position: relative;
     width: 250px;
-    background-color: #d3d3d3; /* Light gray background */
+    background-color: #ec2727; /* Light gray background */
     color: #000;
     padding: 20px;
     display: flex;

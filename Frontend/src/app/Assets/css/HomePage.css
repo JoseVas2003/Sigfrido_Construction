@@ -237,3 +237,24 @@ html {
   border-top: 1px solid #ccc;
   margin: 2rem;
 }
+
+
+/* Mobile breakpoint */
+@media screen and (max-width: 600px) {
+  /* Hide the hero titles on small screens */
+  .hero-title {
+    display: none;
+  }
+
+  /* Make the hero section occupy the full viewport height */
+  .hero-section {
+    height: 100vh;
+  }
+
+  /* Optional: Center the remaining content vertically */
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}

@@ -15,6 +15,8 @@
   grid-template-columns: repeat(3, 1fr); /* Three equal columns */
   gap: 20px; /* Space between sections */
   padding: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Section Wrapper */
@@ -196,6 +198,7 @@ button:hover {
 
 .sidebar {
   width: 20%; 
+  position: relative;
   background-color: #e0e0e0; 
   padding: 20px; 
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); 
@@ -204,7 +207,7 @@ button:hover {
   left: 0; 
   height: calc(100vh - 80px);
   overflow-y: auto; 
-  z-index: 1000; 
+  z-index: 800; 
 }
 .sidebar ul {
   list-style: none;
@@ -222,7 +225,6 @@ button:hover {
   position: fixed; /* Fixed position to stay in the same place */
   top: 140px; /* Adjust to place the button below the navbar */
   right: 20px; /* Align to the right edge of the screen */
-  z-index: 1000; /* Ensure it stays above other elements */
 }
 
 .addProjectButton {
@@ -235,6 +237,8 @@ button:hover {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   transition: background-color 0.3s ease;
+  position: relative;
+  z-index: -1000;
 }
 
 .addProjectButton:hover {
@@ -245,4 +249,16 @@ button:hover {
   color: white !important;
   border-radius: 5px;
   padding: 3px;
+}
+
+/* Mobile breakpoint */
+@media only screen and (max-width: 640px) {
+  .mainContent {
+    margin-left: 20%; /* Leave space for the sidebar */
+    margin-top: 150px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
 }
