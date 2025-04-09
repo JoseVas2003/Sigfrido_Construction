@@ -26,6 +26,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   const [hovered, setHovered] = useState<'delete' | 'edit' | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [hoveredArrow, setHoveredArrow] = useState<'prev' | 'next' | null>(null);
+
   const handleNext = () => {
     if (imageUrls.length > 0) {
       setCurrentIndex((prev) => (prev + 1) % imageUrls.length);
@@ -57,24 +59,57 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* Simple arrows or buttons */}
         {imageUrls.length > 1 && (
           <>
-            <button 
-              style={{ 
-                ...styles.arrowButton, 
-                left: '5px', 
-              }} 
+            <button
+              style={{
+                ...styles.arrowButton,
+                left: "5px",
+                backgroundColor: hoveredArrow === 'prev' ? "#1E2D3D" : styles.arrowButton.backgroundColor,
+              }}
               onClick={handlePrev}
+              onMouseEnter={() => setHoveredArrow('prev')}
+              onMouseLeave={() => setHoveredArrow(null)}
             >
-              ←
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                stroke={hoveredArrow === 'prev' ? "#EBECE5" : "#1E2D3D"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                viewBox="0 0 24 24"
+              >
+                <path d="M5 4v16" />
+                <path d="M19 4l-10 8 10 8V4z" />
+
+              </svg>
             </button>
-            <button 
-              style={{ 
-                ...styles.arrowButton, 
-                right: '5px', 
-              }} 
+
+            <button
+              style={{
+                ...styles.arrowButton,
+                right: "5px",
+                backgroundColor: hoveredArrow === 'next' ? "#1E2D3D" : styles.arrowButton.backgroundColor,
+              }}
               onClick={handleNext}
+              onMouseEnter={() => setHoveredArrow('next')}
+              onMouseLeave={() => setHoveredArrow(null)}
             >
-              →
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                stroke={hoveredArrow === 'next' ? "#EBECE5" : "#1E2D3D"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                viewBox="0 0 24 24"
+              >
+                <path d="M19 20V4" />
+                <path d="M5 4l10 8-10 8V4z" />
+              </svg>
             </button>
+
           </>
         )}
       </div>
@@ -209,11 +244,23 @@ const styles: { [key: string]: CSSProperties } = {
     borderRadius: '4px',
   },
   arrowButton: {
-    position: 'absolute',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    cursor: 'pointer',
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: "40px",
+    height: "40px",
+    backgroundColor: "#EBECE5",
+    border: "2px solid #1E2D3D",
+    borderRadius: "6px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    padding: "4px",
+    transition: "background-color 0.2s ease",
   },
+  
+
   textContainer: {
     flex: 1,
   },
