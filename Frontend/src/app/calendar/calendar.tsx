@@ -5,11 +5,11 @@ import React, { useState } from 'react';
 
 interface CalendarProps {
     onDateChange: (date: Date) => void; // Callback function to notify date selection
+    value: Date | null;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ onDateChange }) => {
+const Calendar: React.FC<CalendarProps> = ({ onDateChange, value }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
     const handlePreviousMonth = () => {
         setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
@@ -20,7 +20,6 @@ const Calendar: React.FC<CalendarProps> = ({ onDateChange }) => {
     };
 
     const handleDateClick = (date: Date) => {
-        setSelectedDate(date);
         onDateChange(date); // Notify parent component of selected date
     };
 
@@ -76,7 +75,7 @@ const Calendar: React.FC<CalendarProps> = ({ onDateChange }) => {
                     ))}
                     {generateCalendarDays().map((date, index) => {
                         const isPast = date ? isPastDate(date) : false;
-                        const isSelected = selectedDate && date && date.getTime() === selectedDate.getTime();
+                        const isSelected = value && date && date.getTime() === value.getTime();
 
                         return (
                             <div
