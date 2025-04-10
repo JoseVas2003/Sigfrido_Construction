@@ -99,7 +99,7 @@ export default function page(){
 
     // Check if all fields are filled
     if (!currentPassword || !newPassword || !confirmNewPassword) {
-      setPasswordError("All fields are required.");
+      setPasswordError("All Fields Are Required.");
       setPasswordBorder(true);
       return false;
     }
@@ -125,10 +125,15 @@ export default function page(){
       setPasswordBorder(true);
       return false;
     }
+    if (currentPassword == newPassword) {
+      setPasswordError("This Password is Already Your Current.");
+      setPasswordBorder(true);
+      return false;
+    }
 
     // Check if new passwords match
     if (newPassword !== confirmNewPassword) {
-      setPasswordError("New passwords do not match.");
+      setPasswordError("New Passwords Do Not Match.");
       setPasswordBorder(true);
       return false;
     }
@@ -148,12 +153,12 @@ export default function page(){
       const matches = await bcrypt.compare(currentPassword,user.data.password);
 
       if (!matches) {
-        setPasswordError("Current password is incorrect.");
+        setPasswordError("Current Password is Incorrect.");
         setPasswordBorder(true);
         return false;
       } 
     } catch (error) {
-      setPasswordError("Error verifying password.");
+      setPasswordError("Error Verifying Password.");
       setPasswordBorder(true);
       return false;
     }
@@ -268,7 +273,6 @@ export default function page(){
     setTimeout(() => setShowPhoneSuccess(false), 3000);
   };
 
-  const router = useRouter();
   const handleConfirmDelete = async() => {
     const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const userURL = connection + (email);
@@ -312,10 +316,8 @@ export default function page(){
     } catch(error){
       console.log(error);
     }
-    setTimeout(() => {
-      signOut();
-      router.push('/');
-    }, 3000);
+
+    setTimeout(() => signOut(), 3000);
   };
 
   // Fetching user info from backend when email is available
@@ -392,7 +394,8 @@ export default function page(){
         {/* Left profile bar */}
         <div className="Left_profile_bar">
         <div className="Circle">{initial}</div>
-          <h1>Welcome back, {names}!</h1>
+          <h1>Welcome back,</h1>
+          <h1>{names}!</h1>
           <div className="SideButtons">
             <Link href="../faq">
               <Image src={Question} alt="FAQ Icon" height={25} width={25} />
@@ -421,11 +424,11 @@ export default function page(){
               <p><strong>Email:</strong> {email}</p>
             </div>
             <div className="SettingsOptions">
-              <div className="SettingsBox" onClick={handleChangePassword}>
+              <div className="SettingsBox" id='changePassword' onClick={handleChangePassword}>
               <strong>Change Password</strong>
               </div>
               <div className="SettingsBox" id='phoneChange' onClick={handleChangePhone}> <strong>Change Phone Number</strong> </div>
-              <div className="SettingsBox" onClick={handleDeleteAccount}> <strong>Delete Account</strong> </div>
+              <div className="SettingsBox" id='accountDelete' onClick={handleDeleteAccount}> <strong>Delete Account</strong> </div>
             </div>
           </div>
 
@@ -440,10 +443,11 @@ export default function page(){
       {showPasswordPopup && (
         <div className="PopupOverlay">
           <div ref={passwordPopupRef} className="PopupBox">
-            <h2 className="PopupTitle">Old Password</h2>
+            <h2 className="PopupTitle">Current Password</h2>
           <input
+            id='currentPassword'
             type="password"
-            placeholder="Enter old password"
+            placeholder="Enter Current Password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             style={{ border: passwordBorder ? "1px solid red" : "" }}
@@ -451,8 +455,9 @@ export default function page(){
 
             <h2 className="PopupTitle">New Password</h2>
           <input
+            id='newPassword'
             type="password"
-            placeholder="Enter new password"
+            placeholder="Enter New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             style={{ border: passwordBorder ? "1px solid red" : "" }}
@@ -460,16 +465,17 @@ export default function page(){
 
             <h2 className="PopupTitle">Confirm New Password</h2>
           <input
+            id='confirmNewPassword'
             type="password"
-            placeholder="Confirm new password"
+            placeholder="Confirm New Password"
             value={confirmNewPassword}
             onChange={(e) => setConfirmNewPassword(e.target.value)}
             style={{ border: passwordBorder ? "1px solid red" : "" }}
           />
 
-          {passwordError && <p className="error-text">{passwordError}</p>}
+          {passwordError && <p id='passwordError' style={{ color: 'red', fontSize: '14px' }}>{passwordError}</p>}
 
-          <button className="PopupButton" onClick={handleConfirmPasswordChange}>
+          <button className="PopupButton" id='confirmPasswordChangeButton' onClick={handleConfirmPasswordChange}>
             Confirm
           </button>
           </div>
@@ -513,7 +519,7 @@ export default function page(){
               style={{ border: phoneBorder ? "1px solid red" : "" }} 
             />
 
-            {phoneError && <p id='phoneError' className="error-text">{phoneError}</p>}
+            {phoneError && <p id='phoneError' style={{ color: 'red', fontSize: '14px' }}>{phoneError}</p>}
 
             <button className="PopupButton" id='confirmNewPhoneButton' onClick={handleConfirmPhoneChange}>Confirm</button>
           </div>
@@ -525,16 +531,17 @@ export default function page(){
         <div className="PopupOverlay">
           <div ref={deletePopupRef} className="PopupBox">
             <h2 className="PopupTitle">Delete Account</h2>
-            <input 
+            <input
+              id='deletePasswordInput'
               onChange={(e) => setoldPasswordDelete(e.target.value)}
               value={oldPasswordDelete}
               type="password"
               placeholder="Enter Current Password"
               style={{ borderColor: passwordBorder ? 'red' : 'initial' }}
             />
-            {passwordError && <p style={{ color: 'red', fontSize: '14px' }}>{passwordError}</p>}
+            {passwordError && <p id='accountDeleteError' style={{ color: 'red', fontSize: '14px' }}>{passwordError}</p>}
 
-            <button className="PopupButton" onClick={handleConfirmDelete} style={{ backgroundColor: 'red', color: 'white' }}>
+            <button className="PopupButton" id='confirmAccountDeleteButton' onClick={handleConfirmDelete} style={{ backgroundColor: 'red', color: 'white' }}>
               Delete Account
             </button>
           </div>
@@ -544,7 +551,7 @@ export default function page(){
       {/* Success message for Password Change */}
       {showPasswordSuccess && (
         <div className="SuccessPopupOverlay">
-          <div className="SuccessPopupBox">
+          <div id='passwordChangeSuccessPopup' className="SuccessPopupBox">
             <h2 className="SuccessMessage" style={{ fontWeight: 'bold' }}>
               Password Has Been Changed Successfully!
             </h2>
@@ -566,7 +573,7 @@ export default function page(){
       {/* Success message for account delete */}
       {showDeleteSuccess && (
         <div className="SuccessPopupOverlay">
-          <div className="SuccessPopupBox">
+          <div id='accountDeleteSuccessPopup' className="SuccessPopupBox">
             <h2 className="SuccessMessage" style={{ fontWeight: 'bold' }}>
               Account Deleted Successfully!
             </h2>

@@ -2,6 +2,7 @@
 .container{
   display: flex;
   min-width: 100vw;
+  align-items: flex-start;
 }
 
 /* Body section */
@@ -16,8 +17,9 @@
   text-align: center;
   background-color: #D9D9D9;
   width: 250px;
-  height: 830px;
+  height: 130vh;
   padding-top: 20px;
+  flex-shrink: 0;
 }
 
 /* Circle inside profile bar */
@@ -66,13 +68,13 @@
 .ImageRow {
   display: flex;
   justify-content: space-evenly;
-  gap: 100px;
+  gap: 10vw;
   margin-top: 40px;
 }
 
 /* Image properties */
 .ProjectImage {
-  width: 250px;
+  width: 100%;
   height: 300px;
   object-fit: cover;
   border-radius: 5px; 
@@ -86,30 +88,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* Grid list */
-.GridList {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(150px, 1fr));
-  gap: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  margin: 50px;
-}
-
-/* Grid items */
-.GridItem {
-  padding: 10px;
-  text-align: center;
-  font-size: 18px;
-}
-
-/* Grid header */
-.GridItemHeader {
-  font-weight: bold;
-  text-decoration: underline;
 }
 
 /* Image container */
@@ -158,4 +136,57 @@
   border: none;
   border-top: 2px solid #ccc; /* Light grey line */
   margin: 40px 0;
+}
+
+.ProjectSection {
+  margin: 3vw;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.PaginationControls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 20px;
+}
+
+.PaginationControls button {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.PaginationControls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Grid list */
+.GridList {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+/* Grid items */
+.GridItem {
+  padding: 10px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.GridItem img {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Grid header */
+.GridItemHeader {
+  font-weight: bold;
+  text-decoration: underline;
 }
