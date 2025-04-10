@@ -144,93 +144,54 @@ export default function Page() {
         }
     };
     
-    const handleSubmitForm = async (e: React.FormEvent) => {
-        e.preventDefault();
+const handleSubmitForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting || !selectedDate || !selectedTime) return;
 
-        if (isSubmitting) return; 
+    setIsSubmitting(true);
 
-        setIsSubmitting(true); 
-    
-        if (!selectedDate || !selectedTime) {
-            alert("Please select a date and time.");
-            setIsSubmitting(false);
-            return;
-        }
-    
-        const formattedDateOnly = selectedDate.toISOString().split('T')[0];
-    
-        // Count appointments for the date only
-        const appointmentCountForDate = appointments.filter(appointment => 
-            formatDateOnly(appointment.date) === formattedDateOnly
-        ).length;
-    
-        // Check for duplicate appointment for this date and time
-        const duplicateAppointment = appointments.some(appointment => 
-            formatDateOnly(appointment.date) === formattedDateOnly &&
-            appointment.time === selectedTime
-        );
-    
-        if (duplicateAppointment) {
-            alert("This time slot is already booked. Please choose another time.");
-            setIsSubmitting(false);
-            return;
-        }
-    
-        if (appointmentCountForDate >= 5) {
-            alert("Sorry, there are already 5 appointments booked for this day. Please choose another date.");
-            setIsSubmitting(false);
-            return;
-        }
-    
-        if (!formData.name || !formData.email || !formData.phone || !formData.message) {
-            alert("Please fill in all the fields.");
-            setIsSubmitting(false);
-            return;
-        }
-    
-        try {
-            setIsSubmitting(true);
-            const isoDate = selectedDate.toISOString();
-    
-            const appointmentData = {
-                date: isoDate,
-                time: selectedTime,
-                email: email,
-                userId: placeholderUserId,
-                name: formData.name,
-                phone: formData.phone,
-            };
-    
-            const emailData = {
-                ...appointmentData,
-                email: formData.email,
-                message: formData.message,
-            };
-    
-            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, appointmentData, {
-                headers: { "Content-Type": "application/json" },
-            });
-    
-            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/emails/send`, emailData, {
-                headers: { "Content-Type": "application/json" },
-            });
-    
-            alert("Appointment scheduled successfully!");
-            resetForm();
-            fetchAppointments();
-        } catch (error) {
-            console.error("Error scheduling appointment:", error);
-            if (axios.isAxiosError(error)) {
-                alert(`Error: ${error.response?.data?.message || error.message}`);
-            } else if (error instanceof Error) {
-                alert(`Error: ${error.message}`);
-            } else {
-                alert("An unknown error occurred.");
-            }
-        } finally {
-            setIsSubmitting(false);  
-        }
-    };
+    if (!formData.name || !formData.email || !formData.phone || !formData.message) {
+        alert("Please fill in all the fields.");
+        setIsSubmitting(false);
+        return;
+    }
+
+    try {
+        const appointmentData = {
+            date: selectedDate.toISOString(),
+            time: selectedTime,
+            email: email,
+            userId: placeholderUserId,
+            name: formData.name,
+            phone: formData.phone,
+        };
+
+        const emailData = {
+            ...appointmentData,
+            email: formData.email,
+            message: formData.message,
+        };
+
+        // Submit appointment first (priority), then email async
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, appointmentData);
+
+        axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/emails/send`, emailData)
+            .catch((err) => console.warn("Email failed to send:", err.message));
+
+        alert("Appointment scheduled!");
+        resetForm();
+
+        setTimeout(() => fetchAppointments(), 1500); 
+    } catch (error) {
+        console.error("Error:", error);
+        alert(`Error: ${axios.isAxiosError(error)
+            ? error.response?.data?.message || error.message
+            : "Unknown error"}`);
+    } finally {
+        setIsSubmitting(false);
+    }
+};
+
         
     const handleReschedule = (appointmentId: string) => {
         if (!selectedDate || !selectedTime) {
@@ -242,10 +203,21 @@ export default function Page() {
             `Are you sure you want to reschedule this appointment to ${selectedDate.toLocaleDateString()} at ${selectedTime}?`,
             async () => {
                 close();
+                setActionInProgressId(appointmentId);
+                
                 try {
                     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/id/${appointmentId}`);
                     const existingAppointment = response.data; 
     
+                    const updatedAppointmentData = {
+                        date: selectedDate.toISOString(),
+                        time: selectedTime,
+                        email: existingAppointment.email,
+                        name: existingAppointment.name,
+                        phone: formData.phone || existingAppointment.phone,
+                        message: formData.message || existingAppointment.message,
+                      };
+        
                     const rescheduleEmailData = {
                         name: existingAppointment.name,
                         email: existingAppointment.email,
@@ -255,32 +227,30 @@ export default function Page() {
                         newDate: selectedDate.toISOString(),
                         newTime: selectedTime,
                       };
-              
-                      // Send reschedule email
-                      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/emails/reschedule`, rescheduleEmailData, {
-                        headers: { "Content-Type": "application/json" },
-                      });
 
-                      const updatedAppointmentData = {
-                        date: selectedDate.toISOString(),
-                        time: selectedTime,
-                        email: existingAppointment.email,
-                        name: existingAppointment.name,
-                        phone: formData.phone || existingAppointment.phone,
-                        message: formData.message || existingAppointment.message,
-                      };
-    
-                    await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${appointmentId}`, updatedAppointmentData, {
-                        headers: { "Content-Type": "application/json" },
-                    });
+                      await Promise.all([
+                        axios.put(
+                            `${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${appointmentId}`,
+                            updatedAppointmentData
+                        ),
+                        axios.post(
+                            `${process.env.NEXT_PUBLIC_API_URL}/api/emails/reschedule`,
+                            rescheduleEmailData
+                        ),
+                    ]);
     
                     alert("Appointment rescheduled successfully.");
                     resetForm();
-                    fetchAppointments(); 
+    
+                    setTimeout(() => {
+                        fetchAppointments();
+                    }, 400);
                 } catch (error) {
-                    const err = error as any;
                     console.error("Error rescheduling appointment:", error);
-                    alert(`Error: ${err.response?.data?.message || err.message}`);
+                    const err = error as any;
+                    alert(`Error: ${err.response?.data?.message || err.message || "Unknown error"}`);
+                } finally {
+                    setActionInProgressId(null);
                 }
             }
         );
@@ -291,29 +261,47 @@ export default function Page() {
             "Are you sure you want to cancel this appointment? This action cannot be undone.",
             async () => {
                 close();
-                try {
-                    setActionInProgressId(appointmentId);
-
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/id/${appointmentId}`);
-                    const existingAppointment = response.data;
+                setActionInProgressId(appointmentId);
     
-                    const formattedDate = new Date(existingAppointment.date).toLocaleDateString();
+                try {
+                    // Try using local appointment state first
+                    let existingAppointment = appointments.find(appt => appt._id === appointmentId);
+    
+                    if (
+                        !existingAppointment ||
+                        !(existingAppointment as any).phone
+                    ) {
+                        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/id/${appointmentId}`);
+                        existingAppointment = response.data;
+                    }
+    
+                    if (!existingAppointment) {
+                        alert("Appointment not found.");
+                        setActionInProgressId(null);
+                        return;
+                    }
     
                     const cancelAppointmentData = {
                         date: existingAppointment.date,
-                        time: existingAppointment.time,           
-                        email: existingAppointment.email,         
+                        time: existingAppointment.time,
+                        email: existingAppointment.email,
                         name: existingAppointment.name,
-                        phone: existingAppointment.phone,
+                        phone: (existingAppointment as any).phone || "",
                     };
-
-                    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/emails/cancel`, cancelAppointmentData, {
-                        headers: { "Content-Type": "application/json" },
-                    });
     
-                    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${appointmentId}`);
+                    // Send both requests in parallel
+                    await Promise.all([
+                        axios.post(
+                            `${process.env.NEXT_PUBLIC_API_URL}/api/emails/cancel`,
+                            cancelAppointmentData,
+                            { headers: { "Content-Type": "application/json" } }
+                        ),
+                        axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${appointmentId}`)
+                    ]);
+    
                     alert("Appointment canceled successfully.");
-                    fetchAppointments();  
+                    resetForm(); 
+                    setTimeout(() => fetchAppointments(), 400);
                 } catch (error: any) {
                     console.error("Error canceling appointment:", error);
                     alert(`Error: ${error.response?.data?.message || error.message}`);
@@ -323,42 +311,61 @@ export default function Page() {
             }
         );
     };
-    
+        
     const blockSelectedDate = async () => {
-        if (selectedDate && selectedTime) {
-            try {
-                setIsBlocking(true);
-                await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, {
-                    date: selectedDate.toISOString(),
-                    time: selectedTime,
-                    email: email,
-                    userId: placeholderUserId,
-                    name: "Blocked",
-                    phone: "0",
-                    message: "Time slot blocked"
-                }, {
-                    headers: { "Content-Type": "application/json" },
-                });
-    
-                alert(`Time slot ${selectedTime} on ${selectedDate.toLocaleDateString()} has been blocked.`);
-                resetForm();
-                fetchAppointments();
-            } catch (error) {
-                console.error("Error blocking time slot:", error);
-                if (axios.isAxiosError(error)) {
-                    alert(`Error blocking time: ${error.response?.data?.message || error.message}`);
-                } else if (error instanceof Error) {
-                    alert(`Error blocking time: ${error.message}`);
-                } else {
-                    alert("An unknown error occurred while blocking the time slot.");
-                }
-            } finally {
-                setIsBlocking(false); 
-            }
-        } else {
+        // Early exit if missing info
+        if (!selectedDate || !selectedTime) {
             alert("Please select both a date and time to block.");
+            return;
         }
-    };
+    
+        setIsBlocking(true);
+    
+        try {
+            // Check if the slot is already blocked/booked 
+            const isAlreadyBlocked = appointments.some(
+                (appt) =>
+                    appt.name === "Blocked" &&
+                    formatDateOnly(appt.date) === formatDateOnly(selectedDate.toISOString()) &&
+                    appt.time === selectedTime
+            );
+    
+            if (isAlreadyBlocked) {
+                alert("This time slot is already blocked.");
+                return;
+            }
+    
+            const blockData = {
+                date: selectedDate.toISOString(),
+                time: selectedTime,
+                email: email,
+                userId: placeholderUserId,
+                name: "Blocked",
+                phone: "0",
+                message: "Time slot blocked",
+            };
+    
+            // Submit block request
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, blockData, {
+                headers: { "Content-Type": "application/json" },
+            });
+    
+            alert(`Blocked ${selectedTime} on ${selectedDate.toLocaleDateString()}`);
+            resetForm();
+    
+            setTimeout(() => fetchAppointments(), 300);
+        } catch (error) {
+            console.error("Error blocking time slot:", error);
+            const msg = axios.isAxiosError(error)
+                ? error.response?.data?.message || error.message
+                : error instanceof Error
+                ? error.message
+                : "An unknown error occurred while blocking the time slot.";
+            alert(`Error blocking time: ${msg}`);
+        } finally {
+            setIsBlocking(false);
+        }
+    };    
 
     const filteredAppointments = appointments.filter((appt) => {
         const dateStr = formatDateOnly(appt.date);  // Properly formatted date
@@ -438,7 +445,10 @@ export default function Page() {
                 <div className="calendarAvailabilityContainer">
                     <h2>Pick a Date and Time</h2>
                     <p>Project Inquiry - 20-min. Touch base</p>
-                    <Calendar onDateChange={handleDateChange} />
+                    <Calendar 
+                    onDateChange={handleDateChange}
+                    value={selectedDate}
+                    />
 
                     <div className="availability">
                         <h2>Availability</h2>
@@ -462,9 +472,9 @@ export default function Page() {
 
                     <form className="provideInfoForm" onSubmit={handleSubmitForm}>
                             <h2>Provide Your Information</h2>
-                            <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} required />
+                            <input type="text" name="name" placeholder="Name" value={formData.name} pattern="^[A-Za-z\s]+$" title="Name should contain letters and spaces only." onChange={handleChange} required />
                             <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-                            <input type="tel" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} required />
+                            <input type="tel" name="phone" placeholder="Phone" value={formData.phone} pattern="^\d{10}$" title="must be only digits and exactly 10 digits." onChange={handleChange} required />
                             <textarea name="message" placeholder="Message" value={formData.message} onChange={handleChange} required />
                             <button type="submit" className="submitButton" id="submitButton" disabled={isSubmitting}>
                                 {isSubmitting ? "Submitting..." : "Submit"}
