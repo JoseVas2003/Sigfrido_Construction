@@ -66,6 +66,15 @@ export default function page(){
   const email = session?.user?.email;
 
   const [projects, setProjects] = useState<Projects[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const projectsPerPage = 4;
+
+  const indexOfLast = currentPage * projectsPerPage;
+  const indexOfFirst = indexOfLast - projectsPerPage;
+  const currentProjects = projects.slice(indexOfFirst, indexOfLast);
+
+  const totalPages = Math.ceil(projects.length / projectsPerPage);
+
   
   useEffect(() => {
     if (!email) return;
@@ -153,33 +162,53 @@ export default function page(){
           <hr className="SeparatorLine" />
           <h1 className='BodyTitles'>Contract History</h1>
           
-          {/* Project list */}
-          <div className="GridList">
-            <div className="GridItem GridItemHeader">Type</div>
-            <div className="GridItem GridItemHeader">Date Started</div>
-            <div className="GridItem GridItemHeader">Cost</div>
-            <div className="GridItem GridItemHeader">Expected Completion</div>
-            <div className="GridItem GridItemHeader">Download</div>
+          <div className="ProjectSection">
+            {/* Project list */}
+            <div className="GridList">
+              <div className="GridItem GridItemHeader">Type</div>
+              <div className="GridItem GridItemHeader">Date Started</div>
+              <div className="GridItem GridItemHeader">Cost</div>
+              <div className="GridItem GridItemHeader">Expected Completion</div>
+              <div className="GridItem GridItemHeader">Download</div>
 
-            {projects.map((project) => (
-              <>
-              <div className="GridItem">{project.projectType}</div>
-              <div className="GridItem">{new Date(project.dateStarted).toLocaleDateString()}</div>
-              <div className="GridItem">${project.estimatedCost}</div>
-              <div className="GridItem">{new Date(project.expectedCompletion).toLocaleDateString()}</div>
-              <div className="GridItem">
-                <Image 
-                  src={Download} 
-                  alt="Download Icon" 
-                  height={25} 
-                  width={25}
-                  onClick={() => handleDownloadQuote(project)}
-                  style={{ cursor: "pointer" }}
-                />
-              </div>
-              </>
-            ))}
+              {currentProjects.map((project) => (
+                <>
+                  <div className="GridItem">{project.projectType}</div>
+                  <div className="GridItem">{new Date(project.dateStarted).toLocaleDateString()}</div>
+                  <div className="GridItem">${project.estimatedCost}</div>
+                  <div className="GridItem">{new Date(project.expectedCompletion).toLocaleDateString()}</div>
+                  <div className="GridItem">
+                    <Image 
+                      src={Download} 
+                      alt="Download Icon" 
+                      height={25} 
+                      width={25}
+                      onClick={() => handleDownloadQuote(project)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </div>
+                </>
+              ))}
+            </div>
+
+            {/* Page controls */}
+            <div className="PaginationControls">
+              <button 
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                ←
+              </button>
+              <span>{currentPage} / {totalPages}</span>
+              <button 
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                →
+              </button>
+            </div>
           </div>
+
         </div>
       </div>
     </div>

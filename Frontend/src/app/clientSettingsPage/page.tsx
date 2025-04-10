@@ -401,7 +401,8 @@ export default function page(){
         {/* Left profile bar */}
         <div className="Left_profile_bar">
         <div className="Circle">{initial}</div>
-          <h1>Welcome back, {names}!</h1>
+          <h1>Welcome back,</h1>
+          <h1>{names}!</h1>
           <div className="SideButtons">
             <Link href="../faq">
               <Image src={Question} alt="FAQ Icon" height={25} width={25} />
