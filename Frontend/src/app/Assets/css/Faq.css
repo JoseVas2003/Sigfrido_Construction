@@ -132,7 +132,7 @@
 .delete-icon {
     position: absolute;
     top: 50%;
-    right: 50px;
+    right: 5px;
     transform: translateY(-30%);
     background: none;
     border: none;
@@ -226,5 +226,37 @@
 
 .faq-title-input {
     width: 100%;
-    padding-right: 40px; /* Make space for the red X */
+    padding-right: 40px; 
 }
+
+.move-buttons {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-30%);
+    display: flex;
+    flex-direction: row;
+    gap: 5px;        
+  } 
+  
+  .move-buttons button {
+    background: none;
+    border: none;
+    font-size: 40px;
+    padding: 0;           
+    margin: 0;            
+    line-height: 0.5;        
+    cursor: pointer;
+    color: #003366;
+    transition: transform 0.2s ease;
+    transform: scaleX(1.3);
+  }  
+  
+  .move-buttons button:hover {
+    transform: scale(1.2);
+  }
+  
+  .move-buttons button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }  

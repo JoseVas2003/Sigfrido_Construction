@@ -22,6 +22,20 @@ export default function FaqPage() {
         setActiveIndex(prevIndex => (prevIndex === index ? null : index));
     };
 
+    const moveItemUp = (index: number) => {
+        if (index <= 0) return;
+        const newItems = [...faqItems];
+        [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
+        setFaqItems(newItems);
+    };
+
+    const moveItemDown = (index: number) => {
+        if (index >= faqItems.length - 1) return;
+        const newItems = [...faqItems];
+        [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
+        setFaqItems(newItems);
+    };
+
     useEffect(() => {
         const fetchFaqItems = async () => {
             try {
@@ -85,6 +99,10 @@ export default function FaqPage() {
                                                 setFaqItems(newItems);
                                             }}
                                         >❌</button>
+                                        <div className="move-buttons">
+                                            <button onClick={() => moveItemUp(index)} disabled={index === 0}>⬆</button>
+                                            <button onClick={() => moveItemDown(index)} disabled={index === faqItems.length - 1}>⬇</button>
+                                        </div>
                                     </>
                                 ) : (
                                     item.text
@@ -123,15 +141,21 @@ export default function FaqPage() {
                                 )}
 
                                 {isEditing && (
-                                    <button
-                                        className='delete-icon'
-                                        title="Delete Question"
-                                        onClick={() => {
-                                            const newItems = [...faqItems];
-                                            newItems.splice(index, 1);
-                                            setFaqItems(newItems);
-                                        }}
-                                    >❌</button>
+                                    <>
+                                        <button
+                                            className='delete-icon'
+                                            title="Delete Question"
+                                            onClick={() => {
+                                                const newItems = [...faqItems];
+                                                newItems.splice(index, 1);
+                                                setFaqItems(newItems);
+                                            }}
+                                        >❌</button>
+                                        <div className="move-buttons">
+                                            <button onClick={() => moveItemUp(index)} disabled={index === 0}>⬆</button>
+                                            <button onClick={() => moveItemDown(index)} disabled={index === faqItems.length - 1}>⬇</button>
+                                        </div>
+                                    </>
                                 )}
                             </div>
 
