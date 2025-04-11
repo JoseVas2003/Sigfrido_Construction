@@ -16,8 +16,8 @@
   font-size: 26px;
   text-align: center;
   background-color: #D9D9D9;
-  width: 250px;
-  height: 130vh;
+  width: 18vw;
+  height: 150vh;
   padding-top: 20px;
   flex-shrink: 0;
 }
@@ -88,6 +88,35 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Grid list */
+.GridList {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 50px;
+}
+
+/* Grid items */
+.GridItem {
+  padding: 10px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.GridItem img {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Grid header */
+.GridItemHeader {
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 /* Image container */
