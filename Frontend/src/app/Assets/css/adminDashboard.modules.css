@@ -19,6 +19,22 @@
   z-index: 1;
 }
 
+/* General Buttons */
+.mainContent button {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.3s ease;
+}
+
+.mainContent button:hover {
+  background-color: #0056b3;
+}
+
 /* Section Wrapper */
 .sectionWrapper {
   background: white;
@@ -178,23 +194,6 @@
   border-radius: 5px;
   background-color: #f9f9f9;
 }
-
-/* General Buttons */
-button {
-  background-color: #007bff;
-  color: white;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
 
 .sidebar {
   width: 20%; 
