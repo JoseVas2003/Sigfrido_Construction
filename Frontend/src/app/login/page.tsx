@@ -4,21 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import '../Assets/css/login.modules.css';
-import '../Assets/css/resetSuccessPopup.css';
 import Navbar, { clicksOut } from '../navbar/navBar';
-
-/* popup functions */
-const openPopup = () =>{
-    let popup = document.getElementById('popup')!;
-
-    popup.style.display="flex";
-}
-
-const closePopup = () =>{
-    let popup = document.getElementById('popup')!;
-
-    popup.style.display="none";
-}
 
 export default function page(){
 
@@ -196,16 +182,6 @@ export default function page(){
                         </div>
 
                     </form>
-                </div>
-                <div className="popup" id="popup">
-                    <div className="popup-content">
-                    <h2>Password Reset Successfully</h2>
-                    
-                    
-                        <button id="closePopup" className="closeReqPopup" onClick={() => {closePopup()}}>CLOSE</button>
-                    
-                    
-                    </div>
                 </div>
             </main>
         </div> 

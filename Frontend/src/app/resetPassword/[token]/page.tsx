@@ -4,7 +4,9 @@ import bcrypt from 'bcryptjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import '../../Assets/css/resetPassword.modules.css';
+import '../../Assets/css/resetSuccessPopup.css';
 import Navbar, { clicksOut } from '../../navbar/navBar';
+
 
 export default function page({params}: any){
 
@@ -120,6 +122,11 @@ export default function page({params}: any){
         }
       }
 
+      const closePopup = () =>{
+
+        changePage.replace('/login');
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -145,8 +152,10 @@ export default function page({params}: any){
                 });
                 
                 
-                changePage.replace('/login');
-                //openPopup();
+                //open success popup
+                let popup = document.getElementById('popup')!;
+
+                popup.style.display="flex";
     
             }catch(error){
                 const err = error as any;
@@ -154,6 +163,8 @@ export default function page({params}: any){
                 alert(`Error: ${err.response?.data?.message || err.message}`);
             }
         }
+
+        
         
 
     };
@@ -205,6 +216,16 @@ export default function page({params}: any){
                         </div>
 
                     </form>
+                </div>
+                <div className="popup" id="popup">
+                    <div className="popup-content">
+                    <h2>Password Reset Successfully</h2>
+                    
+                    
+                        <button id="closePopup" className="closeReqPopup" onClick={() => {closePopup()}}>CLOSE</button>
+                    
+                    
+                    </div>
                 </div>
             </main>
         </div> 

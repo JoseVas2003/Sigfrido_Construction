@@ -21,9 +21,11 @@ describe('Reset Password Functionality', async function ()
         await saveButton.click()
         await driver.sleep(2000)
 
-        //Check That The Reset Password Page Is The Current Ending Page, If So, Test PASSED.  Else, Test FAILED
-        let endingURL = await driver.getCurrentUrl()
-        assert.strictEqual(endingURL, "http://localhost:3000/resetPassword/ResetToken", 'Reset Password Testing FAILED, Left Reset Password Page')
+
+        //Check That The Reset Password Success Popup Didn't Open, If So, Test PASSED.  Else, Test FAILED
+        let popup = await driver.findElement(By.css('.popup'));
+        let display = await popup.getCssValue('display');
+        assert.strictEqual(display, 'none', 'Reset Password Testing FAILED, Success Popup Did Open');
 
         //Check That ERROR Message Displayed in Reset Password Page For Invalid Password Field, If So, Test PASSED.  Else, Test FAILED
         let passwordError = await driver.findElement(By.id('passwordError')).getText();
@@ -51,10 +53,11 @@ describe('Reset Password Functionality', async function ()
         let saveButton = await driver.findElement(By.id('saveButton'));
         await saveButton.click()
         await driver.sleep(2000)
-
-        //Check That The Reset Password Page Is The Current Ending Page, If So, Test PASSED.  Else, Test FAILED
-        let endingURL = await driver.getCurrentUrl()
-        assert.strictEqual(endingURL, "http://localhost:3000/resetPassword/ResetToken", 'Reset Password Testing FAILED, Left Reset Password Page')
+        
+        //Check That The Reset Password Success Popup Didn't Open, If So, Test PASSED.  Else, Test FAILED
+        let popup = await driver.findElement(By.css('.popup'));
+        let display = await popup.getCssValue('display');
+        assert.strictEqual(display, 'none', 'Reset Password Testing FAILED, Success Popup Did Open');
 
         //Check That ERROR Message Displayed in Reset Password Page For Invalid Password Field, If So, Test PASSED.  Else, Test FAILED
         let passwordError = await driver.findElement(By.id('passwordError')).getText();
@@ -83,9 +86,10 @@ describe('Reset Password Functionality', async function ()
         await saveButton.click()
         await driver.sleep(2000)
 
-        //Check That The Reset Password Page Is The Current Ending Page, If So, Test PASSED.  Else, Test FAILED
-        let endingURL = await driver.getCurrentUrl()
-        assert.strictEqual(endingURL, "http://localhost:3000/resetPassword/ResetToken", 'Reset Password Testing FAILED, Left Reset Password Page')
+        //Check That The Reset Password Success Popup Didn't Open, If So, Test PASSED.  Else, Test FAILED
+        let popup = await driver.findElement(By.css('.popup'));
+        let display = await popup.getCssValue('display');
+        assert.strictEqual(display, 'none', 'Reset Password Testing FAILED, Success Popup Did Open');
 
         //Check That ERROR Message Displayed in Reset Password Page For Invalid Password Field, If So, Test PASSED.  Else, Test FAILED
         let passwordError = await driver.findElement(By.id('passwordError')).getText();
@@ -114,9 +118,10 @@ describe('Reset Password Functionality', async function ()
         await saveButton.click()
         await driver.sleep(2000)
 
-        //Check That The Reset Password Is The Current Ending Page, If So, Test PASSED.  Else, Test FAILED
-        let endingURL = await driver.getCurrentUrl()
-        assert.strictEqual(endingURL, "http://localhost:3000/resetPassword/ResetToken", 'Reset Password Testing FAILED, Left Reset Password Page')
+        //Check That The Reset Password Success Popup Didn't Open, If So, Test PASSED.  Else, Test FAILED
+        let popup = await driver.findElement(By.css('.popup'));
+        let display = await popup.getCssValue('display');
+        assert.strictEqual(display, 'none', 'Reset Password Testing FAILED, Success Popup Did Open');
 
         //Check That ERROR Message Displayed in Reset Password Page For Invalid Password Field, If So, Test PASSED.  Else, Test FAILED
         let passwordError = await driver.findElement(By.id('passwordError')).getText();
@@ -145,9 +150,10 @@ describe('Reset Password Functionality', async function ()
         await saveButton.click()
         await driver.sleep(2000)
 
-        //Check That The Reset Password Page Is The Current Ending Page, If So, Test PASSED.  Else, Test FAILED
-        let endingURL = await driver.getCurrentUrl()
-        assert.strictEqual(endingURL, "http://localhost:3000/resetPassword/ResetToken", 'Reset Password Testing FAILED, Left Reset Password Page')
+        //Check That The Reset Password Success Popup Didn't Open, If So, Test PASSED.  Else, Test FAILED
+        let popup = await driver.findElement(By.css('.popup'));
+        let display = await popup.getCssValue('display');
+        assert.strictEqual(display, 'none', 'Reset Password Testing FAILED, Success Popup Did Open');
 
         //Check That ERROR Message Displayed in Reset Password Page For Invalid Password Field, If So, Test PASSED.  Else, Test FAILED
         let passwordError = await driver.findElement(By.id('passwordError')).getText();
@@ -184,9 +190,10 @@ describe('Reset Password Functionality', async function ()
         await saveButton.click()
         await driver.sleep(2000)
 
-        //Check That The Reset Password Page Is The Current Ending Page, If So, Test PASSED.  Else, Test FAILED
-        let endingURL = await driver.getCurrentUrl()
-        assert.strictEqual(endingURL, "http://localhost:3000/resetPassword/ResetToken", 'Reset Password Testing FAILED, Left Reset Password Page')
+        //Check That The Reset Password Success Popup Didn't Open, If So, Test PASSED.  Else, Test FAILED
+        let popup = await driver.findElement(By.css('.popup'));
+        let display = await popup.getCssValue('display');
+        assert.strictEqual(display, 'none', 'Reset Password Testing FAILED, Success Popup Did Open');
 
         //Check That ERROR Message Displayed in Reset Password Page For Invalid Password Field, If So, Test PASSED.  Else, Test FAILED
         let confirmPasswordError = await driver.findElement(By.id('confirmPasswordError')).getText();
@@ -221,9 +228,10 @@ describe('Reset Password Functionality', async function ()
         await saveButton.click()
         await driver.sleep(2000)
 
-        //Check That The Reset Password Page Is The Current Ending Page, If So, Test PASSED.  Else, Test FAILED
-        let endingURL = await driver.getCurrentUrl()
-        assert.strictEqual(endingURL, "http://localhost:3000/resetPassword/ResetToken", 'Reset Password Testing FAILED, Left Reset Password Page')
+        //Check That The Reset Password Success Popup Didn't Open, If So, Test PASSED.  Else, Test FAILED
+        let popup = await driver.findElement(By.css('.popup'));
+        let display = await popup.getCssValue('display');
+        assert.strictEqual(display, 'none', 'Reset Password Testing FAILED, Success Popup Did Open');
 
         //Check That ERROR Message Displayed in Reset Password Page For Invalid Password Field, If So, Test PASSED.  Else, Test FAILED
         let confirmPasswordError = await driver.findElement(By.id('confirmPasswordError')).getText();
@@ -259,9 +267,10 @@ describe('Reset Password Functionality', async function ()
         await saveButton.click()
         await driver.sleep(2000)
 
-        //Check That The Reset Password Page Is The Current Ending Page, If So, Test PASSED.  Else, Test FAILED
-        let endingURL = await driver.getCurrentUrl()
-        assert.strictEqual(endingURL, "http://localhost:3000/login", 'Reset Password Testing FAILED, Did Not Navigate To Login Page')
+        //Check That The Reset Password Success Popup Did Open, If So, Test PASSED.  Else, Test FAILED
+        let popup = await driver.findElement(By.css('.popup'));
+        let display = await popup.getCssValue('display');
+        assert.strictEqual(display, 'flex', 'Reset Password Testing FAILED, Success Popup Did Not Open');
 
         } finally {
         await driver.quit()
