@@ -366,4 +366,106 @@ it('Reschedule Form Submission Validation - Successful submission - ADMIN', asyn
     }
 }).timeout(60000);
 
+it('Cancel Appointment Test - Works for User', async function () {
+    let driver = await new Builder().forBrowser('chrome').build();
+    try {
+        // Navigate to login page
+        await driver.get('http://localhost:3000/login');
+        await driver.manage().window().maximize();
+
+        // Login (update creds if testing admin)
+        await driver.findElement(By.id('emailInput')).sendKeys("NewNon-Admin@account.com");
+        await driver.findElement(By.id('passwordInput')).sendKeys("NonAdmin12345$");
+        await driver.findElement(By.id('LoginButton')).click();
+        await driver.sleep(3000);
+
+        // Navigate to scheduling page
+        await driver.get('http://localhost:3000/schedule');
+        await driver.sleep(2000);
+
+        // Find and click the first cancel button
+        const cancelButtons = await driver.findElements(By.css('.cancelButton'));
+        assert.ok(cancelButtons.length > 0, "No cancel buttons found — make sure there are appointments.");
+        await cancelButtons[0].click();
+        await driver.sleep(1000);
+
+        // Wait for confirmation modal
+        const modal = await driver.wait(until.elementLocated(By.css('.popup-content')), 5000);
+        const modalText = await modal.findElement(By.css('.popup-message')).getText();
+        console.log("CANCEL MODAL TEXT:", modalText);
+        assert.ok(
+            modalText.includes("Are you sure you want to cancel this appointment"),
+            "Missing expected cancel confirmation message."
+        );
+        await driver.sleep(2000);
+
+        // Click Confirm button
+        const confirmBtn = await modal.findElement(By.css('.confirm-button'));
+        await confirmBtn.click();
+
+        // Wait for final success alert
+        const alert = await driver.wait(until.alertIsPresent(), 5000);
+        const alertText = await alert.getText();
+        console.log("ALERT (Success):", alertText);
+        assert.strictEqual(alertText, "Appointment canceled successfully.");
+        await driver.sleep(2000);
+        await alert.accept();
+
+        console.log("Cancel appointment test passed.");
+    } finally {
+        await driver.quit();
+    }
+}).timeout(60000);
+
+it('Cancel Appointment Test - Works for Admin', async function () {
+    let driver = await new Builder().forBrowser('chrome').build();
+    try {
+        // Navigate to login page
+        await driver.get('http://localhost:3000/login');
+        await driver.manage().window().maximize();
+
+        // Login (update creds if testing admin)
+        await driver.findElement(By.id('emailInput')).sendKeys("NewAdmin@account.com");
+        await driver.findElement(By.id('passwordInput')).sendKeys("Admin12345$");
+        await driver.findElement(By.id('LoginButton')).click();
+        await driver.sleep(3000);
+
+        // Navigate to scheduling page
+        await driver.get('http://localhost:3000/schedule');
+        await driver.sleep(2000);
+
+        // Find and click the first cancel button
+        const cancelButtons = await driver.findElements(By.css('.cancelButton'));
+        assert.ok(cancelButtons.length > 0, "No cancel buttons found — make sure there are appointments.");
+        await cancelButtons[0].click();
+        await driver.sleep(1000);
+
+        // Wait for confirmation modal
+        const modal = await driver.wait(until.elementLocated(By.css('.popup-content')), 5000);
+        const modalText = await modal.findElement(By.css('.popup-message')).getText();
+        console.log("CANCEL MODAL TEXT:", modalText);
+        assert.ok(
+            modalText.includes("Are you sure you want to cancel this appointment"),
+            "Missing expected cancel confirmation message."
+        );
+        await driver.sleep(2000);
+
+        // Click Confirm button
+        const confirmBtn = await modal.findElement(By.css('.confirm-button'));
+        await confirmBtn.click();
+
+        // Wait for final success alert
+        const alert = await driver.wait(until.alertIsPresent(), 5000);
+        const alertText = await alert.getText();
+        console.log("ALERT (Success):", alertText);
+        assert.strictEqual(alertText, "Appointment canceled successfully.");
+        await driver.sleep(2000);
+        await alert.accept();
+
+        console.log("Cancel appointment test passed.");
+    } finally {
+        await driver.quit();
+    }
+}).timeout(60000);
+
 })
