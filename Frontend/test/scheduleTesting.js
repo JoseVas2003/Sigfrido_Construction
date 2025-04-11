@@ -170,7 +170,7 @@ describe('Scheduling Appointment Functionality', async function () {
             await driver.sleep(1000);
 
             // Select a date
-             let nextMonthButton = await driver.findElement(By.xpath("//button[text()='Next']"));
+            let nextMonthButton = await driver.findElement(By.xpath("//button[text()='Next']"));
             await nextMonthButton.click();
             await driver.sleep(2000);            
             
@@ -463,6 +463,90 @@ it('Cancel Appointment Test - Works for Admin', async function () {
         await alert.accept();
 
         console.log("Cancel appointment test passed.");
+    } finally {
+        await driver.quit();
+    }
+}).timeout(60000);
+
+it('Block Appointment Slot Test - Admin', async function () {
+    let driver = await new Builder().forBrowser('chrome').build();
+    try {
+        // Login as admin
+        await driver.get('http://localhost:3000/login');
+        await driver.manage().window().maximize();
+
+        await driver.findElement(By.id('emailInput')).sendKeys("NewAdmin@account.com");
+        await driver.findElement(By.id('passwordInput')).sendKeys("Admin12345$");
+        await driver.findElement(By.id('LoginButton')).click();
+        await driver.sleep(3000);
+
+        // Go to schedule page
+        await driver.get('http://localhost:3000/schedule');
+        await driver.sleep(2000);
+
+        // Try clicking block button with no date/time selected
+        const blockButton = await driver.findElement(By.css('.blockButton'));
+        await blockButton.click();
+        await driver.wait(until.alertIsPresent(), 5000);
+        let alert = await driver.switchTo().alert();
+        let alertText = await alert.getText();
+        console.log("ALERT 1:", alertText);
+        assert.strictEqual(alertText, 'Please select both a date and time to block.');
+        await driver.sleep(2000);
+        await alert.accept();
+
+        // Go to next month and select a valid date
+        const nextMonthButton = await driver.findElement(By.xpath("//button[text()='Next']"));
+        await nextMonthButton.click();
+        await driver.sleep(1500);
+
+        const calendarDays = await driver.findElements(By.css('.calendarDay:not(.disabledDay)'));
+        assert.ok(calendarDays.length > 0, "No valid calendar days found.");
+
+        let dateSelected = false;
+        for (const day of calendarDays) {
+            const text = await day.getText();
+            if (text.trim()) {
+                await day.click();
+                await driver.sleep(1000);
+
+                await blockButton.click();
+                await driver.wait(until.alertIsPresent(), 3000);
+                const alert2 = await driver.switchTo().alert();
+                const alertText2 = await alert2.getText();
+                console.log("ALERT 2:", alertText2);
+                assert.strictEqual(alertText2, 'Please select both a date and time to block.');
+                await driver.sleep(2000);
+                await alert2.accept();
+                await driver.sleep(1000);
+
+                const timeButtons = await driver.findElements(By.css('.timeSlotButton'));
+                if (timeButtons.length > 0) {
+                    const selectedTime = await timeButtons[0].getText();
+                    await timeButtons[0].click();
+                    await driver.sleep(1000);
+
+                    // Block the slot
+                    await blockButton.click();
+                    await driver.wait(until.alertIsPresent(), 5000);
+                    const successAlert = await driver.switchTo().alert();
+                    const successText = await successAlert.getText();
+                    console.log("SUCCESS ALERT:", successText);
+
+                    assert.ok(successText.includes("Blocked"));
+                    assert.ok(successText.includes(selectedTime), "Success alert does not include selected time.");
+                    await driver.sleep(2000);
+                    await successAlert.accept();
+
+                    console.log("Block appointment slot test passed.");
+                    dateSelected = true;
+                    break;
+                }
+            }
+        }
+
+        assert.ok(dateSelected, "No available day with valid time slots found.");
+
     } finally {
         await driver.quit();
     }
