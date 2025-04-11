@@ -144,54 +144,61 @@ export default function Page() {
         }
     };
     
-const handleSubmitForm = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isSubmitting || !selectedDate || !selectedTime) return;
-
-    setIsSubmitting(true);
-
-    if (!formData.name || !formData.email || !formData.phone || !formData.message) {
-        alert("Please fill in all the fields.");
-        setIsSubmitting(false);
-        return;
-    }
-
-    try {
-        const appointmentData = {
-            date: selectedDate.toISOString(),
-            time: selectedTime,
-            email: email,
-            userId: placeholderUserId,
-            name: formData.name,
-            phone: formData.phone,
-        };
-
-        const emailData = {
-            ...appointmentData,
-            email: formData.email,
-            message: formData.message,
-        };
-
-        // Submit appointment first (priority), then email async
-        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, appointmentData);
-
-        axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/emails/send`, emailData)
-            .catch((err) => console.warn("Email failed to send:", err.message));
-
-        alert("Appointment scheduled!");
-        resetForm();
-
-        setTimeout(() => fetchAppointments(), 1500); 
-    } catch (error) {
-        console.error("Error:", error);
-        alert(`Error: ${axios.isAxiosError(error)
-            ? error.response?.data?.message || error.message
-            : "Unknown error"}`);
-    } finally {
-        setIsSubmitting(false);
-    }
-};
-
+    const handleSubmitForm = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (isSubmitting) return;
+    
+        setIsSubmitting(true);
+    
+        // Validate required form fields
+        if (!formData.name || !formData.email || !formData.phone || !formData.message) {
+            alert("Please fill in all the fields.");
+            setIsSubmitting(false);
+            return;
+        }
+    
+        // Validate selected date and time
+        if (!selectedDate || !selectedTime) {
+            alert("Please select a date and time.");
+            setIsSubmitting(false);
+            return;
+        }
+    
+        try {
+            const appointmentData = {
+                date: selectedDate.toISOString(),
+                time: selectedTime,
+                email: email,
+                userId: placeholderUserId,
+                name: formData.name,
+                phone: formData.phone,
+            };
+    
+            const emailData = {
+                ...appointmentData,
+                email: formData.email,
+                message: formData.message,
+            };
+    
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, appointmentData);
+    
+            // Fire-and-forget: don't block user on email
+            axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/emails/send`, emailData)
+                .catch((err) => console.warn("Email failed to send:", err.message));
+    
+            alert("Appointment scheduled!");
+            resetForm();
+            setTimeout(() => fetchAppointments(), 1500);
+        } catch (error) {
+            console.error("Error:", error);
+            alert(`Error: ${axios.isAxiosError(error)
+                ? error.response?.data?.message || error.message
+                : "Unknown error"}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+    
         
     const handleReschedule = (appointmentId: string) => {
         if (!selectedDate || !selectedTime) {
@@ -311,7 +318,7 @@ const handleSubmitForm = async (e: React.FormEvent) => {
             }
         );
     };
-        
+    
     const blockSelectedDate = async () => {
         // Early exit if missing info
         if (!selectedDate || !selectedTime) {
@@ -365,7 +372,7 @@ const handleSubmitForm = async (e: React.FormEvent) => {
         } finally {
             setIsBlocking(false);
         }
-    };    
+    };  
 
     const filteredAppointments = appointments.filter((appt) => {
         const dateStr = formatDateOnly(appt.date);  // Properly formatted date
@@ -445,11 +452,8 @@ const handleSubmitForm = async (e: React.FormEvent) => {
                 <div className="calendarAvailabilityContainer">
                     <h2>Pick a Date and Time</h2>
                     <p>Project Inquiry - 20-min. Touch base</p>
-                    <Calendar 
-                    onDateChange={handleDateChange}
-                    value={selectedDate}
-                    />
-
+                    <Calendar onDateChange={handleDateChange} value={selectedDate}/>
+                    
                     <div className="availability">
                         <h2>Availability</h2>
                         <p>Selected Date: {selectedDate ? selectedDate.toLocaleDateString() : "None"}</p>
@@ -471,7 +475,7 @@ const handleSubmitForm = async (e: React.FormEvent) => {
                     </div>
 
                     <form className="provideInfoForm" onSubmit={handleSubmitForm}>
-                            <h2>Provide Your Information</h2>
+                        <h2>Provide Your Information</h2>
                             <input type="text" name="name" placeholder="Name" value={formData.name} pattern="^[A-Za-z\s]+$" title="Name should contain letters and spaces only." onChange={handleChange} required />
                             <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
                             <input type="tel" name="phone" placeholder="Phone" value={formData.phone} pattern="^\d{10}$" title="must be only digits and exactly 10 digits." onChange={handleChange} required />
