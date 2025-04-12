@@ -62,6 +62,7 @@ export default function FaqPage() {
                                 {isEditing ? (
                                     <>
                                         <input
+                                            className="faq-title-input"
                                             type="text"
                                             value={item.text}
                                             onChange={(e) => {
@@ -74,7 +75,6 @@ export default function FaqPage() {
                                                     setFaqItems(newItems);
                                                 }
                                             }}
-                                            className="faq-title-input"
                                         />
                                         <button
                                             className='delete-icon'
@@ -167,6 +167,7 @@ export default function FaqPage() {
                     {isEditing && (
                         <div style={{ position: 'absolute', left: 'calc(50% - 140px)' }}>
                             <button
+                                id="addTitleButton"
                                 className="title-button"
                                 onClick={() => {
                                     setFaqItems(prev => [...prev, { type: 'title', text: 'New Section Title' }]);
