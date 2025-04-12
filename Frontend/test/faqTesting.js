@@ -149,6 +149,54 @@ describe('FAQ - Add Question Test', function () {
     } finally {
       await driver.quit();
     }
+  }).timeout(60000);
+  
+  it('Should delete the last FAQ title and save changes', async function () {
+    const driver = await new Builder().forBrowser('chrome').build();
+    try {
+      await driver.get('http://localhost:3000/faq');
+      await driver.manage().window().maximize();
+      await driver.sleep(1000);
+  
+      // Click Edit
+      const editBtn = await driver.wait(until.elementLocated(By.id("editButton")), 5000);
+      await driver.wait(until.elementIsVisible(editBtn), 5000);
+      await driver.wait(until.elementIsEnabled(editBtn), 5000);
+      await driver.executeScript("arguments[0].scrollIntoView(true);", editBtn);
+      await driver.sleep(300);
+      await driver.executeScript("arguments[0].click();", editBtn);
+  
+      // Get all title inputs to find the last one
+      const titleInputs = await driver.findElements(By.css('input.faq-title-input'));
+      const lastTitleInput = titleInputs[titleInputs.length - 1];
+      const titleText = await lastTitleInput.getAttribute("value");
+  
+      // Find all delete buttons (assumes titles and questions share .delete-icon)
+      const deleteButtons = await driver.findElements(By.css(".delete-icon"));
+      const lastDeleteBtn = deleteButtons[deleteButtons.length - 1];
+  
+      await driver.executeScript("arguments[0].scrollIntoView(true);", lastDeleteBtn);
+      await driver.sleep(300);
+      await driver.executeScript("arguments[0].click();", lastDeleteBtn);
+  
+      // Click Save
+      const saveBtn = await driver.findElement(By.id("editButton"));
+      await driver.wait(until.elementIsVisible(saveBtn), 5000);
+      await driver.wait(until.elementIsEnabled(saveBtn), 5000);
+      await driver.executeScript("arguments[0].scrollIntoView(true);", saveBtn);
+      await driver.sleep(300);
+      await driver.executeScript("arguments[0].click();", saveBtn);
+  
+      // Confirm the title is gone
+      await driver.sleep(2000);
+      const deletedTitle = await driver.findElements(By.xpath(`//*[contains(text(),'${titleText}')]`));
+      assert.strictEqual(deletedTitle.length, 0, "❌ Title was not deleted.");
+  
+      console.log("✅ Test PASSED: Title was deleted successfully.");
+      await driver.sleep(1500);
+    } finally {
+      await driver.quit();
+    }
   }).timeout(60000);  
   
 });
