@@ -38,12 +38,10 @@ export default function CreateProjectPage() {
   const [categoriesError, setCategoriesError] = useState("");
   const [imageError, setImageError] = useState("");
   const [submitHovered, setSubmitHovered] = useState(false);
-
-  // For picking images
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [selectedBoxIndex, setSelectedBoxIndex] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle text changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     let inputValue = value;
@@ -84,7 +82,6 @@ export default function CreateProjectPage() {
     }));
   };
 
-  // Handle multiple checkboxes
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     setFormData((prevFormData) => {
@@ -102,7 +99,6 @@ export default function CreateProjectPage() {
     });
   };
 
-  // This is called when the user clicks on one of the 5 boxes
   const handleBoxClick = (index: number) => {
     setSelectedBoxIndex(index);
     if (fileInputRef.current) {
@@ -115,24 +111,21 @@ export default function CreateProjectPage() {
     e.target.value = "";
     if (!file || selectedBoxIndex == null) return;
   
-    // Validate file type & size before compression if you’d like
     const validTypes = ["image/heic", "image/png", "image/jpeg"];
     if (!validTypes.includes(file.type)) {
       setImageError("Solo se permiten imágenes en formato HEIC, PNG o JPEG.");
       return;
     }
   
-    // Compression options
     const options = {
       maxSizeMB: 0.2,       
       maxWidthOrHeight: 1600, 
-      useWebWorker: true,     // Offload compression to a web worker
+      useWebWorker: true,     
       fileType: file.type,  
     };
   
     try {
       const compressedFile = await imageCompression(file, options);
-  
       const previewUrl = URL.createObjectURL(compressedFile);
   
       setImageSlots((prevSlots) => {
@@ -141,7 +134,6 @@ export default function CreateProjectPage() {
         return updated;
       });
   
-      // Reset error if everything went fine
       setImageError("");
     } catch (error) {
       console.error("Error compressing file:", error);
@@ -173,7 +165,6 @@ export default function CreateProjectPage() {
       valid = false;
     }
 
-    // Ensure at least one image is present across the 5 slots
     const hasAtLeastOne = imageSlots.some((slot) => slot.file !== null);
     if (!hasAtLeastOne) {
       setImageError("Por favor, sube al menos una imagen (en uno de los 5 recuadros).");
@@ -188,6 +179,7 @@ export default function CreateProjectPage() {
     if (!validateForm()) {
       return;
     }
+    setSubmitting(true);
 
     try {
       const data = new FormData();
@@ -197,8 +189,6 @@ export default function CreateProjectPage() {
       data.append("cost", formData.cost);
       formData.categories.forEach((cat) => data.append("categories", cat));
 
-      // Append whichever files are actually set
-      // If a slot is empty, skip it
       for (const slot of imageSlots) {
         if (slot.file) {
           data.append("images", slot.file);
@@ -210,6 +200,8 @@ export default function CreateProjectPage() {
     } catch (error: any) {
       console.error('Error creating project:', error.response?.data || error.message);
       alert(`Error: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -387,7 +379,7 @@ export default function CreateProjectPage() {
 
               {/* The 5 image boxes */}
               <div style={styles.halfInputGroup}>
-                <label style={styles.label}>Agrega Imágenes (5 slots):</label>
+                <label style={styles.label}>Agrega Imágenes (Hasta 5):</label>
 
                 {/* This hidden file input is triggered by whichever box user clicks */}
                 <input
@@ -422,7 +414,6 @@ export default function CreateProjectPage() {
                             width={40}
                             height={40}
                           />
-                          <span style={{ fontSize: '14px' }}>Haz clic para Agregar</span>
                         </div>
                       )}
                     </div>
@@ -439,15 +430,21 @@ export default function CreateProjectPage() {
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
               <button
                 type="submit"
+                onClick={handleSubmit}
+                disabled={submitting}
                 style={{
                   ...styles.button,
                   backgroundColor: submitHovered ? '#1E2D3D' : styles.button.backgroundColor,
-                  color: submitHovered ? '#EBECE5' : styles.button.color,
+                  color: submitting
+                    ? "#EBECE5" 
+                    : (submitHovered ? "#EBECE5" : styles.button.color),
+                  opacity: submitting ? 0.6 : 1,
+                  cursor: submitting ? 'not-allowed' : 'pointer',
                 }}
                 onMouseEnter={() => setSubmitHovered(true)}
                 onMouseLeave={() => setSubmitHovered(false)}
               >
-                Crear Proyecto
+                {submitting ? 'Creando...' : 'Crear Proyecto'}
               </button>
             </div>
           </form>
@@ -561,7 +558,6 @@ const styles: { [key: string]: CSSProperties } = {
     marginTop: '5px',
     textAlign: 'center',
   },
-  // The 5 boxes
   boxContainer: {
     display: 'flex',
     gap: '10px',
@@ -585,7 +581,7 @@ const styles: { [key: string]: CSSProperties } = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    pointerEvents: 'none', // let clicks pass to the parent .box
+    pointerEvents: 'none',
   },
   previewImage: {
     width: '100%',
