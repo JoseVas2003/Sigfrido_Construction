@@ -101,5 +101,54 @@ describe('FAQ - Add Question Test', function () {
       await driver.quit();
     }
   }).timeout(60000);
+
+  it('Should add a new FAQ title and save it', async function () {
+    const driver = await new Builder().forBrowser('chrome').build();
+    try {
+      await driver.get('http://localhost:3000/faq');
+      await driver.manage().window().maximize();
+      await driver.sleep(1000);
+  
+      // Click Edit
+      const editBtn = await driver.wait(until.elementLocated(By.id("editButton")), 5000);
+      await driver.wait(until.elementIsVisible(editBtn), 5000);
+      await driver.wait(until.elementIsEnabled(editBtn), 5000);
+      await driver.executeScript("arguments[0].scrollIntoView(true);", editBtn);
+      await driver.sleep(300);
+      await driver.executeScript("arguments[0].click();", editBtn);
+  
+      // Click Add Title
+      const addTitleBtn = await driver.wait(until.elementLocated(By.id("addTitleButton")), 5000);
+      await driver.wait(until.elementIsVisible(addTitleBtn), 5000);
+      await driver.wait(until.elementIsEnabled(addTitleBtn), 5000);
+      await driver.executeScript("arguments[0].scrollIntoView(true);", addTitleBtn);
+      await driver.sleep(300);
+      await driver.executeScript("arguments[0].click();", addTitleBtn);
+  
+      // Find the last title input and update it
+      const titleInputs = await driver.findElements(By.css('input.faq-title-input'));
+      const lastTitleInput = titleInputs[titleInputs.length - 1];
+      await lastTitleInput.clear();
+      await lastTitleInput.sendKeys("Customer Service");
+  
+      // Click Save
+      const saveBtn = await driver.findElement(By.id("editButton"));
+      await driver.wait(until.elementIsVisible(saveBtn), 5000);
+      await driver.wait(until.elementIsEnabled(saveBtn), 5000);
+      await driver.executeScript("arguments[0].scrollIntoView(true);", saveBtn);
+      await driver.sleep(300);
+      await driver.executeScript("arguments[0].click();", saveBtn);
+  
+      // Confirm the title is added
+      await driver.sleep(2000);
+      const addedTitle = await driver.findElement(By.xpath("//*[contains(text(),'Customer Service')]"));
+      assert.ok(addedTitle, "❌ Title was not added successfully");
+  
+      console.log("✅ Test PASSED: Title added and saved successfully.");
+      await driver.sleep(1500);
+    } finally {
+      await driver.quit();
+    }
+  }).timeout(60000);  
   
 });
