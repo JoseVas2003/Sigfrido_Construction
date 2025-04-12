@@ -1,0 +1,34 @@
+{
+  "name": "sigfrido_construction",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
+    "bcryptjs": "^3.0.2",
+    "mongodb": "^6.15.0",
+    "next-auth": "^4.24.11",
+    "react": "^18",
+    "react-dom": "^18",
+    "selenium": "^2.20.0",
+    "selenium-webdriver": "^4.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.19",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.15",
+    "postcss": "^8",
+    "selenium-webdriver": "^4.30.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "5.7.3"
+  }
+}
