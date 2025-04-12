@@ -8,10 +8,11 @@ import { useEffect, useState } from 'react';
 import "../Assets/css/ClientDashboard.modules.css";
 import Navbar from "../navbar/navBar";
 
-// Sidebar images
+// Icon images
 import Message from '../Assets/clientDashboardIcons/Message.png';
 import Question from '../Assets/clientDashboardIcons/Question.png';
 import Settings from '../Assets/clientDashboardIcons/Setting_line_light@3x.png';
+import Download from '../Assets/clientDashboardIcons/Download.png'
 
 // Static images
 import Bathroom from '../Assets/clientStaticImages/Bathroom-static.jpg';
@@ -36,6 +37,28 @@ interface Projects {
   createdAt: string;
 } 
 
+const handleDownloadQuote = (project) => {
+  const quoteContent = `
+    Name: ${project.customerName}
+    Email: ${project.email}
+    Project Type: ${project.projectType}
+    Date Started: ${new Date(project.dateStarted).toLocaleDateString()}
+    Estimated Cost: $${project.estimatedCost}
+    Expected Completion: ${new Date(project.expectedCompletion).toLocaleDateString()}
+  `;
+
+  const blob = new Blob([quoteContent], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `Quote-${project.projectType}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
 export default function page(){
   const {data: session, status} = useSession();
   const names = session?.user?.name;
@@ -43,6 +66,15 @@ export default function page(){
   const email = session?.user?.email;
 
   const [projects, setProjects] = useState<Projects[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const projectsPerPage = 4;
+
+  const indexOfLast = currentPage * projectsPerPage;
+  const indexOfFirst = indexOfLast - projectsPerPage;
+  const currentProjects = projects.slice(indexOfFirst, indexOfLast);
+
+  const totalPages = Math.ceil(projects.length / projectsPerPage);
+
   
   useEffect(() => {
     if (!email) return;
@@ -68,7 +100,8 @@ export default function page(){
         {/* Left profile bar */}
         <div className="Left_profile_bar">
           <div className="Circle">{initial}</div>
-          <h1>Welcome back, {names}!</h1>
+          <h1>Welcome back,</h1>
+          <h1>{names}!</h1>
           <div className="SideButtons">
             <Link href="../faq">
               <Image src={Question} alt="FAQ Icon" height={25} width={25} />
@@ -125,14 +158,17 @@ export default function page(){
               );
             })}
           </div>
+          
           <hr className="SeparatorLine" />
           <h1 className='BodyTitles'>Contract History</h1>
+          
           {/* Project list */}
           <div className="GridList">
             <div className="GridItem GridItemHeader">Type</div>
             <div className="GridItem GridItemHeader">Date Started</div>
             <div className="GridItem GridItemHeader">Cost</div>
             <div className="GridItem GridItemHeader">Expected Completion</div>
+            <div className="GridItem GridItemHeader">Download</div>
 
             {projects.map((project) => (
               <>
@@ -140,9 +176,20 @@ export default function page(){
               <div className="GridItem">{new Date(project.dateStarted).toLocaleDateString()}</div>
               <div className="GridItem">${project.estimatedCost}</div>
               <div className="GridItem">{new Date(project.expectedCompletion).toLocaleDateString()}</div>
+              <div className="GridItem">
+                <Image 
+                  src={Download} 
+                  alt="Download Icon" 
+                  height={25} 
+                  width={25}
+                  onClick={() => handleDownloadQuote(project)}
+                  style={{ cursor: "pointer" }}
+                />
+              </div>
               </>
             ))}
           </div>
+
         </div>
       </div>
     </div>

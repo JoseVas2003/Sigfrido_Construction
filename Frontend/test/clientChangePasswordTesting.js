@@ -2,9 +2,9 @@ const { Builder, By } = require('selenium-webdriver');
 const assert = require('assert');
 const { describe } = require('node:test');
 
-// BEFORE STARTING TEST: Make sure phone number for NewNon-Admin@account.com is 1234567890
-describe('Client Change Phone Functionality', async function() {
-  it('Entering Correct Current Phone Number and Match New Phone Number', async function() {
+// BEFORE STARTING TEST: Make sure password for NewNon-Admin@account.com is NonAdmin12345$
+describe('Client Change Password Functionality', async function() {
+  it('Entering Correct Current Password and Match New Password', async function() {
     let driver = await new Builder().forBrowser('chrome').build()
     try {
       await driver.get('http://localhost:3000/');
@@ -42,41 +42,38 @@ describe('Client Change Phone Functionality', async function() {
       await clientSettingsButton.click()
       await driver.sleep(3000)
 
-      let changePhoneNumberButton = await driver.findElement(By.id('phoneChange'))
-      await changePhoneNumberButton.click()
+      let changePasswordButton = await driver.findElement(By.id('changePassword'))
+      await changePasswordButton.click()
       await driver.sleep(3000)
 
-      let oldPhoneInput = await driver.findElement(By.id('oldPhoneInput'))
-      let newPhoneInput = await driver.findElement(By.id('newPhoneInput'))
-      let confirmNewPhoneInput = await driver.findElement(By.id('confirmNewPhoneInput'))
-      let confirmNewPhoneButton = await driver.findElement(By.id('confirmNewPhoneButton'))
-      await oldPhoneInput.click()
+      let currentPassword = await driver.findElement(By.id('currentPassword'))
+      let newPassword = await driver.findElement(By.id('newPassword'))
+      let confirmNewPassword = await driver.findElement(By.id('confirmNewPassword'))
+      let confirmNewPasswordButton = await driver.findElement(By.id('confirmPasswordChangeButton'))
+      await currentPassword.click()
       await driver.sleep(500)
-      await oldPhoneInput.sendKeys('1234567890')
+      await currentPassword.sendKeys('NonAdmin12345$')
       await driver.sleep(500)
-      await newPhoneInput.click()
+      await newPassword.click()
       await driver.sleep(500)
-      await newPhoneInput.sendKeys('9876543210')
+      await newPassword.sendKeys('TempPassword12345$')
       await driver.sleep(500)
-      await confirmNewPhoneInput.click()
+      await confirmNewPassword.click()
       await driver.sleep(500)
-      await confirmNewPhoneInput.sendKeys('9876543210')
+      await confirmNewPassword.sendKeys('TempPassword12345$')
       await driver.sleep(500)
-      await confirmNewPhoneButton.click()
+      await confirmNewPasswordButton.click()
       await driver.sleep(1000)
 
-      let phoneSuccessPopup = await driver.findElement(By.id('phoneChangeSuccessPopup')).getText();
-      await driver.sleep(3000)
-      await driver.navigate().refresh();
-      await driver.sleep(3000)
-      assert.strictEqual(phoneSuccessPopup, 'Phone Number Has Been Changed Successfully!', 'Test FAILED, Error Caught');
+      let passwordSuccessPopup = await driver.findElement(By.id('passwordChangeSuccessPopup')).getText();
+      assert.strictEqual(passwordSuccessPopup, 'Password Has Been Changed Successfully!', 'Test FAILED, Error Caught');
 
     } finally{
       await driver.quit()
     }
   }).timeout(60000)
 
-  it('Entering Invalid Current Phone Number and Match New Phone Number', async function() {
+  it('Entering Invalid Current Password and Match New Password', async function() {
     let driver = await new Builder().forBrowser('chrome').build()
     try {
       await driver.get('http://localhost:3000/');
@@ -101,7 +98,7 @@ describe('Client Change Phone Functionality', async function() {
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin12345$")
+      await passwordInput.sendKeys("TempPassword12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -114,38 +111,38 @@ describe('Client Change Phone Functionality', async function() {
       await clientSettingsButton.click()
       await driver.sleep(3000)
 
-      let changePhoneNumberButton = await driver.findElement(By.id('phoneChange'))
-      await changePhoneNumberButton.click()
+      let changePasswordButton = await driver.findElement(By.id('changePassword'))
+      await changePasswordButton.click()
       await driver.sleep(3000)
 
-      let oldPhoneInput = await driver.findElement(By.id('oldPhoneInput'))
-      let newPhoneInput = await driver.findElement(By.id('newPhoneInput'))
-      let confirmNewPhoneInput = await driver.findElement(By.id('confirmNewPhoneInput'))
-      let confirmNewPhoneButton = await driver.findElement(By.id('confirmNewPhoneButton'))
-      await oldPhoneInput.click()
+      let currentPassword = await driver.findElement(By.id('currentPassword'))
+      let newPassword = await driver.findElement(By.id('newPassword'))
+      let confirmNewPassword = await driver.findElement(By.id('confirmNewPassword'))
+      let confirmNewPasswordButton = await driver.findElement(By.id('confirmPasswordChangeButton'))
+      await currentPassword.click()
       await driver.sleep(500)
-      await oldPhoneInput.sendKeys('1293847098')
+      await currentPassword.sendKeys('NonAdmin12345$')
       await driver.sleep(500)
-      await newPhoneInput.click()
+      await newPassword.click()
       await driver.sleep(500)
-      await newPhoneInput.sendKeys('1234567890')
+      await newPassword.sendKeys('$TempPassword12345$')
       await driver.sleep(500)
-      await confirmNewPhoneInput.click()
+      await confirmNewPassword.click()
       await driver.sleep(500)
-      await confirmNewPhoneInput.sendKeys('1234567890')
+      await confirmNewPassword.sendKeys('$TempPassword12345$')
       await driver.sleep(500)
-      await confirmNewPhoneButton.click()
-      await driver.sleep(2000)
+      await confirmNewPasswordButton.click()
+      await driver.sleep(1000)
 
-      let phoneError = await driver.findElement(By.id('phoneError')).getText();
-      assert.strictEqual(phoneError, 'Current phone number is incorrect.', 'Test FAILED, Did Not Catch Error')
+      let passwordError = await driver.findElement(By.id('passwordError')).getText();
+      assert.strictEqual(passwordError, 'Current Password is Incorrect.', 'Test FAILED, Error Not Caught');
 
     }finally{
       await driver.quit()
     }
   }).timeout(60000)
 
-  it('Entering Valid Current Phone Number and NOT Match New Phone Number', async function() {
+  it('Entering Valid Current Password and NOT Match New Password', async function() {
     let driver = await new Builder().forBrowser('chrome').build()
     try {
       await driver.get('http://localhost:3000/');
@@ -170,7 +167,7 @@ describe('Client Change Phone Functionality', async function() {
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin12345$")
+      await passwordInput.sendKeys("TempPassword12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -183,31 +180,31 @@ describe('Client Change Phone Functionality', async function() {
       await clientSettingsButton.click()
       await driver.sleep(3000)
 
-      let changePhoneNumberButton = await driver.findElement(By.id('phoneChange'))
-      await changePhoneNumberButton.click()
+      let changePasswordButton = await driver.findElement(By.id('changePassword'))
+      await changePasswordButton.click()
       await driver.sleep(3000)
 
-      let oldPhoneInput = await driver.findElement(By.id('oldPhoneInput'))
-      let newPhoneInput = await driver.findElement(By.id('newPhoneInput'))
-      let confirmNewPhoneInput = await driver.findElement(By.id('confirmNewPhoneInput'))
-      let confirmNewPhoneButton = await driver.findElement(By.id('confirmNewPhoneButton'))
-      await oldPhoneInput.click()
+      let currentPassword = await driver.findElement(By.id('currentPassword'))
+      let newPassword = await driver.findElement(By.id('newPassword'))
+      let confirmNewPassword = await driver.findElement(By.id('confirmNewPassword'))
+      let confirmNewPasswordButton = await driver.findElement(By.id('confirmPasswordChangeButton'))
+      await currentPassword.click()
       await driver.sleep(500)
-      await oldPhoneInput.sendKeys('9876543210')
+      await currentPassword.sendKeys('TempPassword12345$')
       await driver.sleep(500)
-      await newPhoneInput.click()
+      await newPassword.click()
       await driver.sleep(500)
-      await newPhoneInput.sendKeys('1283947279')
+      await newPassword.sendKeys('NonAdmin12345$')
       await driver.sleep(500)
-      await confirmNewPhoneInput.click()
+      await confirmNewPassword.click()
       await driver.sleep(500)
-      await confirmNewPhoneInput.sendKeys('4597698476')
+      await confirmNewPassword.sendKeys('NonAdmin1234$')
       await driver.sleep(500)
-      await confirmNewPhoneButton.click()
-      await driver.sleep(2000)
+      await confirmNewPasswordButton.click()
+      await driver.sleep(1000)
 
-      let phoneError = await driver.findElement(By.id('phoneError')).getText();
-      assert.strictEqual(phoneError, 'New phone number does not match.', 'Test FAILED, Did Not Catch Error')
+      let passwordError = await driver.findElement(By.id('passwordError')).getText();
+      assert.strictEqual(passwordError, 'New Passwords Do Not Match.', 'Test FAILED, Error Not Caught');
 
     }finally{
       await driver.quit()
@@ -239,7 +236,7 @@ describe('Client Change Phone Functionality', async function() {
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin12345$")
+      await passwordInput.sendKeys("TempPassword12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -252,38 +249,38 @@ describe('Client Change Phone Functionality', async function() {
       await clientSettingsButton.click()
       await driver.sleep(3000)
 
-      let changePhoneNumberButton = await driver.findElement(By.id('phoneChange'))
-      await changePhoneNumberButton.click()
+      let changePasswordButton = await driver.findElement(By.id('changePassword'))
+      await changePasswordButton.click()
       await driver.sleep(3000)
 
-      let oldPhoneInput = await driver.findElement(By.id('oldPhoneInput'))
-      let newPhoneInput = await driver.findElement(By.id('newPhoneInput'))
-      let confirmNewPhoneInput = await driver.findElement(By.id('confirmNewPhoneInput'))
-      let confirmNewPhoneButton = await driver.findElement(By.id('confirmNewPhoneButton'))
-      await oldPhoneInput.click()
+      let currentPassword = await driver.findElement(By.id('currentPassword'))
+      let newPassword = await driver.findElement(By.id('newPassword'))
+      let confirmNewPassword = await driver.findElement(By.id('confirmNewPassword'))
+      let confirmNewPasswordButton = await driver.findElement(By.id('confirmPasswordChangeButton'))
+      await currentPassword.click()
       await driver.sleep(500)
-      await oldPhoneInput.sendKeys('')
+      await currentPassword.sendKeys('')
       await driver.sleep(500)
-      await newPhoneInput.click()
+      await newPassword.click()
       await driver.sleep(500)
-      await newPhoneInput.sendKeys('')
+      await newPassword.sendKeys('')
       await driver.sleep(500)
-      await confirmNewPhoneInput.click()
+      await confirmNewPassword.click()
       await driver.sleep(500)
-      await confirmNewPhoneInput.sendKeys('')
+      await confirmNewPassword.sendKeys('')
       await driver.sleep(500)
-      await confirmNewPhoneButton.click()
-      await driver.sleep(2000)
+      await confirmNewPasswordButton.click()
+      await driver.sleep(1000)
 
-      let phoneError = await driver.findElement(By.id('phoneError')).getText();
-      assert.strictEqual(phoneError, 'All fields are required.', 'Test FAILED, Did Not Catch Error')
+      let passwordError = await driver.findElement(By.id('passwordError')).getText();
+      assert.strictEqual(passwordError, 'All Fields Are Required.', 'Test FAILED, Error Not Caught');
 
     }finally{
       await driver.quit()
     }
   }).timeout(60000)
 
-  it('Entering Same Current Phone Number and Same New Phone Number', async function() {
+  it('Entering Same Current Password and Same New Password', async function() {
     let driver = await new Builder().forBrowser('chrome').build()
     try {
       await driver.get('http://localhost:3000/');
@@ -308,7 +305,7 @@ describe('Client Change Phone Functionality', async function() {
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin12345$")
+      await passwordInput.sendKeys("TempPassword12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -321,38 +318,38 @@ describe('Client Change Phone Functionality', async function() {
       await clientSettingsButton.click()
       await driver.sleep(3000)
 
-      let changePhoneNumberButton = await driver.findElement(By.id('phoneChange'))
-      await changePhoneNumberButton.click()
+      let changePasswordButton = await driver.findElement(By.id('changePassword'))
+      await changePasswordButton.click()
       await driver.sleep(3000)
 
-      let oldPhoneInput = await driver.findElement(By.id('oldPhoneInput'))
-      let newPhoneInput = await driver.findElement(By.id('newPhoneInput'))
-      let confirmNewPhoneInput = await driver.findElement(By.id('confirmNewPhoneInput'))
-      let confirmNewPhoneButton = await driver.findElement(By.id('confirmNewPhoneButton'))
-      await oldPhoneInput.click()
+      let currentPassword = await driver.findElement(By.id('currentPassword'))
+      let newPassword = await driver.findElement(By.id('newPassword'))
+      let confirmNewPassword = await driver.findElement(By.id('confirmNewPassword'))
+      let confirmNewPasswordButton = await driver.findElement(By.id('confirmPasswordChangeButton'))
+      await currentPassword.click()
       await driver.sleep(500)
-      await oldPhoneInput.sendKeys('9876543210')
+      await currentPassword.sendKeys('TempPassword12345$')
       await driver.sleep(500)
-      await newPhoneInput.click()
+      await newPassword.click()
       await driver.sleep(500)
-      await newPhoneInput.sendKeys('9876543210')
+      await newPassword.sendKeys('TempPassword12345$')
       await driver.sleep(500)
-      await confirmNewPhoneInput.click()
+      await confirmNewPassword.click()
       await driver.sleep(500)
-      await confirmNewPhoneInput.sendKeys('9876543210')
+      await confirmNewPassword.sendKeys('TempPassword12345$')
       await driver.sleep(500)
-      await confirmNewPhoneButton.click()
-      await driver.sleep(2000)
+      await confirmNewPasswordButton.click()
+      await driver.sleep(1000)
 
-      let phoneError = await driver.findElement(By.id('phoneError')).getText();
-      assert.strictEqual(phoneError, 'This phone number is already your current.', 'Test FAILED, Did Not Catch Error')
+      let passwordError = await driver.findElement(By.id('passwordError')).getText();
+      assert.strictEqual(passwordError, 'This Password is Already Your Current.', 'Test FAILED, Error Not Caught');
 
     }finally{
       await driver.quit()
     }
   }).timeout(60000)
 
-  it('Entering Current Phone Number and Special Characters to New Phone Number', async function() {
+  it('Entering Current Password and No Special Characters to New Password', async function() {
     let driver = await new Builder().forBrowser('chrome').build()
     try {
       await driver.get('http://localhost:3000/');
@@ -377,7 +374,7 @@ describe('Client Change Phone Functionality', async function() {
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin12345$")
+      await passwordInput.sendKeys("TempPassword12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -390,38 +387,38 @@ describe('Client Change Phone Functionality', async function() {
       await clientSettingsButton.click()
       await driver.sleep(3000)
 
-      let changePhoneNumberButton = await driver.findElement(By.id('phoneChange'))
-      await changePhoneNumberButton.click()
+      let changePasswordButton = await driver.findElement(By.id('changePassword'))
+      await changePasswordButton.click()
       await driver.sleep(3000)
 
-      let oldPhoneInput = await driver.findElement(By.id('oldPhoneInput'))
-      let newPhoneInput = await driver.findElement(By.id('newPhoneInput'))
-      let confirmNewPhoneInput = await driver.findElement(By.id('confirmNewPhoneInput'))
-      let confirmNewPhoneButton = await driver.findElement(By.id('confirmNewPhoneButton'))
-      await oldPhoneInput.click()
+      let currentPassword = await driver.findElement(By.id('currentPassword'))
+      let newPassword = await driver.findElement(By.id('newPassword'))
+      let confirmNewPassword = await driver.findElement(By.id('confirmNewPassword'))
+      let confirmNewPasswordButton = await driver.findElement(By.id('confirmPasswordChangeButton'))
+      await currentPassword.click()
       await driver.sleep(500)
-      await oldPhoneInput.sendKeys('9876543210')
+      await currentPassword.sendKeys('TempPassword12345$')
       await driver.sleep(500)
-      await newPhoneInput.click()
+      await newPassword.click()
       await driver.sleep(500)
-      await newPhoneInput.sendKeys('das^*&@#')
+      await newPassword.sendKeys('TempPassword12345')
       await driver.sleep(500)
-      await confirmNewPhoneInput.click()
+      await confirmNewPassword.click()
       await driver.sleep(500)
-      await confirmNewPhoneInput.sendKeys('das^*&@#')
+      await confirmNewPassword.sendKeys('TempPassword12345')
       await driver.sleep(500)
-      await confirmNewPhoneButton.click()
-      await driver.sleep(2000)
+      await confirmNewPasswordButton.click()
+      await driver.sleep(1000)
 
-      let phoneError = await driver.findElement(By.id('phoneError')).getText();
-      assert.strictEqual(phoneError, 'Phone numbers can only contain digits.', 'Test FAILED, Did Not Catch Error')
+      let passwordError = await driver.findElement(By.id('passwordError')).getText();
+      assert.strictEqual(passwordError, 'Your Password Must Contain At Least 1 Special Character (!#$%^&*)', 'Test FAILED, Error Not Caught');
 
     }finally{
       await driver.quit()
     }
   }).timeout(60000)
 
-  it('Entering Current Phone Number and Less Than 10 Digits', async function() {
+  it('Entering Current Password and Less Than 8 Characters', async function() {
     let driver = await new Builder().forBrowser('chrome').build()
     try {
       await driver.get('http://localhost:3000/');
@@ -446,7 +443,7 @@ describe('Client Change Phone Functionality', async function() {
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin12345$")
+      await passwordInput.sendKeys("TempPassword12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -459,31 +456,31 @@ describe('Client Change Phone Functionality', async function() {
       await clientSettingsButton.click()
       await driver.sleep(3000)
 
-      let changePhoneNumberButton = await driver.findElement(By.id('phoneChange'))
-      await changePhoneNumberButton.click()
+      let changePasswordButton = await driver.findElement(By.id('changePassword'))
+      await changePasswordButton.click()
       await driver.sleep(3000)
 
-      let oldPhoneInput = await driver.findElement(By.id('oldPhoneInput'))
-      let newPhoneInput = await driver.findElement(By.id('newPhoneInput'))
-      let confirmNewPhoneInput = await driver.findElement(By.id('confirmNewPhoneInput'))
-      let confirmNewPhoneButton = await driver.findElement(By.id('confirmNewPhoneButton'))
-      await oldPhoneInput.click()
+      let currentPassword = await driver.findElement(By.id('currentPassword'))
+      let newPassword = await driver.findElement(By.id('newPassword'))
+      let confirmNewPassword = await driver.findElement(By.id('confirmNewPassword'))
+      let confirmNewPasswordButton = await driver.findElement(By.id('confirmPasswordChangeButton'))
+      await currentPassword.click()
       await driver.sleep(500)
-      await oldPhoneInput.sendKeys('9876543210')
+      await currentPassword.sendKeys('TempPassword12345$')
       await driver.sleep(500)
-      await newPhoneInput.click()
+      await newPassword.click()
       await driver.sleep(500)
-      await newPhoneInput.sendKeys('123456789')
+      await newPassword.sendKeys('Temp')
       await driver.sleep(500)
-      await confirmNewPhoneInput.click()
+      await confirmNewPassword.click()
       await driver.sleep(500)
-      await confirmNewPhoneInput.sendKeys('123456789')
+      await confirmNewPassword.sendKeys('Temp')
       await driver.sleep(500)
-      await confirmNewPhoneButton.click()
-      await driver.sleep(2000)
+      await confirmNewPasswordButton.click()
+      await driver.sleep(1000)
 
-      let phoneError = await driver.findElement(By.id('phoneError')).getText();
-      assert.strictEqual(phoneError, 'Phone number must be exactly 10 digits.', 'Test FAILED, Did Not Catch Error')
+      let passwordError = await driver.findElement(By.id('passwordError')).getText();
+      assert.strictEqual(passwordError, 'Your Password Must Be At Least 8 Characters', 'Test FAILED, Error Not Caught');
 
     }finally{
       await driver.quit()
@@ -515,7 +512,7 @@ describe('Client Change Phone Functionality', async function() {
       let passwordInput = await driver.findElement(By.id('passwordInput'));
       await passwordInput.click()
       await driver.sleep(1000)
-      await passwordInput.sendKeys("NonAdmin12345$")
+      await passwordInput.sendKeys("TempPassword12345$")
       await driver.sleep(1000)
 
       let loginButton = await driver.findElement(By.id('LoginButton'));
@@ -528,34 +525,31 @@ describe('Client Change Phone Functionality', async function() {
       await clientSettingsButton.click()
       await driver.sleep(3000)
 
-      let changePhoneNumberButton = await driver.findElement(By.id('phoneChange'))
-      await changePhoneNumberButton.click()
+      let changePasswordButton = await driver.findElement(By.id('changePassword'))
+      await changePasswordButton.click()
       await driver.sleep(3000)
 
-      let oldPhoneInput = await driver.findElement(By.id('oldPhoneInput'))
-      let newPhoneInput = await driver.findElement(By.id('newPhoneInput'))
-      let confirmNewPhoneInput = await driver.findElement(By.id('confirmNewPhoneInput'))
-      let confirmNewPhoneButton = await driver.findElement(By.id('confirmNewPhoneButton'))
-      await oldPhoneInput.click()
+      let currentPassword = await driver.findElement(By.id('currentPassword'))
+      let newPassword = await driver.findElement(By.id('newPassword'))
+      let confirmNewPassword = await driver.findElement(By.id('confirmNewPassword'))
+      let confirmNewPasswordButton = await driver.findElement(By.id('confirmPasswordChangeButton'))
+      await currentPassword.click()
       await driver.sleep(500)
-      await oldPhoneInput.sendKeys('9876543210')
+      await currentPassword.sendKeys('TempPassword12345$')
       await driver.sleep(500)
-      await newPhoneInput.click()
+      await newPassword.click()
       await driver.sleep(500)
-      await newPhoneInput.sendKeys('1234567890')
+      await newPassword.sendKeys('NonAdmin12345$')
       await driver.sleep(500)
-      await confirmNewPhoneInput.click()
+      await confirmNewPassword.click()
       await driver.sleep(500)
-      await confirmNewPhoneInput.sendKeys('1234567890')
+      await confirmNewPassword.sendKeys('NonAdmin12345$')
       await driver.sleep(500)
-      await confirmNewPhoneButton.click()
-      await driver.sleep(2000)
+      await confirmNewPasswordButton.click()
+      await driver.sleep(1000)
 
-      let phoneSuccessPopup = await driver.findElement(By.id('phoneChangeSuccessPopup')).getText();
-      await driver.sleep(2000)
-      await driver.navigate().refresh();
-      await driver.sleep(3000)
-      assert.strictEqual(phoneSuccessPopup, 'Phone Number Has Been Changed Successfully!', 'Test FAILED, Error Not Caught');
+      let passwordSuccessPopup = await driver.findElement(By.id('passwordChangeSuccessPopup')).getText();
+      assert.strictEqual(passwordSuccessPopup, 'Password Has Been Changed Successfully!', 'Test FAILED, Error Caught');
 
     }finally{
       await driver.quit()
