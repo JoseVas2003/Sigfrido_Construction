@@ -179,15 +179,16 @@ export default function FaqPage() {
 
                     <div style={{ textAlign: 'center' }}>
                         <button
+                            id="editButton"
                             className={isEditing ? 'save-button' : 'edit-button'}
                             onClick={async () => {
                                 if (isEditing) {
                                     try {
                                         await axios.post("http://localhost:3001/api/faq", faqItems);
-                                        alert("FAQ saved successfully.");
+                                        console.log("✅ FAQ saved successfully.");
                                     } catch (err) {
                                         console.error("Failed to save FAQ:", err);
-                                        alert("Error saving FAQ.");
+                                        console.error("❌ Error saving FAQ.");
                                     }
                                 }
                                 setIsEditing(prev => !prev);
@@ -199,6 +200,7 @@ export default function FaqPage() {
 
                     {isEditing && (
                         <button
+                            id="addQuestionButton"
                             className="add-button"
                             style={{ position: 'absolute', left: 'calc(50% + 40px)', top: '0' }}
                             onClick={() => {
