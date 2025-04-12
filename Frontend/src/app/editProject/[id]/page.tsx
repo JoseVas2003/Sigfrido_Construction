@@ -33,6 +33,7 @@ export default function EditProjectPage() {
     { file: null, previewUrl: "", dbIndex: null },
   ]);
 
+  const [imagesToDelete, setImagesToDelete] = useState<Set<number>>(new Set());
   const [projectNameError, setProjectNameError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [timeTakenError, setTimeTakenError] = useState("");
@@ -40,24 +41,19 @@ export default function EditProjectPage() {
   const [categoriesError, setCategoriesError] = useState("");
   const [imageError, setImageError] = useState("");
   const [submitHovered, setSubmitHovered] = useState(false);
-
-  // For picking images
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
-
-  // Track hovered trash icon index for color changes on hover
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [hoveredTrashIconIndex, setHoveredTrashIconIndex] = useState<number | null>(
     null
   );
 
   useEffect(() => {
     if (!id) return;
-
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`)
-      .then((response) => {
+  
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`)
+      .then(async (response) => {
         const project = response.data;
-        // Fill text fields
         setFormData((prev) => ({
           ...prev,
           name: project.name || "",
@@ -66,27 +62,29 @@ export default function EditProjectPage() {
           cost: project.cost || "",
           categories: project.categories || [],
         }));
-
-        // Fill image slots from DB
+  
         if (project.images && project.images.length > 0) {
-          setImageSlots((prevSlots) => {
-            const updated = [...prevSlots];
-            const n = Math.min(project.images.length, 5);
-            for (let i = 0; i < n; i++) {
-              updated[i] = {
-                file: null,
-                previewUrl: `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}/images/${i}`,
-                dbIndex: i,
-              };
+          const updated: ImageSlot[] = [...imageSlots];
+          const n = Math.min(project.images.length, 5);
+          for (let i = 0; i < n; i++) {
+            const url = `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}/images/${i}`;
+            try {
+              // Checks if the image exists before using it
+              await axios.head(url);
+              updated[i] = { file: null, previewUrl: url, dbIndex: i };
+            } catch (err) {
+              updated[i] = { file: null, previewUrl: "", dbIndex: null };
             }
-            return updated;
-          });
+          }
+          setImageSlots(updated);
         }
       })
       .catch((error) => {
         console.error("Error fetching project for edit:", error);
       });
   }, [id]);
+  
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -186,59 +184,20 @@ export default function EditProjectPage() {
     }
   };
   
-  const handleImageDelete = async (slotIndex: number) => {
-    const slot = imageSlots[slotIndex];
+  const handleImageDelete = (slotIndex: number) => {
+    setImageSlots((prev) => {
+      const updated = [...prev];
+      const slot = updated[slotIndex];
 
-    // If it's a brand-new file (never saved to DB)
-    if (slot.file && slot.dbIndex === null) {
-      setImageSlots((prev) => {
-        const updated = [...prev];
-        updated[slotIndex] = { file: null, previewUrl: "", dbIndex: null };
-        return updated;
-      });
-      return;
-    }
-
-    // If it's an existing DB image
-    if (slot.dbIndex !== null) {
-      try {
-        await axios.delete(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}/images/${slot.dbIndex}`
-        );
-
-        // Re-fetch project to update image indexes
-        const { data: updatedProject } = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`
-        );
-
-        const newSlots: ImageSlot[] = [
-          { file: null, previewUrl: "", dbIndex: null },
-          { file: null, previewUrl: "", dbIndex: null },
-          { file: null, previewUrl: "", dbIndex: null },
-          { file: null, previewUrl: "", dbIndex: null },
-          { file: null, previewUrl: "", dbIndex: null },
-        ];
-
-        if (updatedProject.images && updatedProject.images.length > 0) {
-          const n = Math.min(updatedProject.images.length, 5);
-          for (let i = 0; i < n; i++) {
-            newSlots[i] = {
-              file: null,
-              previewUrl: `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}/images/${i}`,
-              dbIndex: i,
-            };
-          }
-        }
-        setImageSlots(newSlots);
-      } catch (error: any) {
-        console.error("Error deleting image:", error);
-        setImageError(
-          "Error al borrar la imagen: " + (error.response?.data?.message || error.message)
-        );
+      if (slot.dbIndex !== null) {
+        setImagesToDelete((prevSet) => new Set(prevSet).add(slot.dbIndex!));
       }
-    }
-  };
 
+      updated[slotIndex] = { file: null, previewUrl: "", dbIndex: null };
+      return updated;
+    });
+  };
+    
   const validateForm = () => {
     let valid = true;
 
@@ -263,7 +222,7 @@ export default function EditProjectPage() {
       valid = false;
     }
 
-    // Ensure at least one image remains
+    // Ensures at least one image remains
     const hasAnyImage = imageSlots.some(
       (slot) => slot.file !== null || slot.previewUrl !== ""
     );
@@ -278,11 +237,18 @@ export default function EditProjectPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
+    setSubmitting(true);
     try {
+      for (const dbIndex of imagesToDelete) {
+        try {
+          await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}/images/${dbIndex}`);
+        } catch (error: any) {
+          console.error("Failed to delete image:", error?.response?.data || error.message);
+        }
+      }
+
       const data = new FormData();
       data.append("name", formData.name);
       data.append("description", formData.description);
@@ -290,7 +256,6 @@ export default function EditProjectPage() {
       data.append("cost", formData.cost);
       formData.categories.forEach((cat) => data.append("categories", cat));
 
-      // Append new files if any
       imageSlots.forEach((slot, index) => {
         if (slot.file) {
           data.append(`image_${index}`, slot.file);
@@ -299,13 +264,13 @@ export default function EditProjectPage() {
 
       await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`, data);
 
-      router.push(
-        "/portfolio?message=" +
-          encodeURIComponent("¡El proyecto se actualizó correctamente!")
-      );
+      setImagesToDelete(new Set());
+      router.push("/portfolio?message=" + encodeURIComponent("¡El proyecto se actualizó correctamente!"));
     } catch (error: any) {
       console.error("Error updating project:", error?.response?.data || error.message);
       alert(`Error: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -513,92 +478,59 @@ export default function EditProjectPage() {
                     onChange={handleFileChange}
                   />
 
-                  {imageSlots.map((slot, index) => {
-                    const hasImage = slot.previewUrl || slot.file;
-                    const isHovered = hoveredTrashIconIndex === index;
-                    return (
-                      <div key={index} style={styles.box}>
-                        {hasImage ? (
-                          <>
-                            <img
-                              src={
-                                slot.file
-                                  ? slot.previewUrl
-                                  : slot.previewUrl
-                              }
-                              alt={`preview-${index}`}
-                              style={styles.previewImage}
-                              onClick={() => handleBoxClick(index)}
-                            />
-                            {/* Trash Icon Overlay with Hover Effect */}
-                            <div
-                              style={{
-                                ...styles.trashIconContainer,
-                                backgroundColor: isHovered
-                                  ? "#4FB6CE"
-                                  : styles.trashIconContainer.backgroundColor,
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleImageDelete(index);
-                              }}
-                              onMouseEnter={() => setHoveredTrashIconIndex(index)}
-                              onMouseLeave={() => setHoveredTrashIconIndex(null)}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill={isHovered ? '#EBECE5' : '#1E2D3D'}
+                    {imageSlots.map((slot, index) => {
+                      const hasImage = slot.file || slot.previewUrl;
+                      const isHovered = hoveredTrashIconIndex === index;
+                      return (
+                        <div key={index} style={styles.box} onClick={() => handleBoxClick(index)}>
+                          {slot.previewUrl ? (
+                            <>
+                              <img
+                                src={slot.previewUrl}
+                                alt={`preview-${index}`}
+                                style={styles.previewImage}
+                              />
+
+                              <div
+                                id={`delete-button-${index}`}
+                                style={{
+                                  ...styles.trashIconContainer,
+                                  backgroundColor: isHovered
+                                    ? "#4FB6CE"
+                                    : styles.trashIconContainer.backgroundColor,
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleImageDelete(index);
+                                }}
+                                onMouseEnter={() => setHoveredTrashIconIndex(index)}
+                                onMouseLeave={() => setHoveredTrashIconIndex(null)}
+                              >
+                                {/* Trash icon SVG */}
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill={isHovered ? "#EBECE5" : "#1E2D3D"}
                                 >
-                                <path
-                                  d="M3 6h18"
-                                  stroke={isHovered ? "#EBECE5" : "#1E2D3D"}
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                />
-                                <path
-                                  d="M8 6v12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V6"
-                                  stroke={isHovered ? "#EBECE5" : "#1E2D3D"}
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                />
-                                <path
-                                  d="M10 11v6"
-                                  stroke={isHovered ? "#EBECE5" : "#1E2D3D"}
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                />
-                                <path
-                                  d="M14 11v6"
-                                  stroke={isHovered ? "#EBECE5" : "#1E2D3D"}
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                />
-                                <path
-                                  d="M5 6h14l-1-3H6L5 6z"
-                                  stroke={isHovered ? "#EBECE5" : "#1E2D3D"}
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                />
-                              </svg>
-                            </div>
-                          </>
-                        ) : (
-                          <div
-                            style={styles.box}
-                            onClick={() => handleBoxClick(index)}
-                          >
+                                  <path d="M3 6h18" stroke={isHovered ? "#EBECE5" : "#1E2D3D"} strokeWidth="2" strokeLinecap="round" />
+                                  <path d="M8 6v12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V6" stroke={isHovered ? "#EBECE5" : "#1E2D3D"} strokeWidth="2" strokeLinecap="round" />
+                                  <path d="M10 11v6" stroke={isHovered ? "#EBECE5" : "#1E2D3D"} strokeWidth="2" strokeLinecap="round" />
+                                  <path d="M14 11v6" stroke={isHovered ? "#EBECE5" : "#1E2D3D"} strokeWidth="2" strokeLinecap="round" />
+                                  <path d="M5 6h14l-1-3H6L5 6z" stroke={isHovered ? "#EBECE5" : "#1E2D3D"} strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                              </div>
+                            </>
+                          ) : (
                             <div style={styles.emptyBoxContent}>
                               <Image src={galleryIcon} alt="Gallery Icon" width={40} height={40} />
-                              <span style={{ fontSize: "14px" }}>Haz clic para Agregar/Reemplazar</span>
                             </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                          )}
+                        </div>
+                      );
+                    })}
+
                 </div>
 
                 {imageError && (
@@ -615,16 +547,21 @@ export default function EditProjectPage() {
                 type="submit"
                 style={{
                   ...styles.button,
-                  backgroundColor: submitHovered
+                  backgroundColor: submitting
                     ? "#1E2D3D"
-                    : styles.button.backgroundColor,
-                  color: submitHovered ? "#EBECE5" : styles.button.color,
+                    : (submitHovered ? "#1E2D3D" : styles.button.backgroundColor),
+                  color: submitting
+                    ? "#EBECE5" 
+                    : (submitHovered ? "#EBECE5" : styles.button.color),
+                  cursor: submitting ? "not-allowed" : "pointer",
+                  opacity: submitting ? 0.6 : 1
                 }}
                 onMouseEnter={() => setSubmitHovered(true)}
                 onMouseLeave={() => setSubmitHovered(false)}
+                disabled={submitting}
               >
-                Guardar Cambios
-              </button>
+                {submitting ? "Guardando..." : "Guardar Cambios"}
+                </button>
             </div>
           </form>
         </div>

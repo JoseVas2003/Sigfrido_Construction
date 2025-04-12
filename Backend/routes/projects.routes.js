@@ -1,12 +1,14 @@
 const express = require("express");
-const User = require("../models/projects.model.js") // may not need this
 const router = express.Router();
 const multer = require("multer");
 
 const {getProjects, getProject, createProject, updateProject, deleteProject, getProjectImageByIndex, deleteProjectImage} = require("../controllers/projects.controllers.js");
 
+// Multer ststorage to use memory storage
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
+
+// Name fields for handling image updates
 const multerFields = upload.fields([
     { name: "image_0", maxCount: 1 },
     { name: "image_1", maxCount: 1 },
