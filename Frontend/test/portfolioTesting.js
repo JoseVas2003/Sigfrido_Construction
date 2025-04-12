@@ -3,14 +3,15 @@ const assert = require('assert');
 const { describe } = require('node:test');
 
 const categoriesToTest = [
-    { id: 'category-ADU', name: 'ADU' },
-    { id: 'category-Bathrooms', name: 'Bathrooms' },
-    { id: 'category-Floors', name: 'Floors' },
-    { id: 'category-Kitchen', name: 'Kitchen' },
-    { id: 'category-Roofs', name: 'Roofs' },
-    { id: 'category-Rooms', name: 'Rooms' },
-  ];  
-
+    "ADU",
+    "Bathrooms",
+    "Floors",
+    "Kitchens",
+    "Roofs",
+    "Rooms",
+    "Pavement"
+];
+  
 async function loginAsAdmin(driver) {
     await driver.get('http://localhost:3000/login');
     await driver.manage().window().maximize();
@@ -43,40 +44,37 @@ async function loginAsAdmin(driver) {
 }
 
 describe ('Portfolio functionality', async function () {
-    for (const category of categoriesToTest) {    
-        it(`Filtering projects by the "${category.name}" Category`, async function () {
-            let driver = await new Builder().forBrowser('chrome').build()
+    for (const category of categoriesToTest) {
+        it(`Filtering projects by the "${category}" Category`, async function () {
+            let driver = await new Builder().forBrowser('chrome').build();
             try {
                 await driver.get('http://localhost:3000/portfolio');
                 await driver.manage().window().maximize();
                 await driver.sleep(1000);
-
-                await driver.wait(until.elementLocated(By.id('filterButton')), 5000);
-                await driver.sleep(1000);
-                await driver.findElement(By.id('filterButton')).click();
-
-                await driver.sleep(1000);
-                await driver.wait(until.elementLocated(By.id(category.id)), 5000);
-                await driver.sleep(1000);
-                await driver.findElement(By.id(category.id)).click();
-                await driver.sleep(1000);
-
-                // Get all project cards
-                const cards = await driver.findElements(By.css('[data-testid="project-category"]'));
-                await driver.sleep(1000);
-
-                // Loop through each category field and test it individually
+        
+                const filterSelect = await driver.wait(until.elementLocated(By.id("filter")), 5000);
+                await filterSelect.sendKeys(category); // This sets the <select>'s value by visible text
+                await driver.sleep(3000); // Wait for the filter to apply
+        
+                const cards = await driver.findElements(By.css('[data-testid="project-card"]'));
+                assert.ok(cards.length > 0, `❌ No projects found after selecting category "${category}"`);
+        
                 for (let card of cards) {
-                    const text = await card.getText();
-                    assert.ok(text.toLowerCase().includes(category.name.toLowerCase()),'❌ Card does not include the ADU category');
+                    const catText = await card.getText();
+                    assert.ok(
+                        catText.toLowerCase().includes(category.toLowerCase()),
+                        `❌ Card does not include the "${category}" category`
+                    );
                 }
-                console.log(`✅ Test PASSED: "${category.name}" filter is functioning correctly.`);
-                await driver.sleep(3000);    
+      
+                console.log(`✅ Test PASSED: "${category}" filter is functioning correctly.`);
+                await driver.sleep(1000);
             } finally {
-            await driver.quit()
-        }
-    }).timeout(60000)
+                await driver.quit();
+            }
+        }).timeout(60000);
     }
+      
     it('Filtering projects by the "All" Category', async function () {
         let driver = await new Builder().forBrowser('chrome').build();
         try {
@@ -87,15 +85,13 @@ describe ('Portfolio functionality', async function () {
             await driver.wait(until.elementLocated(By.id('filterButton')), 5000);
             await driver.sleep(1000);
             await driver.findElement(By.id('filterButton')).click();
-    
+            const filterSelect = await driver.wait(until.elementLocated(By.id("filter")), 5000);
+
             await driver.sleep(1000);
-            await driver.wait(until.elementLocated(By.id('category-All')), 5000);
-            await driver.sleep(1000);
-            await driver.findElement(By.id('category-All')).click();
+            await filterSelect.sendKeys("All");
             await driver.sleep(2000);
     
-            // Find all category fields in project cards
-            const categoryElements = await driver.findElements(By.css('[data-testid="project-category"]'));
+            const categoryElements = await driver.findElements(By.css('[id="project-category"]'));
             assert.ok(categoryElements.length > 0, '❌ No project cards were displayed for "All" filter.');
     
             for (let el of categoryElements) {
@@ -112,7 +108,8 @@ describe ('Portfolio functionality', async function () {
             await driver.quit();
         }
     }).timeout(60000);
-    it('Navigating To Edit Project Page Correctly from Portfolio Page', async function () { // we'd click on pencil icon and then click on a garbage icon (we'd have to assign those an id) and look for the 'Project has been deleted!' message.
+
+    it('Navigating To Edit Project Page Correctly from Portfolio Page', async function () {
         let driver = await new Builder().forBrowser('chrome').build();
         try {
             await loginAsAdmin(driver);
@@ -123,16 +120,13 @@ describe ('Portfolio functionality', async function () {
             await driver.findElement(By.id('editButton')).click(); 
             await driver.sleep(1000);   
 
-            // Wait for edit buttons to appear
             const editButtons = await driver.findElements(By.css('[data-testid="edit-project-button"]'));
             assert.ok(editButtons.length > 0, '❌ No edit buttons found');
             await driver.sleep(1000);
 
-            // Click the first edit button
             await editButtons[0].click();
             await driver.sleep(1000);
 
-            // Check that the URL is correct (starts with /editProject/)
             const url = await driver.getCurrentUrl();
             assert.ok(url.includes('/editProject/'), '❌ Did not navigate to editProject page. URL: ${url}');
 
@@ -142,7 +136,8 @@ describe ('Portfolio functionality', async function () {
             await driver.quit()
         }
     }).timeout(60000)
-    it('Deleting projects from Portfolio Page', async function () { // so we'd click on pencil icon (let's assign it an id) and then click on the Edit Project button (let's assign it an id as well) and read the current url
+
+    it('Deleting projects from Portfolio Page', async function () { 
         let driver = await new Builder().forBrowser('chrome').build();
         try {
             await loginAsAdmin(driver);
@@ -157,18 +152,48 @@ describe ('Portfolio functionality', async function () {
             assert.ok(deleteButtons.length > 0, '❌ No delete buttons found on the portfolio page.');
             await driver.sleep(1000);
 
-            // Click the first delete button
             await deleteButtons[0].click();
             await driver.sleep(1000);
 
             const notificationElement = await driver.wait(until.elementLocated(By.id('deleteNotification')),5000);
             const notificationText = await notificationElement.getText();
 
-            assert.strictEqual(notificationText.trim(), 'Project has been deleted!', '❌ Notification message is incorrect or missing');
+            assert.strictEqual(notificationText.trim(), '¡Proyecto eliminado!', '❌ Notification message is incorrect or missing');
             console.log('✅ Test PASSED: Deleted project successfully');
             await driver.sleep(3000);
         } finally {
             await driver.quit()
         }
     }).timeout(60000)
+
+    it('Scrolling through images in projects from Portfolio Page', async function () {
+        let driver = await new Builder().forBrowser('chrome').build();
+        try {
+            await driver.get('http://localhost:3000/portfolio');
+            await driver.manage().window().maximize();
+            await driver.sleep(2000);
+    
+            await driver.wait(until.elementsLocated(By.css('[data-testid="project-card"]')), 5000);
+            const cards = await driver.findElements(By.css('[data-testid="project-card"]'));
+            assert.ok(cards.length > 0, '❌ No project cards found on the portfolio page.');
+    
+            const firstCard = cards[0];
+            
+            const nextArrow = await firstCard.findElement(By.css('[data-testid="next-arrow"]'));
+            const prevArrow = await firstCard.findElement(By.css('[data-testid="prev-arrow"]'));
+    
+            assert.ok(nextArrow, '❌ Next arrow not found in the first card.');
+            assert.ok(prevArrow, '❌ Previous arrow not found in the first card.');
+    
+            await nextArrow.click();
+            await driver.sleep(500);
+            await prevArrow.click();
+            await driver.sleep(500);
+    
+            console.log('✅ Test PASSED: Arrow buttons found and clicked successfully.');
+    
+        } finally {
+            await driver.quit();
+        }
+    }).timeout(60000);
 })

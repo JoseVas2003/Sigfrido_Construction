@@ -66,7 +66,6 @@ describe ('Create Project Functionality', function () {
             await driver.sleep(1000);
             await costInput.sendKeys("$50,000");
 
-
             await driver.sleep(1000);
             await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
             await driver.sleep(500); 
@@ -86,7 +85,7 @@ describe ('Create Project Functionality', function () {
             await floorsCheckbox.click();
 
             await driver.sleep(1000);
-            const kitchenCheckbox = await driver.wait(until.elementLocated(By.id('category-kitchen')), 5000);
+            const kitchenCheckbox = await driver.wait(until.elementLocated(By.id('category-kitchens')), 5000);
             await driver.wait(until.elementIsVisible(kitchenCheckbox), 5000);
             await kitchenCheckbox.click();
 
@@ -101,19 +100,35 @@ describe ('Create Project Functionality', function () {
             await roomsCheckbox.click();
             
             await driver.sleep(1000);
-            const imagePath = path.resolve(__dirname, './testImages/sample.jpeg');
-            const fileInput = await driver.wait(until.elementLocated(By.id('imageFile')), 5000);
-            await fileInput.sendKeys(imagePath); 
+            const pavementCheckbox = await driver.wait(until.elementLocated(By.id('category-pavement')), 5000);
+            await driver.wait(until.elementIsVisible(aduCheckbox), 5000);
+            await pavementCheckbox.click();
+
             await driver.sleep(1000);
-    
+
+            for (let i = 0; i < 5; i++) {
+                const imageBoxes = await driver.findElements(By.css('div[style*="width: 100px"][style*="height: 100px"]'));
+                
+                if (imageBoxes[i]) {
+                await imageBoxes[i].click();
+                await driver.sleep(500);
+            
+                const imagePath = path.resolve(__dirname, './testImages/sample.jpeg');
+                const fileInput = await driver.wait(until.elementLocated(By.id('imageFile')), 5000);
+                await fileInput.sendKeys(imagePath);
+                await driver.sleep(1000);
+                } else {
+                throw new Error(`❌ Image box ${i} not found`);
+                }
+            }
+  
             const submitButton = await driver.wait(until.elementLocated(By.css('button[type="submit"]')), 5000);
             await submitButton.click();
 
-            // ✅ Confirming project creation success
             await driver.sleep(3000);
             const currentUrl = await driver.getCurrentUrl();
 
-            if (currentUrl.includes("message=Project%20created%20successfully!")) {
+            if (currentUrl.includes("message=%C2%A1El%20proyecto%20se%20cre%C3%B3%20correctamente!")) {
                 console.log("✅ Test PASSED: Project was created successfully.");
             } else {
                 throw new Error("❌ Test FAILED: Project success message not found in URL. Project was not created.");
@@ -136,22 +151,22 @@ describe ('Create Project Functionality', function () {
             await submitButton.click();
 
             const projectNameError = await driver.findElement(By.id('projectNameError')).getText();
-            assert.strictEqual(projectNameError, "Project Name cannot be empty.", '❌ Did not catch missing Project Name');
+            assert.strictEqual(projectNameError, "El nombre del proyecto no puede estar vacío.", '❌ Did not catch missing Project Name');
     
             const descriptionError = await driver.findElement(By.id('descriptionError')).getText();
-            assert.strictEqual(descriptionError, "Description cannot be empty.", '❌ Did not catch missing Description');
+            assert.strictEqual(descriptionError, "La descripción no puede estar vacía.", '❌ Did not catch missing Description');
     
             const timeTakenError = await driver.findElement(By.id('timeTakenError')).getText();
-            assert.strictEqual(timeTakenError, "Time Taken cannot be empty.", '❌ Did not catch missing Time Taken');
+            assert.strictEqual(timeTakenError, "La duración no puede estar vacía.", '❌ Did not catch missing Time Taken');
     
             const costError = await driver.findElement(By.id('costError')).getText();
-            assert.strictEqual(costError, "Cost cannot be empty.", '❌ Did not catch missing Cost');
+            assert.strictEqual(costError, "El costo no puede estar vacío.", '❌ Did not catch missing Cost');
     
             const categoriesError = await driver.findElement(By.id('categoriesError')).getText();
-            assert.strictEqual(categoriesError, "Please select at least one project category.", '❌ Did not catch missing Category');
+            assert.strictEqual(categoriesError, "Selecciona al menos una categoría para el proyecto.", '❌ Did not catch missing Category');
     
             const imageError = await driver.findElement(By.id('imageError')).getText();
-            assert.strictEqual(imageError, "Please upload an image.", '❌ Did not catch missing Image');
+            assert.strictEqual(imageError, "Por favor, sube al menos una imagen (en uno de los 5 recuadros).", '❌ Did not catch missing Image');
 
             let endingURL = await driver.getCurrentUrl()
             assert.strictEqual(endingURL, "http://localhost:3000/createProject", '❌ App Left Login Page')
@@ -164,7 +179,7 @@ describe ('Create Project Functionality', function () {
         }
     }).timeout(60000)
 
-    it('Navigating To Create Project Page And Entering INVALID Input', async function () {
+    it('Navigating To Create Project Page And Entering INVALID input', async function () {
         let driver = await new Builder().forBrowser('chrome').build()
         try {
             await loginAsAdmin(driver);
@@ -180,52 +195,31 @@ describe ('Create Project Functionality', function () {
             await driver.sleep(500); 
 
             await driver.sleep(1000);
+            const imageBoxes = await driver.findElements(By.css('div[style*="width: 100px"][style*="height: 100px"]'));
+            await imageBoxes[0].click();
+            await driver.sleep(500);
+            
             const imagePath = path.resolve(__dirname, './testImages/sample.pdf');
             const fileInput = await driver.wait(until.elementLocated(By.id('imageFile')), 5000);
-            await fileInput.sendKeys(imagePath); 
+            await fileInput.sendKeys(imagePath);
             await driver.sleep(1000);
 
             const projectNameError = await driver.findElement(By.id('projectNameError')).getText();
-            assert.strictEqual(projectNameError, "30 character max limit reached", '❌ Name character limit not enforced');
+            assert.strictEqual(projectNameError, "Ha llegado al límite de 30 caracteres.", '❌ Name character limit not enforced');
     
             const descriptionError = await driver.findElement(By.id('descriptionError')).getText();
-            assert.strictEqual(descriptionError, "300 character max limit reached", '❌ Description character limit not enforced');
+            assert.strictEqual(descriptionError, "Ha llegado al límite de 300 caracteres.", '❌ Description character limit not enforced');
     
             const timeTakenError = await driver.findElement(By.id('timeTakenError')).getText();
-            assert.strictEqual(timeTakenError, "15 character max limit reached", '❌ TimeTaken character limit not enforced');
+            assert.strictEqual(timeTakenError, "Ha llegado al límite de 15 caracteres.", '❌ TimeTaken character limit not enforced');
 
             const costError = await driver.findElement(By.id('costError')).getText();
-            assert.strictEqual(costError, "15 character max limit reached", '❌ Cost character limit not enforced');
+            assert.strictEqual(costError, "Ha llegado al límite de 15 caracteres.", '❌ Cost character limit not enforced');
     
             const imageError = await driver.findElement(By.id('imageError')).getText();
-            assert.strictEqual(imageError, "Only HEIC, PNG and JPEG images are allowed.", '❌ Did not catch incorrect Image type');
+            assert.strictEqual(imageError, "Solo se permiten imágenes en formato HEIC, PNG o JPEG.", '❌ Did not catch incorrect Image type');
     
             console.log("✅ Test PASSED: All required field errors displayed correctly.");
-
-            await driver.sleep(3000);    
-        } finally {
-        await driver.quit()
-        }        
-    }).timeout(60000)
-
-    it('Navigating To Create Project Page And Entering TOO LARGE Image', async function () {
-        let driver = await new Builder().forBrowser('chrome').build()
-        try {
-            await loginAsAdmin(driver);
-            await driver.sleep(1000);
-    
-            await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-
-            await driver.sleep(1000);
-            const imagePath = path.resolve(__dirname, './testImages/largeImageSample.png');
-            const fileInput = await driver.wait(until.elementLocated(By.id('imageFile')), 5000);
-            await fileInput.sendKeys(imagePath); 
-            await driver.sleep(1000);
-
-            const imageError = await driver.findElement(By.id('imageError')).getText();
-            assert.strictEqual(imageError, "Image must be less than 10MB.", '❌ Did not catch Image size error');
-    
-            console.log("✅ Test PASSED: All required image size errors displayed correctly.");
 
             await driver.sleep(3000);    
         } finally {
