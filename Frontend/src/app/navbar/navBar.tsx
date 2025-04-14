@@ -46,7 +46,7 @@ const Navbar = () =>{
 
                 <div className="navMenuBarItems">
                     <Link href="../">
-                        <button type="button" className="menuePageButtons">Home</button>
+                        <button type="button" className="menuePageButtons" id='homeButton'>Home</button>
                     </Link>
 
                     <Link href="../portfolio">
@@ -54,11 +54,11 @@ const Navbar = () =>{
                     </Link>
 
                     <Link href="../meetTheOwner">
-                        <button type="button" className="menuePageButtons">Meet The Owner</button>
+                        <button type="button" className="menuePageButtons" id='meetTheOwnerButton'>Meet The Owner</button>
                     </Link>
 
                     <Link href="../reviews">
-                        <button type="button" className="menuePageButtons">Reviews</button>
+                        <button type="button" className="menuePageButtons" id='reviewsButton'>Reviews</button>
                     </Link>
 
                     {(session?.user as any)?.admin ? (
