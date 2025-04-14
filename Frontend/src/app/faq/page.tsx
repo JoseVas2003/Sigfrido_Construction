@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import axios from 'axios';
 import Navbar from '../navbar/navBar';
 import Footer from "../../app/footer/footer";
@@ -17,6 +18,9 @@ export default function FaqPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [language, setLanguage] = useState<'EN' | 'ES'>('EN');
     const [loading, setLoading] = useState(true);
+
+    const { data: session } = useSession();
+    const isAdmin = session?.user?.email === "NewAdmin@account.com";
 
     const toggleAnswer = (index: number) => {
         setActiveIndex(prevIndex => (prevIndex === index ? null : index));
@@ -39,7 +43,7 @@ export default function FaqPage() {
     useEffect(() => {
         const fetchFaqItems = async () => {
             try {
-                const res = await axios.get('http://localhost:3001/api/faq');
+                const res = await axios.get("/api/faq");
                 setFaqItems(res.data);
             } catch (err) {
                 console.error("Failed to fetch FAQ items:", err);
@@ -203,13 +207,14 @@ export default function FaqPage() {
                     )}
 
                     <div style={{ textAlign: 'center' }}>
-                        <button
+                        {isAdmin &&  (
+                            <button
                             id="editButton"
                             className={isEditing ? 'save-button' : 'edit-button'}
                             onClick={async () => {
                                 if (isEditing) {
                                     try {
-                                        await axios.post("http://localhost:3001/api/faq", faqItems);
+                                        await axios.post("/api/faq", faqItems);
                                         console.log("✅ FAQ saved successfully.");
                                     } catch (err) {
                                         console.error("Failed to save FAQ:", err);
@@ -220,7 +225,8 @@ export default function FaqPage() {
                             }}
                         >
                             {isEditing ? 'Save' : 'Edit'}
-                        </button>
+                            </button>
+                        )}
                     </div>
 
                     {isEditing && (
