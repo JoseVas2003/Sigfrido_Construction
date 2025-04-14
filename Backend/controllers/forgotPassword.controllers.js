@@ -21,17 +21,17 @@ const verifyForgotPasswordTransporter = async () => {
 verifyForgotPasswordTransporter();
 
 const sendLink = async (req, res) => {
-    const { email, token } = req.body;
+    const { email, token, name } = req.body;
 
     const forgotPasswordEmail = {
         from: process.env.EMAIL,
         to: email, // Send to client
         subject: "Password Reset",
-        text: `Hello,
+        text: `Hello ${name}!,
 
 Please Follow This Link To Reset Your Password.    
 
-http://localhost:3000/resetPassword/${token}
+https://sigfridocontracting.com/resetPassword/${token}
 
 Best regards,
 Sigfrido Vasquez Construction

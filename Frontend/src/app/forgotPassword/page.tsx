@@ -21,6 +21,7 @@ export default function page(){
     const [formData, setFormData] = useState({
         email: '',
         token: '',
+        name: '',
       });
 
       const [tokenData, setTokenData] = useState({
@@ -128,6 +129,14 @@ export default function page(){
             formData.token = userToken;
     
             try{
+
+                const user = await axios.get(resetPassordURL, {
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                  });
+
+                  formData.name = user.data.firstName;
     
                 await axios.put(resetPassordURL, tokenData, {
                     headers: { "Content-Type": "application/json" },
