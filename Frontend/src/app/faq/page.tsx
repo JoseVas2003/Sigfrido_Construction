@@ -28,7 +28,7 @@ export default function FaqPage() {
     useEffect(() => {
         const fetchFaqItems = async () => {
             try {
-                const res = await axios.get("${process.env.NEXT_PUBLIC_API_URL}/api/faq");
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/faq`);
                 setFaqItems(res.data);
             } catch (err) {
                 console.error("Failed to fetch FAQ items:", err);
@@ -180,7 +180,7 @@ export default function FaqPage() {
                             onClick={async () => {
                                 if (isEditing) {
                                     try {
-                                        await axios.post("${process.env.NEXT_PUBLIC_API_URL}/api/faq", faqItems);
+                                        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/faq`, faqItems);
                                         console.log("✅ FAQ saved successfully.");
                                     } catch (err) {
                                         console.error("Failed to save FAQ:", err);
