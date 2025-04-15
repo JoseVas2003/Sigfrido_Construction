@@ -16,11 +16,10 @@ export default function FaqPage() {
     const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [language, setLanguage] = useState<'EN' | 'ES'>('EN');
     const [loading, setLoading] = useState(true);
 
     const { data: session } = useSession();
-    const isAdmin = session?.user?.email === "NewAdmin@account.com";
+    const isAdmin = session?.user?.admin === true;
 
     const toggleAnswer = (index: number) => {
         setActiveIndex(prevIndex => (prevIndex === index ? null : index));
@@ -29,7 +28,7 @@ export default function FaqPage() {
     useEffect(() => {
         const fetchFaqItems = async () => {
             try {
-                const res = await axios.get('${process.env.NEXT_PUBLIC_API_BASE_URL}/faq');
+                const res = await axios.get("${process.env.NEXT_PUBLIC_API_URL}/api/faq");
                 setFaqItems(res.data);
             } catch (err) {
                 console.error("Failed to fetch FAQ items:", err);
@@ -46,18 +45,9 @@ export default function FaqPage() {
     return (
         <div>
             <Navbar />
-
+            
             <div className='faq-container'>
                 <h1 className='faq-container h1'>Frequently Asked Questions</h1>
-
-                <div className="language-button-right">
-                    <button
-                        className="language-toggle-button"
-                        onClick={() => setLanguage(prev => (prev === 'EN' ? 'ES' : 'EN'))}
-                    >
-                        {language === 'EN' ? '🇲🇽' : '🇺🇸'}
-                    </button>
-                </div>
 
                 {faqItems.map((item, index) => {
                     if (item.type === 'title') {
@@ -183,14 +173,14 @@ export default function FaqPage() {
                     )}
 
                     <div style={{ textAlign: 'center' }}>
-                        {isAdmin &&  (
+                        {isAdmin && (
                             <button
                             id="editButton"
                             className={isEditing ? 'save-button' : 'edit-button'}
                             onClick={async () => {
                                 if (isEditing) {
                                     try {
-                                        await axios.post("${process.env.NEXT_PUBLIC_API_BASE_URL}/faq", faqItems);
+                                        await axios.post("${process.env.NEXT_PUBLIC_API_URL}/api/faq", faqItems);
                                         console.log("✅ FAQ saved successfully.");
                                     } catch (err) {
                                         console.error("Failed to save FAQ:", err);
