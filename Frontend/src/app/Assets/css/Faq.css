@@ -110,25 +110,6 @@
     background-color: #218838;
 }
 
-.language-button-right {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.language-toggle-button {
-    background: none;
-    border: none;
-    font-size: 36px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    line-height: 1;
-    padding: 0;
-}
-
-.language-toggle-button:hover {
-    transform: scale(1.1); /* slight zoom effect on hover */
-}
-
 .delete-icon {
     position: absolute;
     top: 50%;
