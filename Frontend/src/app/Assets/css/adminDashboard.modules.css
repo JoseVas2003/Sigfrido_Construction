@@ -20,14 +20,16 @@
 
 /* Section Wrapper */
 .sectionWrapper {
-  min-height: calc(100vh - 100px); /* ✅ minimum space, but allows it to grow */
+  height: 80vh; /* 👈 keeps section from growing endlessly */
+  overflow-y: auto; /* 👈 enables scrolling inside the section */
   scroll-snap-align: start;
-  overflow: auto;
   padding: 40px 20px;
   background-color: white;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  margin-bottom: 30px;
+  border-radius: 8px;
 }
 
 
@@ -278,3 +280,5 @@
 .review-card button:hover, .user-card button:hover, .contactForm-card button:hover, .appointment-card button:hover, .addProjectButton:hover, .viewInProgressButton:hover, .sectionHeaderButton:hover {
   background-color: #0056b3;
 }
+/*
+

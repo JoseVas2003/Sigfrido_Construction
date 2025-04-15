@@ -125,6 +125,8 @@ export default function AdminDashboard() {
   });
   const [users, setUsers] = useState<User[]>([]);
   const [contactForms, setContactForms] = useState<ContactForm[]>([]);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+
 
   //For english to spanish
   const [language, setLanguage] = useState("en");
@@ -344,22 +346,71 @@ export default function AdminDashboard() {
               onClick={() => (window.location.href = "/AdminAppointments")}
             >
               {t.appointmentsHeader}
-            </button>
-            <div className="calendarWidget">
-              <FullCalendar
-                plugins={[dayGridPlugin]}
-                initialView="dayGridMonth"
-                events={calendarEvents}
-                height="auto"
-                headerToolbar={{
-                  left: "prev,next today",
-                  center: "title",
-                  right: "dayGridMonth,dayGridWeek,dayGridDay",
-                }}
-              />
-            </div>
+</button>
 
-            {loading ? (
+<div className="calendarWidget">
+  <FullCalendar
+    plugins={[dayGridPlugin]}
+    initialView="dayGridMonth"
+    events={calendarEvents}
+    height="auto"
+    headerToolbar={{
+      left: "prev,next today",
+      center: "title",
+      right: "dayGridMonth,dayGridWeek,dayGridDay",
+    }}
+    eventClick={(info) => {
+      const appointmentId = info.event.id;
+      const appointment = appointments.find((apt) => apt._id === appointmentId);
+      if (appointment) {
+        setSelectedAppointment(appointment);
+      }
+    }}
+  />
+
+  {selectedAppointment && (
+    <div className="modalOverlay">
+      <div className="modalContent">
+        <button className="closeButton" onClick={() => setSelectedAppointment(null)}>❌</button>
+        <h3>{selectedAppointment.name}</h3>
+
+        <p>
+  <strong>Date:</strong>{" "}
+  {new Date(selectedAppointment.date).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
+</p>
+<p>
+  <strong>Time:</strong>{" "}
+  {new Date(selectedAppointment.date).toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+  })}
+</p>
+
+
+        <p><strong>Location:</strong> {selectedAppointment.location}</p>
+        {selectedAppointment.notes && <p><strong>Notes:</strong> {selectedAppointment.notes}</p>}
+        {selectedAppointment.email && (
+          <button onClick={() => window.location.href = `mailto:${selectedAppointment.email}`}>
+            {t.email}
+          </button>
+        )}
+        {selectedAppointment.phone && (
+          <button onClick={() => window.location.href = `tel:${selectedAppointment.phone}`}>
+            {t.call}
+          </button>
+        )}
+      </div>
+    </div>
+  )}
+</div>
+
+
+//<div className="appointmentScrollArea">
+{loading ? (
               <p>{t.loadingAppointments}</p>
             ) : (
               appointments.map((apt) => (
@@ -368,7 +419,11 @@ export default function AdminDashboard() {
                     <strong>{apt.name}</strong>
                   </p>
                   <p>
-                    {apt.date} – {apt.time}
+                      {new Date(apt.date).toLocaleDateString(undefined, {
+                          year: "numeric",
+                         month: "long",
+                          day: "numeric",
+                          })} – {apt.time}
                   </p>
                   <p>
                     <strong>{t.location}:</strong> {apt.location}
@@ -399,6 +454,7 @@ export default function AdminDashboard() {
                 </div>
               ))
             )}
+           // </div>
           </section>
 
           <section className="sectionWrapper" id="projectsSection">
