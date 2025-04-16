@@ -24,6 +24,7 @@ import Kitchen from '../Assets/clientStaticImages/Kitchen-static.jpg';
 import LivingRoom from '../Assets/clientStaticImages/LivingRoom-Static.jpg';
 import Roof from '../Assets/clientStaticImages/Roof-static.jpg';
 import Shed from '../Assets/clientStaticImages/Shed-static.jpg';
+import React from 'react';
 
 interface Projects {
   _id: string;
@@ -67,7 +68,7 @@ export default function page(){
 
   const [projects, setProjects] = useState<Projects[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const projectsPerPage = 4;
+  const projectsPerPage = 3;
 
   const indexOfLast = currentPage * projectsPerPage;
   const indexOfFirst = indexOfLast - projectsPerPage;
@@ -170,8 +171,8 @@ export default function page(){
             <div className="GridItem GridItemHeader">Expected Completion</div>
             <div className="GridItem GridItemHeader">Download</div>
 
-            {projects.map((project) => (
-              <>
+            {currentProjects.map((project) => (
+              <React.Fragment key={project._id}>
               <div className="GridItem">{project.projectType}</div>
               <div className="GridItem">{new Date(project.dateStarted).toLocaleDateString()}</div>
               <div className="GridItem">${project.estimatedCost}</div>
@@ -186,8 +187,25 @@ export default function page(){
                   style={{ cursor: "pointer" }}
                 />
               </div>
-              </>
+              </React.Fragment>
             ))}
+          </div>
+
+          {/* Page controls */}
+          <div className="PaginationControls">
+            <button 
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              ←
+            </button>
+            <span>{currentPage} / {totalPages}</span>
+            <button 
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              →
+            </button>
           </div>
 
         </div>
