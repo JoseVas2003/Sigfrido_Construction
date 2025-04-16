@@ -409,7 +409,7 @@ export default function AdminDashboard() {
 </div>
 
 
-//<div className="appointmentScrollArea">
+<div className="appointmentScrollArea">
 {loading ? (
               <p>{t.loadingAppointments}</p>
             ) : (
@@ -454,7 +454,7 @@ export default function AdminDashboard() {
                 </div>
               ))
             )}
-           // </div>
+            </div>
           </section>
 
           <section className="sectionWrapper" id="projectsSection">
