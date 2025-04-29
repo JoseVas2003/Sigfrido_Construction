@@ -270,6 +270,10 @@ describe ('Edit Project Functionality', async function () {
             const imageError = await driver.findElement(By.id('imageError')).getText();
             assert.strictEqual(imageError, "Por favor, sube al menos una imagen (en uno de los 5 recuadros).", '❌ Did not catch missing Image');
 
+            await driver.sleep(1000);
+            await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+            await driver.sleep(500); 
+
             const url = await driver.getCurrentUrl();
             assert.ok(url.includes('/editProject/'), '❌ Left the editProject page.');
     

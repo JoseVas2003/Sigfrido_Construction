@@ -145,7 +145,7 @@ describe ('Create Project Functionality', function () {
 
             await driver.sleep(1000);
             await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-            await driver.sleep(500); 
+            await driver.sleep(500);
 
             const submitButton = await driver.wait(until.elementLocated(By.css('button[type="submit"]')), 5000);
             await submitButton.click();
@@ -167,6 +167,10 @@ describe ('Create Project Functionality', function () {
     
             const imageError = await driver.findElement(By.id('imageError')).getText();
             assert.strictEqual(imageError, "Por favor, sube al menos una imagen (en uno de los 5 recuadros).", '❌ Did not catch missing Image');
+
+            await driver.sleep(1000);
+            await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+            await driver.sleep(500); 
 
             let endingURL = await driver.getCurrentUrl()
             assert.strictEqual(endingURL, "http://localhost:3000/createProject", '❌ App Left Login Page')
