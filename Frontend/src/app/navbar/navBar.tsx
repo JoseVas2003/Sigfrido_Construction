@@ -62,13 +62,17 @@ const Navbar = () =>{
                     </Link>
 
                     {(session?.user as any)?.admin ? (
-                    <Link href="../adminDashboard">
-                        <button type="button" id='dashboardButton'className="menuePageButtons">Dashboard</button>
-                    </Link>
-                    ) : (
+                        <Link href="../adminDashboard">
+                            <button type="button" id='dashboardButton'className="menuePageButtons">Dashboard</button>
+                        </Link>
+                    ) : (!(session?.user as any)?.admin) ? (
                         <Link href="../clientDashboard">
                             <button type="button" className="menuePageButtons" id='dashboardButton'>Dashboard</button>
                         </Link>
+                    ) : (
+                        <Link href="../clientDashboard">
+                            <button type="button" className="menuePageButtons" id='dashboardButton'>Dashboard</button>
+                        </Link>  
                     )}
 
                     {session? (
