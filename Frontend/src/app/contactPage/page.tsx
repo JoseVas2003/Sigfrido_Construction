@@ -62,14 +62,12 @@ export default function ContactPage() {
                             <strong>Schedule a call  </strong>
                             </Link>
                             to speak with us if you have additional questions or need assistance regarding jobs or projects, and we’ll call you at your chosen time.
-                        </p>
-                        <h2>ADDRESS</h2>
-                        <p style={styles.centeredText}>Example Street</p>
-                        <p style={styles.centeredText}>Salinas, CA 99999</p>
+                        </p><br></br>
+                        <p style={styles.centeredText}>Salinas, CA 93905</p><br></br>
                         
                         <h2>CALL US TODAY!</h2>
-                        <p style={styles.centeredText}>XXX-XXX-XXXX</p>
-                        
+                        <p style={styles.centeredText}>831-800-4627</p><br></br><br></br>
+                        <p>Our mission is to make your project a success through expert guidance, reliable service, and a customer-first approach.We are committed to delivering high-quality service and personalized support for every client and project.</p><br></br><br></br>
                         <p>For all other inquiries, please complete and submit the form.</p>
                     </div>
 
