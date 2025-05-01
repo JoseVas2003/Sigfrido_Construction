@@ -9,7 +9,7 @@ export default function Footer() {
       <footer className="footer">
         <div className="footer-container">
           <ul className="footer-links">
-            <Link href="../services">
+            <Link href="../meetTheOwner">
               <button type="button">About</button>
             </Link>
             <Link href="../contactPage">
