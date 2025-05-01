@@ -8,6 +8,7 @@ import Navbar from "../navbar/navBar";
 import AddProjectForm from "./addProjectForm";
 import AppointmentSelector from "./appointmentSelector";
 import Sidebar from "./sidebar";
+import Footer from "../footer/footer";
 
 
 interface Review {
@@ -525,7 +526,9 @@ export default function AdminDashboard() {
               </div>
             ))}
           </section>
+          <Footer />
         </div>
+
       </div>
     </>
   );

@@ -8,6 +8,7 @@ import "../Assets/css/Reviews.modules.css";
 import Navbar from "../navbar/navBar";
 import ReviewCard from "./ReviewCard";
 import ReviewModalForm from "./ReviewModalForm";
+import Footer from "../footer/footer";
 
 // ------------------ TYPES ------------------ //
 export interface Review {
@@ -245,6 +246,7 @@ export default function Reviews() {
                 />
                 ))}
             </div>
+            <Footer />
         </div>
     );
 }

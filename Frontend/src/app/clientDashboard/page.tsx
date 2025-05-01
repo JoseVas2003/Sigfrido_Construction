@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from 'react';
 import "../Assets/css/ClientDashboard.modules.css";
 import Navbar from "../navbar/navBar";
+import Footer from '../footer/footer';
 
 // Icon images
 import Message from '../Assets/clientDashboardIcons/Message.png';
@@ -210,6 +211,7 @@ export default function page(){
 
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

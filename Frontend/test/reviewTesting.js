@@ -52,7 +52,7 @@ describe('Reviews Functionality Tests', function () {
 
 
   describe('Creating Reviews', function () {
-    it('should allow a logged in user to leave a review that shows on the frontend', async function () {
+    it('create review for logged-in users', async function () {
       const driver = await new Builder().forBrowser('chrome').build();
       try {
         await loginUser(driver, 'NewNon-Admin@account.com', 'NonAdmin12345$');
@@ -95,7 +95,7 @@ describe('Reviews Functionality Tests', function () {
       }
     }).timeout(60000);
 
-    it('should prevent non-logged in users from leaving a review', async function () {
+    it('redirect review guests to login', async function () {
       const driver = await new Builder().forBrowser('chrome').build();
       try {
         await driver.get('http://localhost:3000/reviews');
@@ -119,7 +119,7 @@ describe('Reviews Functionality Tests', function () {
   });
 
   describe('Deleting Reviews', function () {
-    it('should allow a logged in non-admin user to delete their own review', async function () {
+    it('non-admin delete their own review', async function () {
       const driver = await new Builder().forBrowser('chrome').build();
       try {
         await loginUser(driver, 'NewNon-Admin@account.com', 'NonAdmin12345$');
@@ -169,7 +169,7 @@ describe('Reviews Functionality Tests', function () {
       }
     }).timeout(60000);
 
-    it('should allow an admin to delete a review left by a non-admin', async function () {
+    it('delete any review for admin', async function () {
       // First: Create a review as a non-admin user.
       const nonAdminDriver = await new Builder().forBrowser('chrome').build();
       try {

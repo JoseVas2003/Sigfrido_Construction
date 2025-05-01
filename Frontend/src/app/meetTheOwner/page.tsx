@@ -2,6 +2,7 @@
 import '../Assets/css/meetTheOwner.css';
 import Image from "next/image";
 import ownerPic from './VasquezOwner.jpg';
+import Footer from '../footer/footer';
 
 import Navbar from "../navbar/navBar";
 import {clicksOut} from '../navbar/navBar'
@@ -142,6 +143,7 @@ export default function page(){
             </div>
           </div>
           </div>
+          <Footer />
     </body>
 </html>
 }
