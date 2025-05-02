@@ -1,34 +1,74 @@
 # Sigfrido Vasquez Construction
 
 <IMG src= "https://github.com/user-attachments/assets/93301080-de1f-443c-a621-1ef4711bf62b" width="200" /><br>
+
 ## Synopsis
-A modern, responsive website created for Sigfrido Construction, a leading construction company specializing in high-quality building and renovation projects. This website is designed to highlight their services, showcase completed projects, and provide clients with easy access to contact information. The goal is to create a professional and engaging online presence to attract new clients and build trust with existing ones.
+A modern, responsive website created for Sigfrido Construction, a leading construction company specializing in high-quality building and renovation projects. This website is designed to highlight their services, showcase completed projects, and provide clients with easy access to contact information. In addition, the admin and customer dashboards provide a way to manage customer's projects, and for customers to easily access quotes and project timelines. The goal is to create a professional and engaging online presence to attract new clients and build trust with existing ones.
 
-## Main features
-- Review system
-- Portfolio showcase system
-- Client project management system
-- Admin project management system
-- Account management system
+## Main Features
 
-## Entity-Relationship Diagram 
+- ⭐ **Review System**  
+- 🖼️ **Portfolio Showcase**  
+- 🔧 **Client Project Management**  
+- 🛠️ **Admin Project Management**  
+- 👤 **Account Management**  
 
-<IMG src= "https://github.com/user-attachments/assets/d6b4e943-76aa-431b-b07b-8dcc59a05439" width="518" />
 
-## Prototype Images Section
-<img width="300" src="https://github.com/user-attachments/assets/fef4b55f-e0cf-4809-995c-eef1d9db2b3a" />
-<img width="300" src="https://github.com/user-attachments/assets/c7a8f22b-d2aa-41f1-8cc8-a209d9c20ea4" />
-<IMG src= "https://github.com/user-attachments/assets/e00c7ba9-5206-46bb-b204-0255d6e77326" width="300" />
-<IMG src= "https://github.com/user-attachments/assets/c5bd1942-a6a3-442f-b530-e9fcb2994e77" width="300" />
-<IMG src= "https://github.com/user-attachments/assets/ced70f28-d400-4f18-96ec-983350a96a24" width="300" />
-<IMG src= "https://github.com/user-attachments/assets/1f144902-fe68-4e12-88a9-21a55d8e5ce3" width="300" />
-<img width="300" src="https://github.com/user-attachments/assets/9f3d85bb-5619-42bd-9b5b-c16638228907" />
-<img width="300" src="https://github.com/user-attachments/assets/0a868e68-f76a-4a9b-8115-3e0e37c90f58" />
-<img width="300" src="https://github.com/user-attachments/assets/684a9293-4e98-45ad-b401-05a808a432c4" />
+## Product Feature Screenshots
 
-<br>
+| Hero section with CTA     | Portfolio gallery         | Reviews Page      |
+|:---------------------------------------:|:-------------------------------------:|:--------------------------------------:|
+| <img src="https://github.com/user-attachments/assets/fef4b55f-e0cf-4809-995c-eef1d9db2b3a" width="300" alt="Hero"/> | <img src="https://github.com/user-attachments/assets/c7a8f22b-d2aa-41f1-8cc8-a209d9c20ea4" width="300" alt="Portfolio page"/> | <img src= "https://github.com/user-attachments/assets/e00c7ba9-5206-46bb-b204-0255d6e77326" width="300" alt="Reviews"/> |
 
-# Testing (per the assignment, placeholder)
+| Login Page      | Meet The Owner Page          | User Schedule Appointment |
+|:---------------------------------------:|:-------------------------------------:|:--------------------------------------:|
+| <img src= "https://github.com/user-attachments/assets/c5bd1942-a6a3-442f-b530-e9fcb2994e77" width="300" alt="Login page"/> | <img src= "https://github.com/user-attachments/assets/ced70f28-d400-4f18-96ec-983350a96a24" width="300" alt="Meet the owner information"/> | <img src= "https://github.com/user-attachments/assets/1f144902-fe68-4e12-88a9-21a55d8e5ce3" width="300" alt="User schedule appointment calandar"/> |
+
+| Admin Calandar  | Project Tracking Page | Client Dashboard     |
+|:---------------------------------------:|:-------------------------------------:|:--------------------------------------:|
+| <img width="300" src="https://github.com/user-attachments/assets/9f3d85bb-5619-42bd-9b5b-c16638228907" alt="Admin Calandar"/> | <img width="300" src="https://github.com/user-attachments/assets/0a868e68-f76a-4a9b-8115-3e0e37c90f58" alt="Project tracking"/> |<img width="300" src="https://github.com/user-attachments/assets/684a9293-4e98-45ad-b401-05a808a432c4" alt="Client Dashboard"/> |
+
+
+
+# Developer Workflow (Setup)
+
+1. **Clone the repo**  
+   ```bash
+   git clone https://github.com/JoseVas2003/Sigfrido_Construction.git
+   cd Sigfrido_Construction
+   ```
+
+2. **Project layout**  
+   - `frontend/` – React + TypeScript client  
+   - `backend/` – Node.js + Express API  
+
+3. **Local development**  
+   - In one terminal, start the backend:  
+     ```bash
+     cd backend
+     npm install     # first time only
+     npm run dev
+     ```
+   - In a second terminal, start the frontend:  
+     ```bash
+     cd frontend
+     npm install     # first time only
+     npm run dev
+     ```
+   - Both servers run on `localhost` (frontend proxies API calls to the backend).
+
+4. **Making changes**  
+   - Edit code in your IDE  
+   - Verify that your `.env` files are up‑to‑date in **both** folders  
+   - Rebuild TS types (frontend) and lint as needed  
+
+5. **Testing your changes**  
+   - Hit your new or modified endpoints/components in the browser  
+   - Run any existing unit/E2E tests:  
+     ```bash
+     npx mocha test
+     ```
+# Testing
 ## Prerequisites
 
 - **Node.js** v20.x or newer  
@@ -105,45 +145,6 @@ npx mocha test/authenticationTesting.js \
 > **Tip:** The `-g` (grep) flag only needs a unique substring of the `it()` description.
 
 
-## Developer Workflow
-
-1. **Clone the repo**  
-   ```bash
-   git clone https://github.com/JoseVas2003/Sigfrido_Construction.git
-   cd Sigfrido_Construction
-   ```
-
-2. **Project layout**  
-   - `frontend/` – React + TypeScript client  
-   - `backend/` – Node.js + Express API  
-
-3. **Local development**  
-   - In one terminal, start the backend:  
-     ```bash
-     cd backend
-     npm install     # first time only
-     npm run dev
-     ```
-   - In a second terminal, start the frontend:  
-     ```bash
-     cd frontend
-     npm install     # first time only
-     npm run dev
-     ```
-   - Both servers run on `localhost` (frontend proxies API calls to the backend).
-
-4. **Making changes**  
-   - Edit code in your IDE  
-   - Verify that your `.env` files are up‑to‑date in **both** folders  
-   - Rebuild TS types (frontend) and lint as needed  
-
-5. **Testing your changes**  
-   - Hit your new or modified endpoints/components in the browser  
-   - Run any existing unit/E2E tests:  
-     ```bash
-     npx mocha test
-     ```
-
 ---
 
 ## Deployment
@@ -188,14 +189,6 @@ npx mocha test/authenticationTesting.js \
 > - Tag releases (Git) so you can roll back easily in EB or Amplify  
 
 
-## Timeline
-
-Major Milestones:
-	
-Sprint 5 > Login Page Functionality<br>
-Sprint 6 > Create Project & Portfolio Functionality<br>
-Sprint 7 > User / Admin Dashboard Functionality<br>
-Sprint 8 > Forgot Password Functionality<br>
 
 ## Built With (Tech Stacks)
 - Next.js
@@ -206,7 +199,7 @@ Sprint 8 > Forgot Password Functionality<br>
 
 
 
-# Coding Hornet's development team:
+# Authors - Coding Hornet's development team:
 Jose Avalos<br>
 Jordan Dawson<br>
 Mitchell Kouiyoth<br>
