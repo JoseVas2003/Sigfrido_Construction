@@ -1,5 +1,6 @@
 const { Builder, By, until } = require('selenium-webdriver');
 const assert = require('assert');
+const { describe } = require('node:test');
 
 async function loginAsAdmin(driver) {
   await driver.get('http://localhost:3000/login');
@@ -20,9 +21,11 @@ async function loginAsAdmin(driver) {
   await driver.sleep(1000);
   await loginButton.click();
 
-  await driver.get('http://localhost:3000/faq');
-  await driver.manage().window().maximize();
-  await driver.sleep(1000);
+  const faqFooterLink = await driver.wait(until.elementLocated(By.linkText('FAQ')), 5000);
+  await driver.executeScript("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", faqFooterLink);
+  await driver.sleep(500);
+  await driver.executeScript("arguments[0].click();", faqFooterLink);
+  await driver.wait(until.urlContains('/faq'), 5000);
 }
 
 describe('FAQ - Add Question Test', function () {
