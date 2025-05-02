@@ -547,7 +547,8 @@ describe('Create Contact Us Form Functionality', async function()
 
 
     // ------------ CORRECT INPUT TEST ------------
-    it('Succesfully Submitting a Contact Us Form', async function() {
+    it('Successfully Submitting a Contact Us Form', async function() {
+
         let driver = await new Builder().forBrowser('chrome').withCapabilities(caps).build();
         try {
             await driver.get('http://localhost:3000/contactPage')
@@ -586,7 +587,7 @@ describe('Create Contact Us Form Functionality', async function()
 
             let submitButton = await driver.findElement(By.id('submitButton'));
             await submitButton.click()
-            await driver.sleep(2000)
+            await driver.sleep(5000)
 
             //Check to make sure form was submitted via logs
             const logs = await driver.manage().logs().get('browser');
