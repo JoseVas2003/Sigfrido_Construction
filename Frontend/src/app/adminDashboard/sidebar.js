@@ -65,13 +65,13 @@ const Sidebar = ({ onToggleLanguage}) => {
         </a>
       </li>
       <li>
-        <a href="#usersSection">
+        <a id="usersSect" href="#usersSection">
           <FaUsers className="icon" />
           {t.users}
         </a>
       </li>
       <li>
-        <a href="#contactFormsSection">
+        <a id="contactSect" href="#contactFormsSection">
           <FaEnvelope className="icon" />
           {t.contactForms}
         </a>

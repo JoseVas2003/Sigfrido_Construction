@@ -23,7 +23,7 @@ async function loginAsAdmin(driver) {
     await driver.sleep(1000);
     await loginButton.click();
 
-    await driver.sleep(1000);
+    await driver.sleep(5000);
 }
 
 
@@ -51,37 +51,41 @@ describe('Admin Deleting a User Acconut via the Admin Dashboard Functionality', 
                 admin: false
             };
 
-            await collection.insertOne(testingUser);
+            const insertedUser = await collection.insertOne(testingUser);
+            const userId = insertedUser.insertedId.toString();
             
             await loginAsAdmin(driver); //login as admin
 
             let menuButton = await driver.wait(until.elementLocated(By.id('MenueB')), 5000);
             await menuButton.click()
-            await driver.sleep(1000)
+            await driver.sleep(5000)
 
             let dashboardButton = await driver.wait(until.elementLocated(By.id('dashboardButton')), 5000);
             await dashboardButton.click()
             await driver.sleep(5000)
 
-            //scroll to bottom of page
-            await driver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
-            await driver.sleep(1000)
+            //go to user section
+            let userSectionB = await driver.wait(until.elementLocated(By.id('usersSect')), 5000);
+            await userSectionB.click();
+            await driver.sleep(1000);
+            await userSectionB.click();
+            await driver.sleep(1000);
 
             //scroll to bottom of users list
             const div = await driver.wait(until.elementLocated(By.id('usersSection')), 5000);
             await driver.executeScript("arguments[0].scrollTop = arguments[0].scrollHeight;", div);
-            await driver.sleep(1000)
+            await driver.sleep(5000)
 
-            let specificDeleteButton = await driver.wait(until.elementLocated(By.id('TestingAdminDelete@example.com')), 5000);
+            let specificDeleteButton = await driver.wait(until.elementLocated(By.id(`${userId}`)), 5000);
             await specificDeleteButton.click()
             await driver.sleep(1000)
 
             //checking to make sure user was deleted from the database
             //const collection = db.collection('users');
-            const documents = await collection.find().toArray();
+            //const documents = await collection.find().toArray();
             //console.log('All users detected: ', documents);
-            const users = await collection.find({ email: 'TestingAdminDelete@example.com'}).toArray();
-            assert.strictEqual(users.length, 0, 'Test FAILED, user still found in database');
+            const deletedUser = await collection.findOne({ _id: insertedUser.insertedId });
+            assert.strictEqual(deletedUser, null, 'Test FAILED, form still found in database');
 
         } finally {
             await driver.quit();
