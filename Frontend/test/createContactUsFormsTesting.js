@@ -36,7 +36,7 @@ describe('Create Contact Us Form Functionality', async function()
         }
     }).timeout(60000)
 
-    it('Navigating to Contact Us Page and Entering ONLY a First Name and Last Name', async function() {
+    it('Navigating to Contact Us Page and Entering ONLY a Last Name and First Name', async function() {
         let driver = await new Builder().forBrowser('chrome').withCapabilities(caps).build();
         try {
             await driver.get('http://localhost:3000/contactPage')
@@ -69,7 +69,7 @@ describe('Create Contact Us Form Functionality', async function()
         }
     }).timeout(60000)
 
-    it('Navigating to Contact Us Page and Entering ONLY a First Name, Last Name and Email', async function() {
+    it('Navigating to Contact Us Page and Entering ONLY an Email, First Name and Last Name', async function() {
         let driver = await new Builder().forBrowser('chrome').withCapabilities(caps).build();
         try {
             await driver.get('http://localhost:3000/contactPage')
@@ -107,7 +107,7 @@ describe('Create Contact Us Form Functionality', async function()
         }
     }).timeout(60000)
 
-    it('Navigating to Contact Us Page and Entering ONLY a First Name, Last Name, Email and Phone', async function() {
+    it('Navigating to Contact Us Page and Entering ONLY a Phone, First Name, Last Name and Email', async function() {
         let driver = await new Builder().forBrowser('chrome').withCapabilities(caps).build();
         try {
             await driver.get('http://localhost:3000/contactPage')
