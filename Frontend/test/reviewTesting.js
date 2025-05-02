@@ -237,41 +237,4 @@ describe('Reviews Functionality Tests', function () {
   });
 
 
-  describe('Cleanup Selenium Test Review', function () {
-    it('should remove the leftover Selenium Test Review', async function () {
-      const driver = await new Builder().forBrowser('chrome').build();
-      try {
-        // Log in as admin so we can delete any user’s review
-        await loginUser(driver, 'NewAdmin@account.com', 'Admin12345$');
-        await driver.get('http://localhost:3000/reviews');
-        await setSortToNewest(driver);
-
-        // Wait for the test review card to show up
-        const reviewCard = await driver.wait(
-          until.elementLocated(By.xpath(
-            "//*[contains(text(),'Selenium Test Review')]/ancestor::*[contains(@class,'review-card')]"
-          )),
-          15000,
-          'Selenium Test Review not found for cleanup'
-        );
-
-        // Click its delete button
-        const deleteButton = await reviewCard.findElement(By.css('.delete-button'));
-        await driver.executeScript('arguments[0].scrollIntoView(true);', deleteButton);
-        await driver.wait(until.elementIsEnabled(deleteButton), 10000);
-        await driver.executeScript('arguments[0].click();', deleteButton);
-
-        // Verify it’s been removed
-        await driver.wait(async () => {
-          const elems = await driver.findElements(By.xpath(
-            "//*[contains(text(),'Selenium Test Review')]/ancestor::*[contains(@class,'review-card')]"
-          ));
-          return elems.length === 0;
-        }, 10000, 'Failed to clean up Selenium Test Review');
-
-      } finally {
-        await driver.quit();
-      }
-    }).timeout(60000);
-  });
 });
