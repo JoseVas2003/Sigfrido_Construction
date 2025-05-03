@@ -280,7 +280,7 @@ export default function page(){
       return false;
     }
 
-    const connection = 'http://localhost:3001/api/users/';
+    const connection = `${process.env.NEXT_PUBLIC_API_URL}/api/users/`;
     const userURL = connection + (email);
     let userID = '';
 
