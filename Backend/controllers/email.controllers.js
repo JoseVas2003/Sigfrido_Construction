@@ -64,6 +64,9 @@ const sendAppointmentConfirmation = async (appointment) => {
   Email: ${appointment.email}
   Date: ${formattedDate}
   Time: ${appointment.time}
+  Message:
+  ${appointment.message}
+  
   This appointment is in approximately ${hoursBefore} hour(s).`,
     };
   
@@ -88,7 +91,7 @@ const sendEmail = async (req, res) => {
     const formattedDate = new Date(date).toLocaleDateString();
 
     const clientMailOptions = {
-        from: 'senior191work@gmail.com',
+        from: process.env.EMAIL,
         to: email, // Send to client
         subject: "Your Appointment Confirmation",
         text: `Hello ${name},
@@ -108,7 +111,7 @@ Owner, Construction Services
     };
     const adminMailOptions = {
         from: process.env.EMAIL,
-        to: process.env.EMAIL,
+        to: process.env.ADMIN_EMAIL,
         subject: "New Appointment Scheduled",
         text: `New appointment booked!
 
@@ -167,7 +170,7 @@ Owner, Construction Services`,
 
   const adminMailOptions = {
       from: process.env.EMAIL,
-      to: process.env.EMAIL,
+      to: process.env.ADMIN_EMAIL,
       subject: "Appointment Cancellation Notice",
       text: `An appointment has been canceled.
 
@@ -226,7 +229,7 @@ Owner, Construction Services`,
 
   const adminMailOptions = {
     from: process.env.EMAIL,
-    to: process.env.EMAIL,
+    to: process.env.ADMIN_EMAIL,
     subject: "Client Rescheduled Appointment",
     text: `Client Rescheduled Appointment:
 
