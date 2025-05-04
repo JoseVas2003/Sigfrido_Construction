@@ -30,7 +30,9 @@ const Navbar = () =>{
         <div>
             <nav className="headerBar">
                 <div>
-                    <Image src={Logo} className='companyLogo' alt='' width={0} height={0}></Image>
+                    <Link href="../">
+                        <Image src={Logo} className='companyLogo' alt='' width={0} height={0} ></Image>
+                    </Link>
                 </div>
 
                  <div className="companyName">
@@ -38,7 +40,7 @@ const Navbar = () =>{
                 </div>
 
                 <div className="menuButtonLocation">
-                    <button type="button" onClick={() => {menuClicked()}}><Image id="MenueB" className="menuButton" src={displayedImage ? Menue : Close} alt='' width={0} height={0}/></button>
+                        <button type="button" onClick={() => {menuClicked()}}><Image id="MenueB" className="menuButton" src={displayedImage ? Menue : Close} alt='' width={0} height={0}/></button>
                 </div>
             </nav>
              
