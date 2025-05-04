@@ -492,7 +492,7 @@ export default function AdminDashboard() {
                 <p>
                   {t.createdAt}: {new Date(user.createdAt).toLocaleString()}
                 </p>
-                <button onClick={() => handleDeleteUser(user._id)}>
+                <button id={user._id} onClick={() => handleDeleteUser(user._id)}>
                   {t.delete}
                 </button>
               </div>
@@ -520,7 +520,7 @@ export default function AdminDashboard() {
                 <p>
                   {t.createdAt}: {new Date(form.createdAt).toLocaleString()}
                 </p>
-                <button onClick={() => handleDeleteContactForm(form._id)}>
+                <button id={form._id} onClick={() => handleDeleteContactForm(form._id)}>
                   {t.delete}
                 </button>
               </div>

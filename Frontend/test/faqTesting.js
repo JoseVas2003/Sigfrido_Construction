@@ -1,13 +1,38 @@
 const { Builder, By, until } = require('selenium-webdriver');
 const assert = require('assert');
+const { describe } = require('node:test');
+
+async function loginAsAdmin(driver) {
+  await driver.get('http://localhost:3000/login');
+  await driver.manage().window().maximize();
+
+  await driver.sleep(1000);
+  const emailInput = await driver.wait(until.elementLocated(By.id('emailInput')), 5000);
+  await driver.sleep(1000);
+  await emailInput.sendKeys("NewAdmin@account.com");
+
+  await driver.sleep(1000);
+  const passwordInput = await driver.wait(until.elementLocated(By.id('passwordInput')), 5000);
+  await driver.sleep(1000);
+  await passwordInput.sendKeys("Admin12345$");
+
+  await driver.sleep(1000);
+  const loginButton = await driver.wait(until.elementLocated(By.id('LoginButton')), 5000);
+  await driver.sleep(1000);
+  await loginButton.click();
+
+  const faqFooterLink = await driver.wait(until.elementLocated(By.linkText('FAQ')), 5000);
+  await driver.executeScript("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", faqFooterLink);
+  await driver.sleep(500);
+  await driver.executeScript("arguments[0].click();", faqFooterLink);
+  await driver.wait(until.urlContains('/faq'), 5000);
+}
 
 describe('FAQ - Add Question Test', function () {
   it('Should add a new FAQ question and save it', async function () {
     const driver = await new Builder().forBrowser('chrome').build();
     try {
-      await driver.get('http://localhost:3000/faq');
-      await driver.manage().window().maximize();
-      await driver.sleep(1000);
+      await loginAsAdmin(driver);
 
       // Click Edit
       const editBtn = await driver.wait(until.elementLocated(By.id("editButton")), 5000);
@@ -60,9 +85,7 @@ describe('FAQ - Add Question Test', function () {
   it('Should delete the last FAQ question and save changes', async function () {
     const driver = await new Builder().forBrowser('chrome').build();
     try {
-      await driver.get('http://localhost:3000/faq');
-      await driver.manage().window().maximize();
-      await driver.sleep(1000);
+      await loginAsAdmin(driver);
   
       // Click Edit
       const editBtn = await driver.wait(until.elementLocated(By.id("editButton")), 5000);
@@ -105,9 +128,7 @@ describe('FAQ - Add Question Test', function () {
   it('Should add a new FAQ title and save it', async function () {
     const driver = await new Builder().forBrowser('chrome').build();
     try {
-      await driver.get('http://localhost:3000/faq');
-      await driver.manage().window().maximize();
-      await driver.sleep(1000);
+      await loginAsAdmin(driver);
   
       // Click Edit
       const editBtn = await driver.wait(until.elementLocated(By.id("editButton")), 5000);
@@ -154,9 +175,7 @@ describe('FAQ - Add Question Test', function () {
   it('Should delete the last FAQ title and save changes', async function () {
     const driver = await new Builder().forBrowser('chrome').build();
     try {
-      await driver.get('http://localhost:3000/faq');
-      await driver.manage().window().maximize();
-      await driver.sleep(1000);
+      await loginAsAdmin(driver);
   
       // Click Edit
       const editBtn = await driver.wait(until.elementLocated(By.id("editButton")), 5000);
