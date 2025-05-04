@@ -199,7 +199,7 @@ npx mocha test/authenticationTesting.js \
 
 
 
-# Authors - Coding Hornet's development team:
+# Authors - Coding Hornet's Development Team:
 Jose Avalos<br>
 Jordan Dawson<br>
 Mitchell Kouiyoth<br>
